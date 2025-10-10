@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+import 'package:link_learner/core/constants/app_images.dart';
+import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/routes/app_routes.dart';
+import 'package:link_learner/widgets/asset_images.dart';
+import 'package:link_learner/widgets/common_elevated_button.dart';
+
+class PaymentFailedScreen extends StatefulWidget {
+  const PaymentFailedScreen({super.key});
+
+  @override
+  State<PaymentFailedScreen> createState() => _PaymentFailedScreenState();
+}
+
+class _PaymentFailedScreenState extends State<PaymentFailedScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ColorConstants.whiteColor,
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+
+            children: [
+              assetImages(AppImages.failedIcon, height: 150, width: 150),
+              SizedBox(height: 10),
+              Text(
+                "Purchase Failed!",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: elevatedButton(
+                        onTap: () {
+                          AppRoutes.pop(context);
+                        },
+                        title: "Call to Action",
+                        backgroundColor: ColorConstants.primaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
