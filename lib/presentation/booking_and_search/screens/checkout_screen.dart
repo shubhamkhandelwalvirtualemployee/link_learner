@@ -5,6 +5,7 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
+import 'package:link_learner/widgets/custom_text_field.dart';
 import 'package:link_learner/widgets/network_images.dart';
 import 'package:provider/provider.dart';
 
@@ -240,6 +241,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ],
                   ),
                   SizedBox(height: 20),
+                  Text(
+                    "BILLING DETAIL",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: ColorConstants.primaryColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Full Address",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: ColorConstants.disabledColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  customTextField(
+                    controller: bookingSearchProvider.addressController,
+                    maxLines: 4,
+                    fillColor: ColorConstants.containerAndFillColor,
+                  ),
                 ],
               ),
             ),

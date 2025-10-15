@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/main.dart';
+import 'package:link_learner/presentation/booking/screens/booking_details_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/buy_booking_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/checkout_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/payment_failed_screen.dart';
@@ -27,6 +29,8 @@ class RouteManager {
       RouteNames.checkoutScreen: (context) => CheckoutScreen(),
       RouteNames.paymentSuccessScreen: (context) => PaymentSuccessScreen(),
       RouteNames.paymentFailedScreen: (context) => PaymentFailedScreen(),
+      RouteNames.bookingDetailsScreen: (context) => BookingDetailsScreen(),
+      RouteNames.noNetworkScreen: (context) => NoNetworkScreen(),
     };
 
     final builder = routes[settings.name];

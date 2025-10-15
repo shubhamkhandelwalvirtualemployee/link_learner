@@ -34,7 +34,7 @@ Widget customTextField({
             : [],
     decoration: InputDecoration(
       // filled: true,
-      // fillColor: fillColor ?? ColorConstants.containerAndFillColor,
+      fillColor: fillColor ?? ColorConstants.containerAndFillColor,
       enabledBorder: OutlineInputBorder(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         borderSide: BorderSide(color: color ?? ColorConstants.disabledColor),

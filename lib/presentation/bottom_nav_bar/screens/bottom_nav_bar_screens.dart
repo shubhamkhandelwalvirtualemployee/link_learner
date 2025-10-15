@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
 import 'package:link_learner/presentation/notifications/screens/notifications_tab_screen.dart';
 import 'package:link_learner/presentation/booking/screens/booking_screen.dart';
+import 'package:link_learner/widgets/asset_images.dart';
 import 'package:provider/provider.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
-
 import 'package:link_learner/presentation/booking_and_search/screens/booking_search_screen.dart';
 import 'package:link_learner/presentation/home/screen/home_screen.dart';
 import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
@@ -16,7 +17,6 @@ class BottomNavBarScreens extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> screens = const [
       HomeScreen(),
-
       BookingScreen(),
       BookingSearchScreen(),
       NotificationsTabScreen(),
@@ -42,9 +42,14 @@ class BottomNavBarScreens extends StatelessWidget {
               if (provider.showProfileIcon)
                 Padding(
                   padding: const EdgeInsets.only(right: 16.0),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.blue.shade100,
-                    child: const Icon(Icons.person, color: Colors.blue),
+                  child: GestureDetector(
+                    onTap: () {
+                      provider.onItemTapped(4);
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.blue.shade100,
+                      child: const Icon(Icons.person, color: Colors.blue),
+                    ),
                   ),
                 ),
             ],
@@ -54,7 +59,6 @@ class BottomNavBarScreens extends StatelessWidget {
 
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
-              color: ColorConstants.whiteColor,
               boxShadow: [
                 BoxShadow(
                   color: ColorConstants.disabledColor.withOpacity(0.1),
@@ -63,59 +67,159 @@ class BottomNavBarScreens extends StatelessWidget {
                 ),
               ],
             ),
-            child: BottomNavigationBar(
-              currentIndex: provider.selectedIndex,
-              onTap: provider.onItemTapped,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: ColorConstants.whiteColor,
-              selectedItemColor: ColorConstants.primaryColor,
-              unselectedItemColor: ColorConstants.disabledColor,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              selectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(25),
+                topRight: Radius.circular(25),
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-              items: <BottomNavigationBarItem>[
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  label: 'Home',
+              child: BottomNavigationBar(
+                currentIndex: provider.selectedIndex,
+                onTap: provider.onItemTapped,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: ColorConstants.whiteColor,
+                selectedItemColor: ColorConstants.primaryColor,
+                unselectedItemColor: ColorConstants.disabledColor,
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
                 ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.menu_book),
-                  label: 'Booking',
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
                 ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ColorConstants.primaryColor,
-                      ),
-                      child: const Icon(
-                        Icons.search,
-                        color: ColorConstants.whiteColor,
-                        size: 28,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.selectedIndex == 0)
+                          Container(
+                            width: 30,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorConstants.primaryColor,
+                              shape: BoxShape.rectangle,
+                            ),
+                          ),
+                        SizedBox(height: 5),
+                        assetImages(
+                          AppImages.homeIcon,
+                          height: 24,
+                          iconColor:
+                              provider.selectedIndex == 0
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
+                        ),
+                      ],
+                    ),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.selectedIndex == 1)
+                          Container(
+                            width: 30,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorConstants.primaryColor,
+                              shape: BoxShape.rectangle,
+                            ),
+                          ),
+                        SizedBox(height: 5),
+                        assetImages(
+                          AppImages.bookingIcon,
+                          height: 24,
+                          iconColor:
+                              provider.selectedIndex == 1
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
+                        ),
+                      ],
+                    ),
+                    label: 'Booking',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: ColorConstants.containerAndFillColor,
+                        ),
+                        child: const Icon(
+                          Icons.search,
+                          color: ColorConstants.primaryColor,
+                          size: 28,
+                        ),
                       ),
                     ),
+                    label: '',
                   ),
-                  label: '',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.message_outlined),
-                  label: 'Message',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
-                  label: 'Account',
-                ),
-              ],
+                  BottomNavigationBarItem(
+                    icon: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.selectedIndex == 3)
+                          Container(
+                            width: 30,
+
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorConstants.primaryColor,
+                              shape: BoxShape.rectangle,
+                            ),
+                          ),
+                        SizedBox(height: 5),
+                        assetImages(
+                          AppImages.messageIcon,
+                          height: 24,
+                          iconColor:
+                              provider.selectedIndex == 3
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
+                        ),
+                      ],
+                    ),
+                    label: 'Message',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.selectedIndex == 4)
+                          Container(
+                            width: 30,
+
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorConstants.primaryColor,
+                              shape: BoxShape.rectangle,
+                            ),
+                          ),
+                        SizedBox(height: 3),
+                        Icon(
+                          Icons.person,
+                          size: 28,
+                          color:
+                              provider.selectedIndex == 4
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
+                        ),
+                      ],
+                    ),
+                    label: 'Account',
+                  ),
+                ],
+              ),
             ),
           ),
         );

@@ -10,4 +10,6 @@ class RouteNames {
   static const String checkoutScreen = "/CheckoutScreen";
   static const String paymentSuccessScreen = "/PaymentSuccessScreen";
   static const String paymentFailedScreen = "/PaymentFailedScreen";
+  static const String bookingDetailsScreen = "/BookingDetailsScreen";
+  static const String noNetworkScreen = "/NoNetworkScreen";
 }

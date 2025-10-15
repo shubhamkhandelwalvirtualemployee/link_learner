@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BookingSearchProvider extends ChangeNotifier {
+  TextEditingController _addressController = TextEditingController();
+
+  TextEditingController get addressController => _addressController;
   final List<String> categories = [
     'Design',
     'Painting',

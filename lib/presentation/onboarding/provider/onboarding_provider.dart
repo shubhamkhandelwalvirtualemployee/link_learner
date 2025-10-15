@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+
+import 'package:link_learner/core/constants/session_constants.dart';
+import 'package:link_learner/core/utils/session_manager.dart';
 import 'package:link_learner/routes/app_routes.dart';
 
 class OnboardingProvider extends ChangeNotifier {
@@ -32,6 +35,10 @@ class OnboardingProvider extends ChangeNotifier {
   }
 
   void skipToLastPage(BuildContext context) {
+    SessionManager().setValue(
+      SessionConstants.storeOnboarding,
+      SessionConstants.storeOnboarding,
+    );
     controller.jumpToPage(onboardingData.length - 1);
     AppRoutes.pushAndRemoveUntil(
       context,

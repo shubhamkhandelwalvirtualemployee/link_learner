@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:link_learner/presentation/booking_and_search/widgets/search_bottom_sheet.dart';
+import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -77,7 +79,12 @@ class _BookingScreenState extends State<BookingScreen>
                   },
                   itemBuilder: (context, index) {
                     return InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        AppRoutes.push(
+                          context,
+                          RouteNames.bookingDetailsScreen,
+                        );
+                      },
                       child: _buildBookingListItem(
                         title: bookings[index]['title'],
                         person: bookings[index]['person'],

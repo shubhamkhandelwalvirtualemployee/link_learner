@@ -8,4 +8,8 @@ class AppImages {
   static const String noNotification = "assets/images/no_notification.png";
   static const String successIcon = "assets/images/success_icon.png";
   static const String failedIcon = "assets/images/failed_icon.png";
+  static const String homeIcon = "assets/images/home.png";
+  static const String messageIcon = "assets/images/message.png";
+  static const String bookingIcon = "assets/images/booking.png";
+  static const String notNetwork = "assets/images/no_network.png";
 }
