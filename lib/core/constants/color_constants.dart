@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ColorConstants {
-  static const Color primaryColor = Color(0xFF3D5CFF);
+  static const Color primaryColor = Color(0xFFC40016);
   // static const Color secondaryColor = Color(0xFFE79503);
   static const Color primaryTextColor = Colors.black;
   // static const Color checkColor = Colors.greenAccent;

@@ -50,7 +50,6 @@ class SearchFilterBottomSheet extends StatelessWidget {
                     ),
                   ),
 
-                  // --- Scrollable Content ---
                   Expanded(
                     child: ListView(
                       controller: scrollController,

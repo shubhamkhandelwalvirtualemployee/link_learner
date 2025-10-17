@@ -1,3 +1,3 @@
 class ApiUrls {
-  static const String baseUrl = "http://13.53.112.148:5000/";
+  static const String baseUrl = "https://api.l2l.ie";
 }

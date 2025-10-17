@@ -102,17 +102,16 @@ class SignUpScreen extends StatelessWidget {
                         // Mobile
                         _buildLabel("Mobile"),
                         PhoneNumberField(
-                          validator: (value) {
-                            return loginSignupProvider.phoneNumberValidator(
-                              value ?? "",
-                            );
-                          },
-                          onChanged: (phone) {
-                            print('Phone changed: $phone');
-                          },
+                          initialCountryCode:
+                              loginSignupProvider
+                                  .countryCode, // e.g. "US" or "IN"
                           controller:
                               loginSignupProvider.mobileNumberSignupController,
+                          onChanged: (fullNumber) {
+                            print("Full number: $fullNumber");
+                          },
                         ),
+
                         const SizedBox(height: 10),
 
                         // Email
@@ -238,6 +237,9 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
+                                print(
+                                  "${loginSignupProvider.countryCode}${loginSignupProvider.mobileNumberSignupController.text}",
+                                );
                                 AppRoutes.pushAndRemoveUntil(
                                   context,
                                   RouteNames.loginScreen,

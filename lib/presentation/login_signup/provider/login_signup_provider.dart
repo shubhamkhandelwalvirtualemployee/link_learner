@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/presentation/login_signup/model/sign_up_request_model.dart';
+import 'package:link_learner/services/api_calling.dart';
+import 'package:link_learner/widgets/common_snack_bar.dart';
 import 'package:otp_text_field_v2/otp_field_v2.dart';
 
 class LoginSignupProvider extends ChangeNotifier {
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   final GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> phoneKey = GlobalKey<FormState>();
@@ -26,7 +31,8 @@ class LoginSignupProvider extends ChangeNotifier {
   final TextEditingController _loginPasswordController =
       TextEditingController();
 
-  final OtpFieldControllerV2 _verifyMobileOtpController = OtpFieldControllerV2();
+  final OtpFieldControllerV2 _verifyMobileOtpController =
+      OtpFieldControllerV2();
 
   TextEditingController get mobileNumberSignupController =>
       _mobileNumberSignupController;
@@ -171,4 +177,57 @@ class LoginSignupProvider extends ChangeNotifier {
         (today.month == date.month && today.day >= date.day);
     return age > 16 || (age == 16 && hasHadBirthday);
   }
+
+  final String _countryCode = "US";
+
+  String get countryCode => _countryCode;
+
+  void setMobileNumber(String number) {
+    _mobileNumberSignupController.text = number;
+    notifyListeners();
+  }
+
+  // Future<void> signUp(BuildContext context) async {
+  //   _isLoading = true;
+  //   try {
+  //     final response = await ApiCalling().signUp(
+  //       SignUpRequestModel(
+  //         role: "",
+  //         email: _signUpEmailController.text.trim(),
+  //         password: _signUpPasswordController.text.trim(),
+  //         firstName: _signUpNameController.text.trim(),
+  //         lastName: _signUpNameController.text.trim(),
+  //         phone: _mobileNumberSignupController.text,
+  //       ),
+  //     );
+  //   }
+  //     // if (response.status == 409) {
+  //     //   commonSnackBar(
+  //     //     'User already exists. Please login.',
+  //     //     color: ColorConstants.primaryColor,
+  //     //   );
+  //     // } else if (response.status == 200 &&
+  //     //     response.token != null &&
+  //     //     response.user != null) {
+  //     //   _emailController.clear();
+  //     //   _passwordController.clear();
+  //     //   // _confirmPasswordController.clear();
+  //     //   AppRoutes.pushAndRemoveUntil(
+  //     //     context,
+  //     //     RouteNames.createAccountScreen,
+  //     //     (Route<dynamic> route) => false,
+  //     //   );
+  //     // } else {
+  //     //   commonSnackBar(
+  //     //     'Sign up failed. Please try again.',
+  //     //     color: ColorConstants.primaryColor,
+  //     //   );
+  //     }
+  //   } catch (e) {
+  //     commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
+  //   } finally {
+  //     _isLoading = false;
+  //     notifyListeners();
+
+  // }
 }

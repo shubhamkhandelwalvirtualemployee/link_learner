@@ -11,7 +11,6 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
-import 'package:link_learner/core/utils/session_manager.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
@@ -33,14 +32,14 @@ void main() async {
   // Load environment variables
   // await dotenv.load(fileName: ".env");
 
-  await Firebase.initializeApp();
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    sound: true,
-    badge: true,
-  );
+  // await Firebase.initializeApp();
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   sound: true,
+  //   badge: true,
+  // );
 
-  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -296,7 +295,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         localizationsDelegates: [],
         title: 'Link Learner',
-        // theme: ThemeData(fontFamily: "Inter", useMaterial3: true),
+        theme: ThemeData(fontFamily: "Geist", useMaterial3: true),
         initialRoute: RouteNames.onboardingScreen,
         onGenerateRoute: RouteManager.onGenerateRoute,
       ),

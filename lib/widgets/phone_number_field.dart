@@ -13,7 +13,7 @@ class PhoneNumberField extends StatelessWidget {
   const PhoneNumberField({
     super.key,
     required this.controller,
-    this.initialCountryCode = 'IN',
+    this.initialCountryCode = 'IN', // default
     this.validator,
     this.onChanged,
   });
@@ -28,9 +28,9 @@ class PhoneNumberField extends StatelessWidget {
           pickerDialogStyle: PickerDialogStyle(
             backgroundColor: ColorConstants.whiteColor,
           ),
-          disableLengthCheck: true,
           controller: controller,
           initialCountryCode: initialCountryCode,
+          disableLengthCheck: true,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(10),
@@ -53,8 +53,8 @@ class PhoneNumberField extends StatelessWidget {
             errorStyle: const TextStyle(fontSize: 14),
           ),
           onChanged: (phone) {
-            fieldState.didChange(phone.number);
-            if (onChanged != null) onChanged!(phone.number);
+            fieldState.didChange(phone.completeNumber); // send full number
+            if (onChanged != null) onChanged!(phone.completeNumber);
           },
         );
       },
