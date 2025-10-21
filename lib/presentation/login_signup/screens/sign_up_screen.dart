@@ -4,6 +4,7 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
+import 'package:link_learner/widgets/common_snack_bar.dart';
 import 'package:link_learner/widgets/custom_text_field.dart';
 import 'package:link_learner/widgets/phone_number_field.dart';
 import 'package:provider/provider.dart';
@@ -75,9 +76,20 @@ class SignUpScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Name
-                        _buildLabel("Your Name"),
+                        _buildLabel("First Name"),
                         customTextField(
-                          controller: loginSignupProvider.signUpNameController,
+                          controller:
+                              loginSignupProvider.signUpFirstNameController,
+                          validator:
+                              (value) =>
+                                  value == null || value.trim().isEmpty
+                                      ? "Name is required"
+                                      : null,
+                        ),
+                        const SizedBox(height: 10), _buildLabel("Last Name"),
+                        customTextField(
+                          controller:
+                              loginSignupProvider.signUpLastNameController,
                           validator:
                               (value) =>
                                   value == null || value.trim().isEmpty
@@ -86,18 +98,18 @@ class SignUpScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
 
-                        // Address
-                        _buildLabel("Your Address"),
-                        customTextField(
-                          controller:
-                              loginSignupProvider.signUpAddressController,
-                          validator:
-                              (value) =>
-                                  value == null || value.trim().isEmpty
-                                      ? "Address is required"
-                                      : null,
-                        ),
-                        const SizedBox(height: 10),
+                        // // Address
+                        // _buildLabel("Your Address"),
+                        // customTextField(
+                        //   controller:
+                        //       loginSignupProvider.signUpAddressController,
+                        //   validator:
+                        //       (value) =>
+                        //           value == null || value.trim().isEmpty
+                        //               ? "Address is required"
+                        //               : null,
+                        // ),
+                        // const SizedBox(height: 10),
 
                         // Mobile
                         _buildLabel("Mobile"),
@@ -109,6 +121,7 @@ class SignUpScreen extends StatelessWidget {
                               loginSignupProvider.mobileNumberSignupController,
                           onChanged: (fullNumber) {
                             print("Full number: $fullNumber");
+                            loginSignupProvider.setMobileNumber(fullNumber);
                           },
                         ),
 
@@ -125,38 +138,38 @@ class SignUpScreen extends StatelessWidget {
                         const SizedBox(height: 10),
 
                         // DOB
-                        _buildLabel("Date Of Birth"),
-                        customTextField(
-                          controller: loginSignupProvider.dateOfBirthController,
-                          readOnly: true,
-                          suffixIcon: const Icon(Icons.calendar_today),
-                          onTap: () => loginSignupProvider.pickDate(context),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Date of birth is required';
-                            }
-                            if (!loginSignupProvider.isAbove16(
-                              loginSignupProvider.selectedDate,
-                            )) {
-                              return 'Age must be at least 16 years';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
+                        // _buildLabel("Date Of Birth"),
+                        // customTextField(
+                        //   controller: loginSignupProvider.dateOfBirthController,
+                        //   readOnly: true,
+                        //   suffixIcon: const Icon(Icons.calendar_today),
+                        //   onTap: () => loginSignupProvider.pickDate(context),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Date of birth is required';
+                        //     }
+                        //     if (!loginSignupProvider.isAbove16(
+                        //       loginSignupProvider.selectedDate,
+                        //     )) {
+                        //       return 'Age must be at least 16 years';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
+                        // const SizedBox(height: 10),
 
                         // License
-                        _buildLabel("License Number"),
-                        customTextField(
-                          controller:
-                              loginSignupProvider.licenseNumberController,
-                          validator:
-                              (value) =>
-                                  value == null || value.trim().isEmpty
-                                      ? "License Number is required"
-                                      : null,
-                        ),
-                        const SizedBox(height: 10),
+                        // _buildLabel("License Number"),
+                        // customTextField(
+                        //   controller:
+                        //       loginSignupProvider.licenseNumberController,
+                        //   validator:
+                        //       (value) =>
+                        //           value == null || value.trim().isEmpty
+                        //               ? "License Number is required"
+                        //               : null,
+                        // ),
+                        // const SizedBox(height: 10),
 
                         // Password
                         _buildLabel("Password"),
@@ -205,20 +218,26 @@ class SignUpScreen extends StatelessWidget {
                           height: 50,
                           child: elevatedButton(
                             onTap: () {
-                              // if (loginSignupProvider
-                              //     .signupFormKey
-                              //     .currentState!
-                              //     .validate()) {
-                              //   // Handle signup logic
-                              // }
+                              if (!loginSignupProvider.isChecked) {
+                                commonSnackBar(
+                                  'Please agree to the Terms & Conditions to continue.',
+                                  color: ColorConstants.primaryColor,
+                                );
+                                return;
+                              }
 
-                              AppRoutes.push(
-                                context,
-                                RouteNames.mobileVerifyScreen,
-                              );
+                              if (loginSignupProvider
+                                  .signupFormKey
+                                  .currentState!
+                                  .validate()) {
+                                loginSignupProvider.signUp(context);
+                              }
                             },
                             title: "Create Account",
-                            backgroundColor: ColorConstants.primaryColor,
+                            backgroundColor:
+                                !loginSignupProvider.isChecked
+                                    ? ColorConstants.disabledColor
+                                    : ColorConstants.primaryColor,
                           ),
                         ),
 
@@ -237,9 +256,6 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
-                                print(
-                                  "${loginSignupProvider.countryCode}${loginSignupProvider.mobileNumberSignupController.text}",
-                                );
                                 AppRoutes.pushAndRemoveUntil(
                                   context,
                                   RouteNames.loginScreen,

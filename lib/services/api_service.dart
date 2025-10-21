@@ -34,31 +34,33 @@ class ApiService {
           return handler.next(options);
         },
         onResponse: (response, handler) async {
+          // ✅ Normalize backend responses
+          final data = response.data;
+
+          // If response is just a boolean (true/false)
+          if (data is bool) {
+            response.data = {
+              "success": data,
+              "message": data ? "Request successful" : "Request failed",
+            };
+          }
+          // Optional: if you want to wrap plain string responses
+          else if (data is String) {
+            response.data = {"success": true, "message": data};
+          }
+
           return handler.next(response);
         },
         onError: (DioException error, handler) async {
           final statusCode = error.response?.statusCode;
+
           if (statusCode == 401 || statusCode == 403) {
             await SessionManager().clearAll();
-            // await Provider.of<BottomNavBarProvider>(
-            //   navigatorKey.currentContext!,
-            //   listen: false,
-            // ).reset(notify: false);
-            // if (navigatorKey.currentState?.context != null) {
-            //   AppRoutes.pushAndRemoveUntil(
-            //     navigatorKey.currentContext!,
-            //     RouteNames.onBoardingScreen,
-            //     (Route<dynamic> route) => false,
-            //   );
-            // }
 
             return handler.reject(
               DioException(
                 requestOptions: error.requestOptions,
-                error:
-                    error.response?.data is Map<String, dynamic>
-                        ? (error.response?.data["message"] ?? "Unauthorized")
-                        : "Unauthorized",
+                error: "Unauthorized access. Please log in again.",
                 type: error.type,
                 response: error.response,
               ),
@@ -67,12 +69,17 @@ class ApiService {
 
           String errorMessage = "Something went wrong. Please try again.";
           final data = error.response?.data;
+
           if (data is Map<String, dynamic>) {
             if (data["errors"] != null) {
               errorMessage = data["errors"].toString();
             } else if (data["message"] != null) {
               errorMessage = data["message"];
+            } else if (data["success"] == false) {
+              errorMessage = "Request failed.";
             }
+          } else if (data is bool && data == false) {
+            errorMessage = "Request failed.";
           }
 
           return handler.reject(

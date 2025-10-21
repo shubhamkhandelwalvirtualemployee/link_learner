@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/presentation/login_signup/model/login_response_model.dart';
 import 'package:link_learner/presentation/login_signup/model/sign_up_request_model.dart';
+import 'package:link_learner/presentation/login_signup/model/sign_up_response_model.dart';
+import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/services/api_calling.dart';
 import 'package:link_learner/widgets/common_snack_bar.dart';
 import 'package:otp_text_field_v2/otp_field_v2.dart';
@@ -13,11 +17,21 @@ class LoginSignupProvider extends ChangeNotifier {
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> phoneKey = GlobalKey<FormState>();
 
+  final SignUpResponseModel _signUpResponseModel = SignUpResponseModel();
+
+  SignUpResponseModel get signUpResponseModel => _signUpResponseModel;
+
+  final LoginResponseModel _loginResponseModel = LoginResponseModel();
+  LoginResponseModel get loginResponseModel => _loginResponseModel;
+
   final TextEditingController _mobileNumberSignupController =
       TextEditingController();
   final TextEditingController _mobileNumberVerifyController =
       TextEditingController();
-  final TextEditingController _signUpNameController = TextEditingController();
+  final TextEditingController _signUpFirstNameController =
+      TextEditingController();
+  final TextEditingController _signUpLastNameController =
+      TextEditingController();
   final TextEditingController _signUpAddressController =
       TextEditingController();
   final TextEditingController _signUpEmailController = TextEditingController();
@@ -38,7 +52,12 @@ class LoginSignupProvider extends ChangeNotifier {
       _mobileNumberSignupController;
   TextEditingController get mobileNumberVerifyController =>
       _mobileNumberVerifyController;
-  TextEditingController get signUpNameController => _signUpNameController;
+  TextEditingController get signUpFirstNameController =>
+      _signUpFirstNameController;
+
+  TextEditingController get signUpLastNameController =>
+      _signUpLastNameController;
+
   TextEditingController get signUpAddressController => _signUpAddressController;
   TextEditingController get signUpEmailController => _signUpEmailController;
   TextEditingController get dateOfBirthController => _dateOfBirthController;
@@ -85,6 +104,14 @@ class LoginSignupProvider extends ChangeNotifier {
       return 'Please enter your password.';
     } else if (password.length < 6) {
       return 'Password must be at least 6 characters long.';
+    } else if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Password must contain at least one uppercase letter.';
+    } else if (!RegExp(r'[a-z]').hasMatch(password)) {
+      return 'Password must contain at least one lowercase letter.';
+    } else if (!RegExp(r'[0-9]').hasMatch(password)) {
+      return 'Password must contain at least one number.';
+    } else if (!RegExp(r'[!@#\$&*~]').hasMatch(password)) {
+      return 'Password must contain at least one special character.';
     }
     return null;
   }
@@ -103,7 +130,8 @@ class LoginSignupProvider extends ChangeNotifier {
   void clearTextFields() {
     _mobileNumberSignupController.clear();
     _mobileNumberVerifyController.clear();
-    _signUpNameController.clear();
+    _signUpFirstNameController.clear();
+    _signUpLastNameController.clear();
     _signUpAddressController.clear();
     _signUpEmailController.clear();
     _dateOfBirthController.clear();
@@ -120,7 +148,8 @@ class LoginSignupProvider extends ChangeNotifier {
   void dispose() {
     _mobileNumberSignupController.dispose();
     _mobileNumberVerifyController.dispose();
-    _signUpNameController.dispose();
+    _signUpLastNameController.dispose();
+    _signUpAddressController.dispose();
     _signUpAddressController.dispose();
     _signUpEmailController.dispose();
     _dateOfBirthController.dispose();
@@ -179,55 +208,81 @@ class LoginSignupProvider extends ChangeNotifier {
   }
 
   final String _countryCode = "US";
+  String _fullMobileNumber = "";
 
   String get countryCode => _countryCode;
+  String get fullMobileNumber => _fullMobileNumber;
 
   void setMobileNumber(String number) {
-    _mobileNumberSignupController.text = number;
+    _fullMobileNumber = number;
     notifyListeners();
   }
 
-  // Future<void> signUp(BuildContext context) async {
-  //   _isLoading = true;
-  //   try {
-  //     final response = await ApiCalling().signUp(
-  //       SignUpRequestModel(
-  //         role: "",
-  //         email: _signUpEmailController.text.trim(),
-  //         password: _signUpPasswordController.text.trim(),
-  //         firstName: _signUpNameController.text.trim(),
-  //         lastName: _signUpNameController.text.trim(),
-  //         phone: _mobileNumberSignupController.text,
-  //       ),
-  //     );
-  //   }
-  //     // if (response.status == 409) {
-  //     //   commonSnackBar(
-  //     //     'User already exists. Please login.',
-  //     //     color: ColorConstants.primaryColor,
-  //     //   );
-  //     // } else if (response.status == 200 &&
-  //     //     response.token != null &&
-  //     //     response.user != null) {
-  //     //   _emailController.clear();
-  //     //   _passwordController.clear();
-  //     //   // _confirmPasswordController.clear();
-  //     //   AppRoutes.pushAndRemoveUntil(
-  //     //     context,
-  //     //     RouteNames.createAccountScreen,
-  //     //     (Route<dynamic> route) => false,
-  //     //   );
-  //     // } else {
-  //     //   commonSnackBar(
-  //     //     'Sign up failed. Please try again.',
-  //     //     color: ColorConstants.primaryColor,
-  //     //   );
-  //     }
-  //   } catch (e) {
-  //     commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
+  Future<void> signUp(BuildContext context) async {
+    _isLoading = true;
+    try {
+      final response = await ApiCalling().signUp(
+        SignUpRequestModel(
+          role: "LEARNER",
+          email: _signUpEmailController.text.trim(),
+          password: _signUpPasswordController.text.trim(),
+          firstName: _signUpFirstNameController.text.trim(),
+          lastName: _signUpLastNameController.text.trim(),
+          phone: _fullMobileNumber,
+          callbackUrl: "https://learner.l2l.ie",
+        ),
+      );
 
-  // }
+      if (response.success == true) {
+        _signUpResponseModel.data = response.data;
+        commonSnackBar(
+          "${response.message}",
+          color: ColorConstants.primaryColor,
+        );
+      } else {
+        commonSnackBar(
+          "${response.message}",
+          color: ColorConstants.primaryColor,
+        );
+      }
+    } catch (e) {
+      commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> login(BuildContext context) async {
+    _isLoading = true;
+    try {
+      final response = await ApiCalling().login(
+        email: _loginEmailController.text.trim(),
+        password: _loginPasswordController.text.trim(),
+      );
+
+      if (response.success == true) {
+        _loginResponseModel.data = response.data;
+        commonSnackBar(
+          "${response.message}",
+          color: ColorConstants.primaryColor,
+        );
+        AppRoutes.pushAndRemoveUntil(
+          context,
+          RouteNames.bottomNavBarScreens,
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        commonSnackBar(
+          "${response.message}",
+          color: ColorConstants.primaryColor,
+        );
+      }
+    } catch (e) {
+      commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

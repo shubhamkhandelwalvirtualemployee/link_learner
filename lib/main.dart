@@ -55,7 +55,7 @@ class MyApp extends StatefulWidget {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
   // if (Platform.isIOS) {
   //   if (message.data.containsKey('badgeCount')) {
   //     final badgeCount = int.tryParse(message.data['badgeCount']) ?? 0;
@@ -67,7 +67,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 class _MyAppState extends State<MyApp> {
   late final StreamSubscription<InternetStatus> _internetSubscription;
   bool _isNoInternetDialogVisible = false;
-  late FirebaseMessaging _messaging;
+  // late FirebaseMessaging _messaging;
   late final FlutterLocalNotificationsPlugin _localNotifications;
   final _appLinks = AppLinks();
 
@@ -109,39 +109,39 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initializeNotifications() async {
-    _messaging = FirebaseMessaging.instance;
+    // _messaging = FirebaseMessaging.instance;
 
     // Request permissions
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    // NotificationSettings settings = await _messaging.requestPermission(
+    //   alert: true,
+    //   badge: true,
+    //   sound: true,
+    // );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      fcmToken = await _messaging.getToken();
-      print("✅ FCM Token: $fcmToken");
+    // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    //   fcmToken = await _messaging.getToken();
+    //   print("✅ FCM Token: $fcmToken");
 
-      if (fcmToken != null) {}
+    //   if (fcmToken != null) {}
 
-      // Foreground push handler
+    //   // Foreground push handler
 
-      // Firebase foreground notifications
-      FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
+    //   // Firebase foreground notifications
+    //   FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
 
-      // Firebase background/tapped notifications
-      FirebaseMessaging.onMessageOpenedApp.listen(
-        _handleBackgroundNotification,
-      );
+    //   // Firebase background/tapped notifications
+    //   FirebaseMessaging.onMessageOpenedApp.listen(
+    //     _handleBackgroundNotification,
+    //   );
 
-      // Firebase terminated state notification
-      RemoteMessage? initialMessage = await _messaging.getInitialMessage();
-      if (initialMessage != null) {
-        _handleTerminatedNotification(initialMessage);
-      }
-    } else {
-      print('⚠️ User declined or has not accepted notification permissions.');
-    }
+    //   // Firebase terminated state notification
+    //   // RemoteMessage? initialMessage = await _messaging.getInitialMessage();
+    //   // if (initialMessage != null) {
+    //   //   _handleTerminatedNotification(initialMessage);
+    //   // }
+    // } else {
+    //   print('⚠️ User declined or has not accepted notification permissions.');
+    // }
 
     // Local notification setup
     _localNotifications = FlutterLocalNotificationsPlugin();

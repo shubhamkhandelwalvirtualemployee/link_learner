@@ -135,7 +135,7 @@ class LoginScreen extends StatelessWidget {
                             onTap: () {
                               if (loginSignupProvider.loginFormKey.currentState!
                                   .validate()) {
-                                // Handle signup logic
+                                loginSignupProvider.login(context);
                               }
                             },
                             title: "Log In",

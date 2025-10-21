@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
+import 'package:link_learner/presentation/login_signup/model/login_response_model.dart';
 import 'package:link_learner/presentation/login_signup/model/sign_up_request_model.dart';
 import 'package:link_learner/presentation/login_signup/model/sign_up_response_model.dart';
 import 'package:link_learner/services/api_service.dart';
@@ -40,6 +41,36 @@ class ApiCalling {
         // }
       }
       return SignUpResponseModel.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LoginResponseModel> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _api.post(ApiEndpoint.login, {
+        "email": email,
+        "password": password,
+      });
+      final accessToken = response["data"]['accessToken'];
+
+      if (accessToken != null) {
+        await _sessionManager.setValue(
+          SessionConstants.accessToken,
+          accessToken,
+        );
+
+        // Get FCM token
+        // String? firebaseToken = await _messaging.getToken();
+        // if (firebaseToken != null) {
+        //   await updateFirebaseToken(firebaseToken: firebaseToken);
+        // }
+      }
+
+      return LoginResponseModel.fromJson(response);
     } catch (e) {
       rethrow;
     }

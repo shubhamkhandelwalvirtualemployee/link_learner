@@ -28,15 +28,13 @@ class SignUpResponseModel {
 
 class Data {
   User? user;
-  String? accessToken;
-  String? refreshToken;
+  bool? emailSent;
 
-  Data({this.user, this.accessToken, this.refreshToken});
+  Data({this.user, this.emailSent});
 
   Data.fromJson(Map<String, dynamic> json) {
     user = json["user"] == null ? null : User.fromJson(json["user"]);
-    accessToken = json["accessToken"];
-    refreshToken = json["refreshToken"];
+    emailSent = json["emailSent"];
   }
 
   static List<Data> fromList(List<Map<String, dynamic>> list) {
@@ -48,8 +46,7 @@ class Data {
     if (user != null) {
       _data["user"] = user?.toJson();
     }
-    _data["accessToken"] = accessToken;
-    _data["refreshToken"] = refreshToken;
+    _data["emailSent"] = emailSent;
     return _data;
   }
 }
@@ -59,47 +56,16 @@ class User {
   String? email;
   String? firstName;
   String? lastName;
-  String? phone;
-  dynamic avatar;
   String? role;
-  bool? isActive;
-  bool? emailVerified;
-  bool? profileComplete;
-  String? createdAt;
-  String? updatedAt;
-  Profiles? profiles;
 
-  User({
-    this.id,
-    this.email,
-    this.firstName,
-    this.lastName,
-    this.phone,
-    this.avatar,
-    this.role,
-    this.isActive,
-    this.emailVerified,
-    this.profileComplete,
-    this.createdAt,
-    this.updatedAt,
-    this.profiles,
-  });
+  User({this.id, this.email, this.firstName, this.lastName, this.role});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     email = json["email"];
     firstName = json["firstName"];
     lastName = json["lastName"];
-    phone = json["phone"];
-    avatar = json["avatar"];
     role = json["role"];
-    isActive = json["isActive"];
-    emailVerified = json["emailVerified"];
-    profileComplete = json["profileComplete"];
-    createdAt = json["createdAt"];
-    updatedAt = json["updatedAt"];
-    profiles =
-        json["profiles"] == null ? null : Profiles.fromJson(json["profiles"]);
   }
 
   static List<User> fromList(List<Map<String, dynamic>> list) {
@@ -112,43 +78,7 @@ class User {
     _data["email"] = email;
     _data["firstName"] = firstName;
     _data["lastName"] = lastName;
-    _data["phone"] = phone;
-    _data["avatar"] = avatar;
     _data["role"] = role;
-    _data["isActive"] = isActive;
-    _data["emailVerified"] = emailVerified;
-    _data["profileComplete"] = profileComplete;
-    _data["createdAt"] = createdAt;
-    _data["updatedAt"] = updatedAt;
-    if (profiles != null) {
-      _data["profiles"] = profiles?.toJson();
-    }
-    return _data;
-  }
-}
-
-class Profiles {
-  dynamic learner;
-  dynamic instructor;
-  dynamic agency;
-
-  Profiles({this.learner, this.instructor, this.agency});
-
-  Profiles.fromJson(Map<String, dynamic> json) {
-    learner = json["learner"];
-    instructor = json["instructor"];
-    agency = json["agency"];
-  }
-
-  static List<Profiles> fromList(List<Map<String, dynamic>> list) {
-    return list.map(Profiles.fromJson).toList();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["learner"] = learner;
-    _data["instructor"] = instructor;
-    _data["agency"] = agency;
     return _data;
   }
 }
