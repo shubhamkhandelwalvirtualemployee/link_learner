@@ -13,6 +13,7 @@ import 'package:link_learner/presentation/login_signup/screens/mobile_verify_scr
 import 'package:link_learner/presentation/login_signup/screens/sign_up_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/verify_phone.dart';
 import 'package:link_learner/presentation/onboarding/screens/onboarding_screen.dart';
+import 'package:link_learner/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
 
 class RouteManager {
@@ -31,6 +32,7 @@ class RouteManager {
       RouteNames.paymentFailedScreen: (context) => PaymentFailedScreen(),
       RouteNames.bookingDetailsScreen: (context) => BookingDetailsScreen(),
       RouteNames.noNetworkScreen: (context) => NoNetworkScreen(),
+      RouteNames.editProfileScreen: (context) => EditProfileScreen(),
     };
 
     final builder = routes[settings.name];

@@ -346,6 +346,7 @@ class _NoNetworkScreenState extends State<NoNetworkScreen> {
                       children: [
                         Expanded(
                           child: elevatedButton(
+                            onTap: () {},
                             title: "Try again",
                             backgroundColor: ColorConstants.primaryColor,
                           ),

@@ -27,33 +27,39 @@ class BottomNavBarScreens extends StatelessWidget {
       builder: (context, provider, _) {
         return Scaffold(
           backgroundColor: ColorConstants.whiteColor,
-          appBar: AppBar(
-            backgroundColor: ColorConstants.whiteColor,
-            surfaceTintColor: ColorConstants.whiteColor,
-            title: Text(
-              provider.getAppBarTitle(),
-              style: const TextStyle(
-                color: ColorConstants.primaryTextColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-            actions: [
-              if (provider.showProfileIcon)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      provider.onItemTapped(4);
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: Colors.blue.shade100,
-                      child: const Icon(Icons.person, color: Colors.blue),
+          appBar:
+              provider.selectedIndex == 0
+                  ? null // Hide AppBar only on Home screen
+                  : AppBar(
+                    backgroundColor: ColorConstants.whiteColor,
+                    surfaceTintColor: ColorConstants.whiteColor,
+                    title: Text(
+                      provider.getAppBarTitle(),
+                      style: const TextStyle(
+                        color: ColorConstants.primaryTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
                     ),
+                    actions: [
+                      if (provider.showProfileIcon)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              provider.onItemTapped(4);
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue.shade100,
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-            ],
-          ),
 
           body: IndexedStack(index: provider.selectedIndex, children: screens),
 

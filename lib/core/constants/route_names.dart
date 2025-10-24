@@ -12,4 +12,5 @@ class RouteNames {
   static const String paymentFailedScreen = "/PaymentFailedScreen";
   static const String bookingDetailsScreen = "/BookingDetailsScreen";
   static const String noNetworkScreen = "/NoNetworkScreen";
+  static const String editProfileScreen = "/EditProfileScreen";
 }
