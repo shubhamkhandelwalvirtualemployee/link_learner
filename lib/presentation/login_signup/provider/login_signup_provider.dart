@@ -58,6 +58,8 @@ class LoginSignupProvider extends ChangeNotifier {
   TextEditingController get signUpLastNameController =>
       _signUpLastNameController;
 
+  final TextEditingController _forgotEmailController = TextEditingController();
+
   TextEditingController get signUpAddressController => _signUpAddressController;
   TextEditingController get signUpEmailController => _signUpEmailController;
   TextEditingController get dateOfBirthController => _dateOfBirthController;
@@ -65,6 +67,7 @@ class LoginSignupProvider extends ChangeNotifier {
   TextEditingController get signUpPasswordController =>
       _signUpPasswordController;
   TextEditingController get loginEmailController => _loginEmailController;
+  TextEditingController get forgotEmailController => _forgotEmailController;
   TextEditingController get loginPasswordController => _loginPasswordController;
   OtpFieldControllerV2 get verifyMobileOtpController =>
       _verifyMobileOtpController;
@@ -157,6 +160,7 @@ class LoginSignupProvider extends ChangeNotifier {
     _signUpPasswordController.dispose();
     _loginEmailController.dispose();
     _loginPasswordController.dispose();
+    _forgotEmailController.dispose();
     super.dispose();
   }
 
@@ -279,10 +283,42 @@ class LoginSignupProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
+      print("e$e");
       commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
+  Future<void> resetPassword(BuildContext context) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await ApiCalling().resetPassword(
+        email: _forgotEmailController.text.trim(),
+      );
+
+      if (response['success'] == true) {
+        commonLongSnackBar(
+          response['message'] ?? "Password reset link sent successfully.",
+          color: ColorConstants.primaryColor,
+        );
+      } else {
+        commonLongSnackBar(
+          response['message'] ?? "Something went wrong",
+          color: ColorConstants.primaryColor,
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      commonSnackBar('Password reset error: $e',
+          color: ColorConstants.primaryColor);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 }

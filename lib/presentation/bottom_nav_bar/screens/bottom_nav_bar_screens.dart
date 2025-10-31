@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
+import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
 import 'package:link_learner/presentation/notifications/screens/notifications_tab_screen.dart';
 import 'package:link_learner/presentation/booking/screens/booking_screen.dart';
 import 'package:link_learner/widgets/asset_images.dart';
@@ -18,8 +19,7 @@ class BottomNavBarScreens extends StatelessWidget {
     final List<Widget> screens = const [
       HomeScreen(),
       BookingScreen(),
-      BookingSearchScreen(),
-      NotificationsTabScreen(),
+      InstructorListScreen(),
       ProfileScreen(),
     ];
 
@@ -33,32 +33,19 @@ class BottomNavBarScreens extends StatelessWidget {
                   : AppBar(
                     backgroundColor: ColorConstants.whiteColor,
                     surfaceTintColor: ColorConstants.whiteColor,
-                    title: Text(
-                      provider.getAppBarTitle(),
-                      style: const TextStyle(
-                        color: ColorConstants.primaryTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
-                    ),
-                    actions: [
-                      if (provider.showProfileIcon)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              provider.onItemTapped(4);
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.blue.shade100,
-                              child: const Icon(
-                                Icons.person,
-                                color: Colors.blue,
-                              ),
-                            ),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          provider.getAppBarTitle(),
+                          style: const TextStyle(
+                            color: ColorConstants.primaryTextColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
                           ),
                         ),
-                    ],
+                      ],
+                    ),
                   ),
 
           body: IndexedStack(index: provider.selectedIndex, children: screens),
@@ -151,22 +138,30 @@ class BottomNavBarScreens extends StatelessWidget {
                     label: 'Booking',
                   ),
                   BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorConstants.containerAndFillColor,
-                        ),
-                        child: const Icon(
+                    icon: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.selectedIndex == 2)
+                          Container(
+                            width: 30,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: ColorConstants.primaryColor,
+                              shape: BoxShape.rectangle,
+                            ),
+                          ),
+                        const SizedBox(height: 3),
+                        Icon(
                           Icons.search,
-                          color: ColorConstants.primaryColor,
                           size: 28,
+                          color: provider.selectedIndex == 2
+                              ? ColorConstants.primaryColor
+                              : ColorConstants.disabledColor,
                         ),
-                      ),
+                      ],
                     ),
-                    label: '',
+                    label: 'Search',
                   ),
                   BottomNavigationBarItem(
                     icon: Column(
@@ -175,7 +170,6 @@ class BottomNavBarScreens extends StatelessWidget {
                         if (provider.selectedIndex == 3)
                           Container(
                             width: 30,
-
                             height: 3,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
@@ -183,47 +177,18 @@ class BottomNavBarScreens extends StatelessWidget {
                               shape: BoxShape.rectangle,
                             ),
                           ),
-                        SizedBox(height: 5),
-                        assetImages(
-                          AppImages.messageIcon,
-                          height: 24,
-                          iconColor:
-                              provider.selectedIndex == 3
-                                  ? ColorConstants.primaryColor
-                                  : ColorConstants.disabledColor,
-                        ),
-                      ],
-                    ),
-                    label: 'Message',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (provider.selectedIndex == 4)
-                          Container(
-                            width: 30,
-
-                            height: 3,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: ColorConstants.primaryColor,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                        SizedBox(height: 3),
+                        const SizedBox(height: 3),
                         Icon(
                           Icons.person,
                           size: 28,
-                          color:
-                              provider.selectedIndex == 4
-                                  ? ColorConstants.primaryColor
-                                  : ColorConstants.disabledColor,
+                          color: provider.selectedIndex == 3
+                              ? ColorConstants.primaryColor
+                              : ColorConstants.disabledColor,
                         ),
                       ],
                     ),
                     label: 'Account',
-                  ),
+                  )
                 ],
               ),
             ),

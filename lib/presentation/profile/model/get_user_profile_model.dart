@@ -1,121 +1,119 @@
-class LoginResponseModel {
-  final bool? success;
-  final String? message;
-  LoginData? data;
+class ProfileResponse {
+  final bool success;
+  final String message;
+  final ProfileData data;
 
-  LoginResponseModel({
-     this.success,
-     this.message,
-    this.data,
+  ProfileResponse({
+    required this.success,
+    required this.message,
+    required this.data,
   });
 
-  factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
-    return LoginResponseModel(
-      success: json["success"] ?? false,
-      message: json["message"] ?? "",
-      data: json["data"] != null ? LoginData.fromJson(json["data"]) : null,
+  factory ProfileResponse.fromJson(Map<String, dynamic> json) {
+    return ProfileResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: ProfileData.fromJson(json['data'] ?? {}),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "message": message,
-    if (data != null) "data": data!.toJson(),
+    'success': success,
+    'message': message,
+    'data': data.toJson(),
   };
 }
 
-class LoginData {
-  final User? user;
-  final String? accessToken;
-  final String? refreshToken;
+class ProfileData {
+  final User user;
 
-  LoginData({
-    this.user,
-    this.accessToken,
-    this.refreshToken,
-  });
+  ProfileData({required this.user});
 
-  factory LoginData.fromJson(Map<String, dynamic> json) {
-    return LoginData(
-      user: json["user"] != null ? User.fromJson(json["user"]) : null,
-      accessToken: json["accessToken"],
-      refreshToken: json["refreshToken"],
+  factory ProfileData.fromJson(Map<String, dynamic> json) {
+    return ProfileData(
+      user: User.fromJson(json['user'] ?? {}),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    if (user != null) "user": user!.toJson(),
-    "accessToken": accessToken,
-    "refreshToken": refreshToken,
+    'user': user.toJson(),
   };
 }
 
 class User {
-  final String? id;
-  final String? email;
-  final String? firstName;
-  final String? lastName;
+  final String id;
+  final String email;
+  final String role;
+  final String firstName;
+  final String lastName;
   final String? phone;
   final String? avatar;
-  final String? role;
-  final bool? isActive;
-  final bool? emailVerified;
-  final bool? profileComplete;
-  final String? createdAt;
-  final String? updatedAt;
+  final bool isActive;
+  final bool emailVerified;
+  final bool profileComplete;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   final Learner? learner;
+  final dynamic instructor;
+  final dynamic agency;
 
   User({
-    this.id,
-    this.email,
-    this.firstName,
-    this.lastName,
+    required this.id,
+    required this.email,
+    required this.role,
+    required this.firstName,
+    required this.lastName,
     this.phone,
     this.avatar,
-    this.role,
-    this.isActive,
-    this.emailVerified,
-    this.profileComplete,
-    this.createdAt,
-    this.updatedAt,
+    required this.isActive,
+    required this.emailVerified,
+    required this.profileComplete,
+    required this.createdAt,
+    required this.updatedAt,
     this.learner,
+    this.instructor,
+    this.agency,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json["id"],
-      email: json["email"],
-      firstName: json["firstName"],
-      lastName: json["lastName"],
-      phone: json["phone"],
-      avatar: json["avatar"],
-      role: json["role"],
-      isActive: json["isActive"],
-      emailVerified: json["emailVerified"],
-      profileComplete: json["profileComplete"],
-      createdAt: json["createdAt"],
-      updatedAt: json["updatedAt"],
-      learner: json["learner"] != null ? Learner.fromJson(json["learner"]) : null,
+      id: json['id'] ?? '',
+      email: json['email'] ?? '',
+      role: json['role'] ?? '',
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      phone: json['phone'],
+      avatar: json['avatar'],
+      isActive: json['isActive'] ?? false,
+      emailVerified: json['emailVerified'] ?? false,
+      profileComplete: json['profileComplete'] ?? false,
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      learner:
+      json['learner'] != null ? Learner.fromJson(json['learner']) : null,
+      instructor: json['instructor'],
+      agency: json['agency'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "email": email,
-    "firstName": firstName,
-    "lastName": lastName,
-    "phone": phone,
-    "avatar": avatar,
-    "role": role,
-    "isActive": isActive,
-    "emailVerified": emailVerified,
-    "profileComplete": profileComplete,
-    "createdAt": createdAt,
-    "updatedAt": updatedAt,
-    if (learner != null) "learner": learner!.toJson(),
+    'id': id,
+    'email': email,
+    'role': role,
+    'firstName': firstName,
+    'lastName': lastName,
+    'phone': phone,
+    'avatar': avatar,
+    'isActive': isActive,
+    'emailVerified': emailVerified,
+    'profileComplete': profileComplete,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+    'learner': learner?.toJson(),
+    'instructor': instructor,
+    'agency': agency,
   };
 }
-
 
 class Learner {
   final String id;
@@ -207,4 +205,3 @@ class Preferences {
     'transmissionType': transmissionType,
   };
 }
-

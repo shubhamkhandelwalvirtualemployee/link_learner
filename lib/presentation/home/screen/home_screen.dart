@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
+import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,9 +18,9 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔴 Header Section
+                // 🔴 RED HEADER
                 Container(
-                  padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: ColorConstants.primaryColor,
@@ -30,233 +32,248 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Header Title
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'Hi, Kristin',
-                                style: TextStyle(
-                                  color: ColorConstants.whiteColor,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Let's start learning",
-                                style: TextStyle(
-                                  color: ColorConstants.whiteColor,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                bottomNavProvider.onItemTapped(4);
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: Colors.blue.shade100,
-                                child: const Icon(
-                                  Icons.person,
-                                  color: Colors.blue,
-                                ),
-                              ),
+                          const Text(
+                            "Hi, Kristin",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: ColorConstants.whiteColor,
                             ),
                           ),
+                          Spacer(),
+                          IconButton(onPressed: (){
+                            AppRoutes.push(context, RouteNames.paymentFailedScreen);
+                          }, icon: Icon(Icons.notifications, color: ColorConstants.whiteColor,))
                         ],
                       ),
+                      const SizedBox(height: 3),
+                      const Text(
+                        "Let's start learning",
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: ColorConstants.whiteColor,
+                        ),
+                      ),
+
                       const SizedBox(height: 25),
 
-                      // 📊 Learning Progress
+                      // ✅ My Session Card
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: ColorConstants.whiteColor,
-                          borderRadius: BorderRadius.circular(16),
+                          color:  ColorConstants.whiteColor,
+                          borderRadius: BorderRadius.circular(18),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Title + Book Session Button
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: const [
                                 Text(
-                                  'Learned today',
+                                  "My Session",
                                   style: TextStyle(
-                                    color: ColorConstants.primaryTextColor,
+                                    color: Colors.black87,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
-                                  'My courses',
+                                  "Book Session",
                                   style: TextStyle(
                                     color: ColorConstants.primaryColor,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+
+                            const SizedBox(height: 10),
+
+                            // Session Time
                             Row(
                               children: const [
                                 Text(
-                                  '46min',
+                                  "46min",
                                   style: TextStyle(
-                                    fontSize: 22,
+                                    fontSize: 26,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  ' / 60min',
+                                  " / 60min",
                                   style: TextStyle(
-                                    color: ColorConstants.disabledColor,
+                                    fontSize: 15,
+                                    color: Colors.grey,
                                   ),
-                                ),
+                                )
                               ],
                             ),
-                            const SizedBox(height: 10),
+
+                            const SizedBox(height: 12),
+
+                            // Progress Bar
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(6),
                               child: LinearProgressIndicator(
                                 value: 46 / 60,
-                                backgroundColor: Colors.grey.shade200,
-                                color: ColorConstants.primaryColor,
                                 minHeight: 6,
+                                color: ColorConstants.primaryColor,
+                                backgroundColor: Colors.grey.shade300,
                               ),
                             ),
                           ],
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                // 📘 What do you want to learn today
-                // Horizontal Scrollable ListView
+                // ✅ Upcoming & Instructor Cards
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 2, // number of items in your list
-                      itemBuilder: (context, index) {
-                        return Container(
-                          width: 300,
-                          padding: const EdgeInsets.all(16),
-                          margin: const EdgeInsets.only(right: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.pink.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'What do you want\nto learn today?',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: ColorConstants.primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Get Started',
-                                  style: TextStyle(
-                                    color: ColorConstants.whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                  child: Row(
+                    children: [
+                      _topSmallCard(
+                        title: "Upcoming Bookings",
+                        count: "06",
+                        buttonText: "View all bookings",
+                        buttonColor: ColorConstants.primaryColor,
+                      ),
+                      const SizedBox(width: 12),
+                      _topSmallCard(
+                        title: "Active Instructors",
+                        count: "06",
+                        buttonText: "Find more instructors",
+                        buttonColor: ColorConstants.primaryColor,
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 25),
 
-                // 🧭 Learning Plan Section
+                // ✅ Quick Actions Title
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Learning Plan',
+                    "Quick Actions",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: ColorConstants.primaryTextColor,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
 
+                const SizedBox(height: 15),
+
+                // ✅ Quick Actions Buttons
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      _buildCourseProgress(
-                        title: 'Packaging Design',
-                        completed: 40,
-                        total: 48,
-                        color: ColorConstants.primaryColor,
+                      Row(
+                        children: [
+                          _quickButton("Find Instructors", () {
+                            bottomNavProvider.onItemTapped(2);
+                          }),
+                          const SizedBox(width: 12),
+                          _quickButton("My Booking", () {
+                            bottomNavProvider.onItemTapped(1);
+                          }),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      _buildCourseProgress(
-                        title: 'Product Design',
-                        completed: 6,
-                        total: 24,
-                        color: Colors.grey,
-                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _quickButton("View Profile", () {
+                            print("Find Instructors tapped");
+                            AppRoutes.push(context, RouteNames.editProfileScreen);
+                            // Navigate or perform action
+                          }),
+                          const SizedBox(width: 12),
+                          _quickButton("Settings", () {
+                            bottomNavProvider.onItemTapped(3);
+                          }),
+                        ],
+                      )
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 30),
 
-                // 🎯 Meetup Banner
+                // ✅ Recent Activity
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "Recent Activity",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
-                    width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.pink.shade50,
-                      borderRadius: BorderRadius.circular(16),
+                      color:  ColorConstants.whiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade300,
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        )
+                      ],
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Meetup',
-                          style: TextStyle(
-                            color: ColorConstants.primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 30),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Booking Confirmed",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                "Your session with John Smith has been confirmed for tomorrow at 2:00 PM",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                "2 hours ago",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          'Off-line exchange of learning experiences',
-                          style: TextStyle(color: ColorConstants.primaryColor),
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -271,52 +288,83 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCourseProgress({
+  // ✅ Top Small Cards
+  Widget _topSmallCard({
     required String title,
-    required int completed,
-    required int total,
-    required Color color,
+    required String count,
+    required String buttonText,
+    required Color buttonColor,
   }) {
-    double progress = completed / total;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            spreadRadius: 1,
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              CircularProgressIndicator(
-                value: progress,
-                strokeWidth: 4,
-                color: color,
-                backgroundColor: Colors.grey.shade300,
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.pink.shade50,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
-              const SizedBox(width: 14),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              count,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonColor,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {},
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(color:  ColorConstants.whiteColor, fontSize: 12),
                 ),
               ),
-            ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ✅ Quick Action Button
+  Widget _quickButton(String text, Function() onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 55,
+          decoration: BoxDecoration(
+            color: ColorConstants.primaryColor,
+            borderRadius: BorderRadius.circular(10),
           ),
-          Text(
-            '$completed/$total',
-            style: const TextStyle(color: Colors.black54),
+          child: Center(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

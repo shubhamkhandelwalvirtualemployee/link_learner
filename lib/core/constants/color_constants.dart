@@ -13,6 +13,7 @@ class ColorConstants {
   static const Color iconColor = Color(0xff404040);
   static const Color disabledColor = Colors.grey;
   static const Color errorColor = Color(0xFFFF3C3C);
+  static const Color primaryGrey = Color(0xFF555555);
   // static const Color onlineColor = Color(0xFF2ADD75);
   // static const Color pollColor = Color(0xFFCFCFE7);
   // static const Color pollBgColor = Color(0xFFA9A9F2);

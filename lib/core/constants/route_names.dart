@@ -1,5 +1,5 @@
 class RouteNames {
-  static const String onboardingScreen = "/OnboardingScreen";
+  static const String splashScreen = "/splashScreen";
   static const String signUpScreen = "/SignUpScreen";
   static const String loginScreen = "/LoginScreen";
   static const String mobileVerifyScreen = "/MobileVerifyScreen";
@@ -13,4 +13,8 @@ class RouteNames {
   static const String bookingDetailsScreen = "/BookingDetailsScreen";
   static const String noNetworkScreen = "/NoNetworkScreen";
   static const String editProfileScreen = "/EditProfileScreen";
+  static const String resetPasswordScreen = "/ResetPasswordScreen";
+  static const String changePasswordScreen = "/ChangePasswordScreen";
+  static const String instructorListScreen = "/InstructorListScreen";
+  static const String instructorDetailsScreen = "/InstructorDetailsScreen";
 }

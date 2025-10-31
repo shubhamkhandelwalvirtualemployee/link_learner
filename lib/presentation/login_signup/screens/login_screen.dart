@@ -111,7 +111,7 @@ class LoginScreen extends StatelessWidget {
                               onTap: () {
                                 AppRoutes.push(
                                   context,
-                                  RouteNames.profileScreen,
+                                  RouteNames.resetPasswordScreen,
                                 );
                               },
                               child: Text(
@@ -178,7 +178,7 @@ class LoginScreen extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 20),
-                        Row(
+                       /* Row(
                           children: [
                             Expanded(child: Divider(endIndent: 20)),
                             Text(
@@ -212,7 +212,7 @@ class LoginScreen extends StatelessWidget {
                               ),
                             ),
                           ],
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

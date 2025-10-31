@@ -14,8 +14,9 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
+import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
 import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
-import 'package:link_learner/presentation/onboarding/provider/onboarding_provider.dart';
+import 'package:link_learner/presentation/profile/provider/change_password_provider.dart';
 import 'package:link_learner/presentation/profile/provider/profile_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/routes/route_manager.dart';
@@ -271,9 +272,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<OnboardingProvider>(
-          create: (context) => OnboardingProvider(),
-        ),
         ChangeNotifierProvider<LoginSignupProvider>(
           create: (context) => LoginSignupProvider(),
         ),
@@ -289,6 +287,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<BookingProvider>(
           create: (context) => BookingProvider(),
         ),
+        ChangeNotifierProvider<ChangePasswordProvider>(create: (context) => ChangePasswordProvider(),),
+        ChangeNotifierProvider<InstructorProvider>(create: (context) => InstructorProvider(),),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
@@ -296,7 +296,7 @@ class _MyAppState extends State<MyApp> {
         localizationsDelegates: [],
         title: 'Link Learner',
         theme: ThemeData(fontFamily: "Geist", useMaterial3: true),
-        initialRoute: RouteNames.onboardingScreen,
+        initialRoute: RouteNames.splashScreen,
         onGenerateRoute: RouteManager.onGenerateRoute,
       ),
     );

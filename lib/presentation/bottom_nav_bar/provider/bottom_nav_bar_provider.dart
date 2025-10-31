@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class BottomNavProvider extends ChangeNotifier {
   int _selectedIndex = 0;
-
   int get selectedIndex => _selectedIndex;
 
   void onItemTapped(int index) {
@@ -12,18 +11,17 @@ class BottomNavProvider extends ChangeNotifier {
 
   String getAppBarTitle() {
     switch (_selectedIndex) {
+      case 0:
+        return 'Home';
       case 1:
-        return 'Booking';
+        return 'My Booking';
+      case 2:
+        return 'Find Instructor';
+      case 3:
+        return 'Account';
       default:
-        return [
-          'Home',
-          'Booking',
-          'Booking & Search',
-          'Notifications',
-          'Account',
-        ][_selectedIndex];
+        return '';
     }
   }
-
-  bool get showProfileIcon => _selectedIndex == 1 || _selectedIndex == 2;
 }
+

@@ -238,6 +238,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 10),
                   ListTile(
                     dense: true,
+                    onTap: (){
+                      AppRoutes.push(context, RouteNames.changePasswordScreen);
+                    },
+                    leading: CircleAvatar(
+                      backgroundColor: ColorConstants.containerAndFillColor,
+                      child: Icon(
+                        Icons.password_sharp,
+                        color: ColorConstants.primaryColor,
+                      ),
+                    ),
+                    title: Text(
+                      "Change Password",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: ColorConstants.disabledColor,
+                      size: 18,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ListTile(
+                    dense: true,
                     leading: CircleAvatar(
                       backgroundColor: ColorConstants.containerAndFillColor,
                       child: Icon(

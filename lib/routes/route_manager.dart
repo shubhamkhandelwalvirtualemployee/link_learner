@@ -8,18 +8,22 @@ import 'package:link_learner/presentation/booking_and_search/screens/checkout_sc
 import 'package:link_learner/presentation/booking_and_search/screens/payment_failed_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/payment_success_screen.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/screens/bottom_nav_bar_screens.dart';
+import 'package:link_learner/presentation/instructor/screens/instructor_detail_screen.dart';
+import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
+import 'package:link_learner/presentation/login_signup/screens/reset_password_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/login_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/mobile_verify_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/sign_up_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/verify_phone.dart';
 import 'package:link_learner/presentation/onboarding/screens/onboarding_screen.dart';
+import 'package:link_learner/presentation/profile/screens/change_password_screen.dart';
 import 'package:link_learner/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
 
 class RouteManager {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final routes = <String, WidgetBuilder>{
-      RouteNames.onboardingScreen: (context) => const OnboardingScreen(),
+      RouteNames.splashScreen: (context) => const SplashScreen(),
       RouteNames.signUpScreen: (context) => const SignUpScreen(),
       RouteNames.loginScreen: (context) => const LoginScreen(),
       RouteNames.mobileVerifyScreen: (context) => const MobileVerifyScreen(),
@@ -33,6 +37,9 @@ class RouteManager {
       RouteNames.bookingDetailsScreen: (context) => BookingDetailsScreen(),
       RouteNames.noNetworkScreen: (context) => NoNetworkScreen(),
       RouteNames.editProfileScreen: (context) => EditProfileScreen(),
+      RouteNames.resetPasswordScreen: (context) => ResetPasswordScreen(),
+      RouteNames.changePasswordScreen: (context) => ChangePasswordScreen(),
+      RouteNames.instructorListScreen: (context) => InstructorListScreen(),
     };
 
     final builder = routes[settings.name];

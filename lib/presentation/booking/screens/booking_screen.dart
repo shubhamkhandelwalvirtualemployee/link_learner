@@ -13,10 +13,8 @@ class BookingScreen extends StatefulWidget {
   State<BookingScreen> createState() => _BookingScreenState();
 }
 
-class _BookingScreenState extends State<BookingScreen>
-    with AutomaticKeepAliveClientMixin<BookingScreen> {
+class _BookingScreenState extends State<BookingScreen> {
   @override
-  bool get wantKeepAlive => true;
 
   final List<Map<String, dynamic>> bookings = [
     {
@@ -39,109 +37,80 @@ class _BookingScreenState extends State<BookingScreen>
     },
   ];
 
-  final List<String> filterChips = ['All', 'Upcoming', 'Completed'];
+  final List<String> filterChips = ['All Bookings', 'Upcoming', 'Completed','Cancelled'];
+
+  int selectedIndex = 0; // 0 = All Booking
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
-    return Consumer<BookingProvider>(
-      builder: (context, bookingSearchProvider, _) {
-        return Scaffold(
-          backgroundColor: ColorConstants.whiteColor,
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 16),
-                _buildSearchBar(context),
-                const SizedBox(height: 20),
-                _buildImageCards(),
-                const SizedBox(height: 20),
-                const Text(
-                  'Your booking',
-                  style: TextStyle(
-                    color: ColorConstants.primaryTextColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildFilterChips(bookingSearchProvider),
-                const SizedBox(height: 16),
-
-                ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: bookings.length,
-                  separatorBuilder: (context, index) {
-                    return SizedBox(height: 10);
-                  },
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        AppRoutes.push(
-                          context,
-                          RouteNames.bookingDetailsScreen,
-                        );
-                      },
-                      child: _buildBookingListItem(
-                        title: bookings[index]['title'],
-                        person: bookings[index]['person'],
-                        price: bookings[index]['price'],
-                        hours: bookings[index]['hours'],
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 50),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: ColorConstants.containerAndFillColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.search, color: ColorConstants.iconColor),
-          const SizedBox(width: 8),
-          const Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Find Booking',
-                hintStyle: TextStyle(color: ColorConstants.disabledColor),
-                border: InputBorder.none,
-              ),
+
+          const SizedBox(height: 20),
+
+          /// ✅ FILTER CHIPS (SCROLLABLE & EXACT UI)
+          Container(
+            height: 45,
+            padding: const EdgeInsets.only(left: 20),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: filterChips.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final isSelected = selectedIndex == index;
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFFD7263D) // red pill
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.transparent
+                            : Colors.grey.shade400,
+                      ),
+                    ),
+                    child: Text(
+                      filterChips[index],
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          InkWell(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => const SearchFilterBottomSheet(),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: ColorConstants.containerAndFillColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.filter_list,
-                color: ColorConstants.disabledColor,
-              ),
+
+          const SizedBox(height: 20),
+
+          /// ✅ BOOKING LIST
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: [
+                _bookingCard("upcoming"),
+                const SizedBox(height: 20),
+                _bookingCard("completed"),
+                const SizedBox(height: 20),
+                _bookingCard("cancelled"),
+              ],
             ),
           ),
         ],
@@ -149,190 +118,182 @@ class _BookingScreenState extends State<BookingScreen>
     );
   }
 
-  Widget _buildImageCards() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.blue.shade100,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text(
-                  'Lorem Ips',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.pink.shade100,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text(
-                  'Lorem Ip',
-                  style: TextStyle(
-                    color: ColorConstants.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildFilterChips(BookingProvider bookingSearchProvider) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children:
-            filterChips.map((chipLabel) {
-              final isSelected =
-                  bookingSearchProvider.selectedChip == chipLabel;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: GestureDetector(
-                  onTap: () => bookingSearchProvider.selectChip(chipLabel),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? ColorConstants.primaryColor
-                              : ColorConstants.transparentColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border:
-                          isSelected
-                              ? null
-                              : Border.all(
-                                color: ColorConstants.transparentColor,
-                              ),
-                    ),
-                    child: Text(
-                      chipLabel,
-                      style: TextStyle(
-                        color:
-                            isSelected
-                                ? ColorConstants.whiteColor
-                                : ColorConstants.primaryTextColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+  /// ✅ TOP TABS (Active, Completed, Cancelled)
+  Widget _tabButton(String text, bool selected) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: selected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.black : Colors.grey,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildBookingListItem({
-    required String title,
-    required String person,
-    required int price,
-    required int hours,
-  }) {
-    return Card(
-      elevation: 1,
-      color: ColorConstants.whiteColor,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: ColorConstants.disabledColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
+  /// ✅ BOOKING CARD UI
+  Widget _bookingCard(String status) {
+    Color chipColor;
+    Color chipTextColor;
 
-                  Text(
-                    "Booking type",
-                    style: const TextStyle(
-                      color: ColorConstants.disabledColor,
-                      fontSize: 14,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 5),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: ColorConstants.errorColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Cancelled',
+    if (status == "upcoming") {
+      chipColor = const Color(0xFFDEE8FF);
+      chipTextColor = const Color(0xFF4A73FF);
+    } else if (status == "completed") {
+      chipColor = const Color(0xFFE0FFE4);
+      chipTextColor = const Color(0xFF00A84A);
+    } else {
+      chipColor = const Color(0xFFFFE4E4);
+      chipTextColor = const Color(0xFFDD3A3A);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          /// ✅ IMAGE PLACEHOLDER
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          /// ✅ TEXT
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Row(
+                  children: [
+                    const Text(
+                      "John Smith",
                       style: TextStyle(
-                        color: ColorConstants.errorColor,
-                        fontSize: 10,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    "30 March 2020 | 16 hours",
-                    style: const TextStyle(
-                      color: ColorConstants.disabledColor,
-                      fontSize: 12,
+
+                    const Spacer(),
+
+                    /// ✅ STATUS CHIP
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: chipColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: chipTextColor,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                Row(
+                  children: const [
+                    Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      "Sunday 19 October 2025",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                Row(
+                  children: const [
+                    Icon(Icons.access_time, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      "14:00 (60 minutes)",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                Row(
+                  children: const [
+                    Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      "Dublin City Center",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    _button("Reschedule", false),
+                    const SizedBox(width: 10),
+                    _button("Cancel", true),
+                  ],
+                )
+              ],
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: ColorConstants.primaryColor,
-              size: 20,
-            ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+// ✅ Buttons
+  Widget _button(String text, bool danger) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: danger ? Colors.red : Colors.grey.shade400,
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: danger ? Colors.red : Colors.black,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
