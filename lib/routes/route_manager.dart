@@ -40,6 +40,12 @@ class RouteManager {
       RouteNames.resetPasswordScreen: (context) => ResetPasswordScreen(),
       RouteNames.changePasswordScreen: (context) => ChangePasswordScreen(),
       RouteNames.instructorListScreen: (context) => InstructorListScreen(),
+      RouteNames.instructorDetailsScreen: (context) {
+        final args = settings.arguments as Map<String, dynamic>;
+
+        final String instructorId = args['instructorId'];
+        return InstructorDetailScreen(instructorId: instructorId);
+      },
     };
 
     final builder = routes[settings.name];

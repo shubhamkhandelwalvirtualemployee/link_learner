@@ -14,6 +14,9 @@ class ColorConstants {
   static const Color disabledColor = Colors.grey;
   static const Color errorColor = Color(0xFFFF3C3C);
   static const Color primaryGrey = Color(0xFF555555);
+  static const Color textColor = Color(0xFF444444);
+  static const Color backgroundChipColor = Color(0xFFF9D2DD);
+  static const Color backgroundTextFormFieldColor = Color(0xFFFCACACA);
   // static const Color onlineColor = Color(0xFF2ADD75);
   // static const Color pollColor = Color(0xFFCFCFE7);
   // static const Color pollBgColor = Color(0xFFA9A9F2);
