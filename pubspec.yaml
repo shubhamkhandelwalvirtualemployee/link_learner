@@ -30,6 +30,7 @@ dependencies:
   app_links: ^6.4.0
   fluttertoast: ^9.0.0
   table_calendar: ^3.2.0
+  flutter_stripe: ^12.1.0
 
 
 

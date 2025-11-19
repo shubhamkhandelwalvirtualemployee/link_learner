@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
+import 'package:link_learner/presentation/instructor/model/instructor_package_model.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/presentation/instructor/model/weekly_available_model.dart';
 import 'package:link_learner/services/api_calling.dart';
@@ -16,14 +17,113 @@ class InstructorProvider extends ChangeNotifier {
   String searchText = "";
   WeeklyAvailabilityResponse? weeklyAvailability;
   InstructorDetailResponse? instructorDetailResponse;
+  InstructorPackagesResponse? instructorPackagesResponse;
   bool isAvailabilityLoading = false;
+  bool isInstructorPackageLoading = false;
+
+  List<String> selectedSpecializations = [];
+
+  void toggleSpecialization(String spec) {
+    if (selectedSpecializations.contains(spec)) {
+      selectedSpecializations.remove(spec);
+    } else {
+      selectedSpecializations.add(spec);
+    }
+    notifyListeners();
+  }
+
+  void clearSpecializations() {
+    selectedSpecializations.clear();
+    notifyListeners();
+  }
+
+  String selectedVehicle = '';
+  String selectedVehicleType = '';
+
+  void setSelectedVehicle(String vehicle) {
+    selectedVehicle = vehicle;
+    notifyListeners();
+  }
+
+  void setSelectedVehicleType(String type) {
+    selectedVehicleType = type;
+    notifyListeners();
+  }
+
+  AvailabilitySlot? selectedSlot;
+  DateTime? selectedDate;
+  DateTime? weekStartDate;
+
+  void setSelectedDate(DateTime date) {
+    selectedDate = date;
+    notifyListeners();
+  }
+
+  void setSelectedSlot(AvailabilitySlot slot) {
+    selectedSlot = slot;
+    notifyListeners();
+  }
+  void setWeekStartDate(DateTime date) {
+    weekStartDate = date;
+    notifyListeners();
+  }
+
+
+  String selectedCounty = "All Counties";
+  String selectedRating = "Any Rating";
+  String selectedSortBy = "Highest Rated";
+  String minPrice = "";
+  String maxPrice = "";
+  String cityTown = "";
+
+  void setSelectedCounty(String county) {
+    selectedCounty = county;
+    notifyListeners();
+  }
+
+  void setSelectedRating(String rating) {
+    selectedRating = rating;
+    notifyListeners();
+  }
+
+  void setSelectedSortBy(String sortBy) {
+    selectedSortBy = sortBy;
+    notifyListeners();
+  }
+
+  void setMinPrice(String value) {
+    minPrice = value;
+    notifyListeners();
+  }
+
+  void setMaxPrice(String value) {
+    maxPrice = value;
+    notifyListeners();
+  }
+
+  void setCityTown(String value) {
+    cityTown = value;
+    notifyListeners();
+  }
+
+  void clearAllFilters() {
+    selectedCounty = "All Counties";
+    selectedRating = "Any Rating";
+    selectedSortBy = "Highest Rated";
+    selectedVehicleType = "";
+    selectedSpecializations.clear();
+    minPrice = "";
+    maxPrice = "";
+    cityTown = "";
+    notifyListeners();
+  }
+
 
   Future<void> getInstructorList({bool isRefresh = false}) async {
-
     if (isRefresh) {
       page = 1;
       hasMore = true;
-      instructorListResponse = null;   // ✅ reset old data
+      instructorListResponse = null;
     }
 
     if ((isPaginating && !isRefresh) || !hasMore) return;
@@ -40,22 +140,21 @@ class InstructorProvider extends ChangeNotifier {
         page: page,
         limit: limit,
         search: searchText.trim().isEmpty ? null : searchText.trim(),
+        county: selectedCounty,
+        sortBy: selectedSortBy,
+        minRate: minPrice,
+        maxRate: maxPrice,
+        minRating: selectedRating,
       );
 
       if (page == 1) {
-        instructorListResponse = res; // ✅ fresh list
+        instructorListResponse = res;
       } else {
-        instructorListResponse!.data!.instructors!
-            .addAll(res.data?.instructors ?? []);
+        instructorListResponse!.data!.instructors!.addAll(res.data?.instructors ?? []);
       }
 
-      // ✅ pagination condition:
       hasMore = (res.data?.instructors?.length ?? 0) == limit;
-
-      if (hasMore) {
-        page++;
-      }
-
+      if (hasMore) page++;
     } catch (e) {
       debugPrint("Pagination Error: $e");
     }
@@ -64,6 +163,7 @@ class InstructorProvider extends ChangeNotifier {
     isPaginating = false;
     notifyListeners();
   }
+
 
 
 
@@ -82,6 +182,24 @@ class InstructorProvider extends ChangeNotifier {
     }
 
     isAvailabilityLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> getInstructorPackage(String instructorId) async {
+    isInstructorPackageLoading = true;
+    notifyListeners();
+
+    try {
+      final res =
+      await ApiCalling().getInstructorPackage(instructorId);
+
+      instructorPackagesResponse = res;   // ✅ store data
+
+    } catch (e) {
+      debugPrint("Error fetching weekly availability: $e");
+    }
+
+    isInstructorPackageLoading = false;
     notifyListeners();
   }
 

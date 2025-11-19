@@ -6,14 +6,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'dart:async';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/core/constants/stripe_Constant.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
+import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
 import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
 import 'package:link_learner/presentation/profile/provider/change_password_provider.dart';
@@ -29,21 +32,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Load environment variables
-  // await dotenv.load(fileName: ".env");
-
-  // await Firebase.initializeApp();
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   sound: true,
-  //   badge: true,
-  // );
-
-  // FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-
+  Stripe.publishableKey = StripeConstants.publishableKey;   // YOUR PUBLISHABLE KEY
+  Stripe.merchantIdentifier = "merchant.com.linklearner"; // For Apple Pay
+  await Stripe.instance.applySettings();
+   await Firebase.initializeApp();
+   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+     alert: true,
+     sound: true,
+     badge: true,
+   );
+   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
   runApp(MyApp());
 }
 
@@ -56,19 +55,16 @@ class MyApp extends StatefulWidget {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-  // await Firebase.initializeApp();
-  // if (Platform.isIOS) {
-  //   if (message.data.containsKey('badgeCount')) {
-  //     final badgeCount = int.tryParse(message.data['badgeCount']) ?? 0;
-  //     BadgeManager.updateBadgeCount(badgeCount);
-  //   }
-  // }
+   await Firebase.initializeApp();
+   if (Platform.isIOS) {
+
+   }
 }
 
 class _MyAppState extends State<MyApp> {
   late final StreamSubscription<InternetStatus> _internetSubscription;
   bool _isNoInternetDialogVisible = false;
-  // late FirebaseMessaging _messaging;
+   late FirebaseMessaging _messaging;
   late final FlutterLocalNotificationsPlugin _localNotifications;
   final _appLinks = AppLinks();
 
@@ -110,56 +106,65 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initializeNotifications() async {
-    // _messaging = FirebaseMessaging.instance;
+    _messaging = FirebaseMessaging.instance;
 
     // Request permissions
-    // NotificationSettings settings = await _messaging.requestPermission(
-    //   alert: true,
-    //   badge: true,
-    //   sound: true,
-    // );
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 
-    // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    //   fcmToken = await _messaging.getToken();
-    //   print("✅ FCM Token: $fcmToken");
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      if (Platform.isIOS) {
+        _messaging.onTokenRefresh.listen((token) {
+          print("🔄 FCM Token Refreshed: $token");
+          fcmToken = token;
+        });
 
-    //   if (fcmToken != null) {}
+       // String? apnsToken = await _messaging.getAPNSToken();
+     //   print("📱 APNS Token: $apnsToken");
 
-    //   // Foreground push handler
+        Future.delayed(const Duration(seconds: 3), () async {
+          fcmToken = await _messaging.getToken();
+          print("🎉 FCM Token (after delay): $fcmToken");
+        });
+      }
 
-    //   // Firebase foreground notifications
-    //   FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
 
-    //   // Firebase background/tapped notifications
-    //   FirebaseMessaging.onMessageOpenedApp.listen(
-    //     _handleBackgroundNotification,
-    //   );
+      // Firebase foreground notifications
+      FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
 
-    //   // Firebase terminated state notification
-    //   // RemoteMessage? initialMessage = await _messaging.getInitialMessage();
-    //   // if (initialMessage != null) {
-    //   //   _handleTerminatedNotification(initialMessage);
-    //   // }
-    // } else {
-    //   print('⚠️ User declined or has not accepted notification permissions.');
-    // }
+      // Firebase background/tapped notifications
+      FirebaseMessaging.onMessageOpenedApp.listen(
+        _handleBackgroundNotification,
+      );
+
+      // Firebase terminated state notification
+      RemoteMessage? initialMessage = await _messaging.getInitialMessage();
+      if (initialMessage != null) {
+        _handleTerminatedNotification(initialMessage);
+      }
+    } else {
+      print('⚠️ User declined or has not accepted notification permissions.');
+    }
 
     // Local notification setup
     _localNotifications = FlutterLocalNotificationsPlugin();
 
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@drawable/ic_notification');
+    AndroidInitializationSettings('@drawable/ic_notification');
 
     const DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings(
-          defaultPresentAlert: true,
-          defaultPresentBadge: true,
-          defaultPresentSound: true,
-          requestProvisionalPermission: true,
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+    DarwinInitializationSettings(
+      defaultPresentAlert: true,
+      defaultPresentBadge: true,
+      defaultPresentSound: true,
+      requestProvisionalPermission: true,
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -273,7 +278,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<LoginSignupProvider>(
-          create: (context) => LoginSignupProvider(),
+        create: (context) => LoginSignupProvider(),
         ),
         ChangeNotifierProvider<ProfileProvider>(
           create: (context) => ProfileProvider(),
@@ -289,6 +294,7 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<ChangePasswordProvider>(create: (context) => ChangePasswordProvider(),),
         ChangeNotifierProvider<InstructorProvider>(create: (context) => InstructorProvider(),),
+        ChangeNotifierProvider<CheckoutProvider>(create: (context) => CheckoutProvider(),),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,

@@ -294,7 +294,7 @@ class BuyBookingScreen extends StatelessWidget {
                 height: 50,
                 child: elevatedButton(
                   onTap: () {
-                    AppRoutes.push(context, RouteNames.checkoutScreen);
+                   // AppRoutes.push(context, RouteNames.checkoutScreen);
                   },
                   title: "Buy Now",
                   backgroundColor: ColorConstants.primaryColor,

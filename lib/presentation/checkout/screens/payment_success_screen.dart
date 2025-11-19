@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/widgets/asset_images.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
@@ -38,9 +39,13 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                       height: 50,
                       child: elevatedButton(
                         onTap: () {
-                          AppRoutes.pop(context);
+                          AppRoutes.pushAndRemoveUntil(
+                            context,
+                            RouteNames.bottomNavBarScreens,
+                                (Route<dynamic> route) => false,
+                          );
                         },
-                        title: "Call to Action",
+                        title: "Book another Session",
                         backgroundColor: ColorConstants.primaryColor,
                       ),
                     ),

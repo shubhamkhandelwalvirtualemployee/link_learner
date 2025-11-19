@@ -17,6 +17,12 @@ class ColorConstants {
   static const Color textColor = Color(0xFF444444);
   static const Color backgroundChipColor = Color(0xFFF9D2DD);
   static const Color backgroundTextFormFieldColor = Color(0xFFFCACACA);
+  static const Color boxShadowColor = Color(0xFF8B8D2);
+  static const Color textListColor = Color(0xFF1F1F39);
+  static const Color completedColor = Color(0xFF016630);
+  static const Color failedColor = Color(0xFFC40016);
+  static const Color detailIconColor = Color(0xFF1D1B20);
+  static const Color specializationColor = Color(0xFFF9D2DD);
   // static const Color onlineColor = Color(0xFF2ADD75);
   // static const Color pollColor = Color(0xFFCFCFE7);
   // static const Color pollBgColor = Color(0xFFA9A9F2);

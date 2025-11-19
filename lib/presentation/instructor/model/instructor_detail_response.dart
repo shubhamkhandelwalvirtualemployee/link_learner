@@ -56,7 +56,7 @@ class InstructorDetails {
   final bool documentsUploaded;
   final String createdAt;
   final String updatedAt;
-  final InstructorUser user;
+  final InstructorDetailUser user;
   final List<dynamic> documents;
 
   InstructorDetails({
@@ -117,7 +117,7 @@ class InstructorDetails {
       documentsUploaded: json['documentsUploaded'] ?? false,
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
-      user: InstructorUser.fromJson(json['user'] ?? {}),
+      user: InstructorDetailUser.fromJson(json['user'] ?? {}),
       documents: json['documents'] ?? [],
     );
   }
@@ -146,7 +146,7 @@ class VehicleDetails {
   }
 }
 
-class InstructorUser {
+class InstructorDetailUser {
   final String id;
   final String firstName;
   final String lastName;
@@ -154,7 +154,7 @@ class InstructorUser {
   final String? avatar;
   final String createdAt;
 
-  InstructorUser({
+  InstructorDetailUser({
     required this.id,
     required this.firstName,
     required this.lastName,
@@ -163,8 +163,8 @@ class InstructorUser {
     required this.createdAt,
   });
 
-  factory InstructorUser.fromJson(Map<String, dynamic> json) {
-    return InstructorUser(
+  factory InstructorDetailUser.fromJson(Map<String, dynamic> json) {
+    return InstructorDetailUser(
       id: json['id'] ?? '',
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',

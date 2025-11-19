@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/weekly_available_model.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
+import 'package:link_learner/presentation/login_signup/widgets/hourly_widget.dart';
+import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
-
 
 class InstructorDetailScreen extends StatefulWidget {
   final String instructorId;
@@ -21,8 +24,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      final provider =
-      Provider.of<InstructorProvider>(context, listen: false);
+      final provider = Provider.of<InstructorProvider>(context, listen: false);
       provider.getInstructorDetailProvider(widget.instructorId);
       provider.getWeeklyAvailabilityProvider(widget.instructorId);
     });
@@ -39,70 +41,34 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
           );
         }
 
-        final instructor =
-            provider.instructorDetailResponse!.data.instructor;
+        final instructor = provider.instructorDetailResponse!.data.instructor;
         final availability = provider.weeklyAvailability?.data ?? {};
 
         return Scaffold(
           backgroundColor: ColorConstants.whiteColor,
           appBar: AppBar(
-            backgroundColor: ColorConstants.whiteColor,
-            title: const Text("Instructor Details"),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+            backgroundColor: Colors.white,
+            title: const Text("Instructor Details",style: TextStyle(fontSize: 24,
+                fontWeight: FontWeight.w400),),
+            leading: BackButton(color: Colors.black),
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Profile Section ---
                 _buildProfileCard(instructor),
-
                 const SizedBox(height: 16),
 
-                // --- Specializations ---
                 _buildSpecializations(instructor.specializations),
-
                 const SizedBox(height: 16),
 
-                // --- Vehicle Details ---
                 _buildVehicleCard(instructor.vehicleDetails),
-
                 const SizedBox(height: 16),
 
-                // --- Availability Calendar ---
-                _buildAvailability(availability),
-
-                const SizedBox(height: 16),
-
-                // --- Session Notes ---
-                _buildNotesSection(),
-
+                _buildAvailabilitySection(availability),
                 const SizedBox(height: 20),
 
-                // --- Book Now Button ---
-                Center(
-                  child: SizedBox(
-                    width: 236,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorConstants.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "Book Now",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildBookNowButton(provider, instructor),
               ],
             ),
           ),
@@ -111,29 +77,214 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
     );
   }
 
-  Widget _buildProfileCard(InstructorDetails instructor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ColorConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-            spreadRadius: 0,                     // How wide the shadow spreads
-            blurRadius: 4,                       // How soft the shadow looks
-            offset: const Offset(0, 4),          // x and y offset (move shadow)
+  // 🔥 BOOK NOW BUTTON
+  Widget _buildBookNowButton(
+    InstructorProvider provider,
+    InstructorDetails instructor,
+  ) {
+    return SizedBox(
+      width: 236,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorConstants.primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+        ),
+        onPressed: () async {
+
+          final checkOutProvider = Provider.of<CheckoutProvider>(context, listen: false);
+
+          if (provider.selectedDate == null || provider.selectedSlot == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Please select a date & time")),
+            );
+            return;
+          }
+
+          final selectedDate = provider.selectedDate!;
+          final selectedSlot = provider.selectedSlot!;
+
+          // FIRST: Check availability BEFORE navigation
+          bool isAvailable = await checkOutProvider.checkAvailability(
+            instructorId: instructor.id,
+            selectedDate: selectedDate,
+            startTime: selectedSlot.startTime,
+            duration: 60,
+          );
+          print(isAvailable);
+
+          if (!isAvailable) {
+            // Show proper conflict dialog
+            final message = checkOutProvider.availabilityResponse?.data.message ??
+                "This time slot is not available.";
+
+            final conflicts = checkOutProvider.availabilityResponse?.data.conflictingBookings ?? [];
+
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) {
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  insetPadding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // ❌ Warning Icon
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 42,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // Title
+                        const Text(
+                          "Instructor Not Available",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black87,
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Message
+                        Text(
+                          message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.4,
+                            color: Colors.black87,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // Conflicting bookings section
+                        if (conflicts.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Conflicting Bookings:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          ...conflicts.map(
+                                (id) => Text(
+                              "• $id",
+                              style: const TextStyle(fontSize: 13, color: Colors.black54),
+                            ),
+                          ),
+                        ],
+
+                        const SizedBox(height: 24),
+
+                        // Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              "Choose Another Time Slot",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+
+            return; // ⛔ STOP — do NOT navigate
+          }
+
+          // If available → navigate to Checkout Page
+          AppRoutes.push(
+            context,
+            RouteNames.checkoutPage,
+            arguments: {
+              "instructor": instructor,
+              "selectedDate": selectedDate,
+              "selectedSlot": selectedSlot,
+            },
+          );
+        },
+        child: const Text("Book Now", style: TextStyle(color: Colors.white)),
       ),
+    );
+  }
+
+  // ---------------- PROFILE CARD ----------------
+  Widget _buildProfileCard(InstructorDetails instructor) {
+    final String initials = [
+      if (instructor.user.firstName.isNotEmpty)
+        instructor.user.firstName[0].toUpperCase()
+      else
+        "",
+      (instructor.user.lastName.isNotEmpty)
+          ? instructor.user.lastName[0].toUpperCase()
+          : "",
+    ].join("");
+    return Container(
+      decoration: _boxDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage:
-              NetworkImage(instructor.user.avatar ?? ''),
-              backgroundColor: ColorConstants.textColor,
+            Container(
+              height: 75,
+              width: 75,
+              decoration: BoxDecoration(
+                color: ColorConstants.disabledColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ColorConstants.disabledColor,
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: ColorConstants.disabledColor,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -143,361 +294,312 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                   Text(
                     "${instructor.user.firstName} ${instructor.user.lastName}",
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold,color: ColorConstants.textColor),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ColorConstants.textColor,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.email, size: 12,color: ColorConstants.textColor),
-                      SizedBox(width: 4,),
-                      Text(instructor.user.email , style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      const Icon(
+                        Icons.email,
+                        size: 12,
+                        color: ColorConstants.textColor,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        instructor.user.email,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: ColorConstants.textColor,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 12,color: ColorConstants.textColor),
-                      SizedBox(width: 4,),
-                      Text(instructor.address, style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      const Icon(
+                        Icons.location_on,
+                        size: 12,
+                        color: ColorConstants.textColor,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        instructor.address,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: ColorConstants.textColor,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text("License Number: ${instructor.rsaLicenseNumber}", style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
-                      SizedBox(width: 10,),
-                      Text("Expiry: ${ DateFormat('dd MMM yyyy').format(DateTime.parse(instructor.licenseExpiryDate))}", style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: "License Number: ",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: ColorConstants.textColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            TextSpan(
+                              text: instructor.rsaLicenseNumber,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: ColorConstants.textColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: "Expiry: ",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: ColorConstants.textColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            TextSpan(
+                              text: DateFormat('dd MMM yyyy')
+                                  .format(DateTime.parse(instructor.licenseExpiryDate)),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: ColorConstants.textColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     instructor.bio,
-                    maxLines: 2,
+                    maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        fontSize: 10, color: ColorConstants.textColor),
+                      fontSize: 12,
+                      color: ColorConstants.textColor,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star, size: 16),
-                      Text(" ${instructor.rating} (${instructor.totalReviews} reviews)", style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      const Icon(Icons.star, size: 16,color: ColorConstants.detailIconColor,),
+                      Text(
+                        " ${instructor.rating} (${instructor.totalReviews} reviews)",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: ColorConstants.textColor,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       const Spacer(),
                       Text(
                         "\$${instructor.hourlyRate}/session",
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: ColorConstants.primaryColor),
+                          fontWeight: FontWeight.bold,
+                          color: ColorConstants.primaryColor,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
+  // ---------------- SPECIALIZATIONS ----------------
   Widget _buildSpecializations(List<String> specs) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: ColorConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-            spreadRadius: 0,                     // How wide the shadow spreads
-            blurRadius: 4,                       // How soft the shadow looks
-            offset: const Offset(0, 4),          // x and y offset (move shadow)
+      decoration: _boxDecoration(),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Specializations",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Specializations",style: TextStyle(fontWeight: FontWeight.w700,fontSize: 14,color: ColorConstants.textColor),),
-            SizedBox(height: 10,),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: specs
-                  .map((e) => Chip(
-                backgroundColor: ColorConstants.backgroundChipColor,
-                labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(
-                    style: BorderStyle.none, // ✅ Removes the border completely
-                  ),
-                  borderRadius: BorderRadius.circular(16), // 🔹 Rounded edges only
-                ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: specs.map(
+                  (e) => Chip(
+                backgroundColor: ColorConstants.specializationColor, // chip background
                 label: Text(
                   e,
-                  style: const TextStyle(color: ColorConstants.primaryTextColor),
+                  style: const TextStyle(
+                    color: ColorConstants.textColor, // text color
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
-              ))
-                  .toList(),
-            ),
-          ],
-        ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: const BorderSide( // NO BORDER
+                    color: Colors.transparent,
+                    width: 0,
+                  ),
+                ),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ).toList(),
+          )
+        ],
       ),
     );
   }
 
+  // ---------------- VEHICLE CARD ----------------
   Widget _buildVehicleCard(VehicleDetails vehicle) {
     return Container(
-      decoration: BoxDecoration(
-        color: ColorConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-            spreadRadius: 0,                     // How wide the shadow spreads
-            blurRadius: 4,                       // How soft the shadow looks
-            offset: const Offset(0, 4),          // x and y offset (move shadow)
+      decoration: _boxDecoration(),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Vehicle Details",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Make: ${vehicle.make}",style: TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
+                    ),),
+                    Text("Model: ${vehicle.model}",style: TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
+                    ),),
+                    Text("Year: ${vehicle.year}",style: TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
+                    ),),
+                    Text("Transmission: ${vehicle.transmission}",style: TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
+                    ),),
+                  ],
+                ),
+              ),
+              Image.asset("assets/images/car.png", width: 120),
+            ],
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Vehicle Details",style: TextStyle(fontWeight: FontWeight.w700,fontSize: 14,color: ColorConstants.textColor),),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Make: ${vehicle.make}",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 12,color: ColorConstants.textColor),),
-                      Text("Model: ${vehicle.model}",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 12,color: ColorConstants.textColor),),
-                      Text("Year: ${vehicle.year}",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 12,color: ColorConstants.textColor),),
-                      Text("Transmission: ${vehicle.transmission}",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 12,color: ColorConstants.textColor),),
-                    ],
-                  ),
-                ),
-                Image.asset(
-                  'assets/images/car.png', // sample placeholder
-                  width: 120,
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
-  Widget _buildAvailability(Map<int, List<AvailabilitySlot>> availability) {
-    DateTime today = DateTime.now();
 
-    // 🔹 Move state variables OUTSIDE the builder so they persist across rebuilds
-    DateTime selectedDate = today;
-    DateTime currentWeekStart = today.subtract(Duration(days: today.weekday % 7)); // Start from Sunday
+  // ---------------- AVAILABILITY SECTION ----------------
+  // ------------------ MAIN AVAILABILITY SECTION ------------------
+  Widget _buildAvailabilitySection(
+      Map<int, List<AvailabilitySlot>> availability,
+      ) {
+    return Consumer<InstructorProvider>(
+      builder: (context, provider, _) {
+        provider.selectedDate ??= DateTime.now();
 
-    return StatefulBuilder(
-      builder: (context, setState) {
-        // Helper: get days for the current week
-        List<DateTime> getWeekDays(DateTime weekStart) {
-          return List.generate(7, (index) => weekStart.add(Duration(days: index)));
+        // Initialize week start date
+        provider.weekStartDate ??= provider.selectedDate!.subtract(
+          Duration(days: provider.selectedDate!.weekday % 7),
+        );
+
+        // ---------------- WEEK DAYS LOADER ----------------
+        List<DateTime> _getWeekDays(DateTime start) {
+          return List.generate(7, (i) {
+            final day = start.add(Duration(days: i));
+            int key = day.weekday % 7;
+            if ((availability[key] ?? []).isNotEmpty) return day;
+            return null;
+          }).whereType<DateTime>().toList();
         }
 
-        List<DateTime> currentWeekDays = getWeekDays(currentWeekStart);
+        List<DateTime> weekDays = _getWeekDays(provider.weekStartDate!);
+        if (weekDays.isEmpty) weekDays = [provider.selectedDate!];
 
-        // Go to next week
+        // ---------------- WEEK NAVIGATION ----------------
         void goToNextWeek() {
-          setState(() {
-            currentWeekStart = currentWeekStart.add(const Duration(days: 7));
-            currentWeekDays = getWeekDays(currentWeekStart);
-            selectedDate = currentWeekDays.first; // Auto-select first day (Sunday)
-          });
+          provider.setWeekStartDate(
+            provider.weekStartDate!.add(const Duration(days: 7)),
+          );
         }
 
-        // Go to previous week
         void goToPreviousWeek() {
-          setState(() {
-            currentWeekStart = currentWeekStart.subtract(const Duration(days: 7));
-            currentWeekDays = getWeekDays(currentWeekStart);
-            selectedDate = currentWeekDays.first;
-          });
-        }
-
-        // Get slots for a given day
-        List<AvailabilitySlot> getSlotsForDay(DateTime day) {
-          int dayOfWeek = day.weekday % 7; // Sunday = 0
-          return availability[dayOfWeek] ?? [];
+          provider.setWeekStartDate(
+            provider.weekStartDate!.subtract(const Duration(days: 7)),
+          );
         }
 
         return Container(
-          decoration: BoxDecoration(
-            color: ColorConstants.whiteColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-                spreadRadius: 0,                     // How wide the shadow spreads
-                blurRadius: 4,                       // How soft the shadow looks
-                offset: const Offset(0, 4),          // x and y offset (move shadow)
-              ),
-            ],
-          ),
+          decoration: _boxDecoration(),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Header ---
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "Select Date & Time", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 14,color: ColorConstants.textColor),)
-                  ],
+                const Text(
+                  "Select Date & Time",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: ColorConstants.textColor,
+                  ),
                 ),
-                const SizedBox(height: 10),
 
-                // --- Month & Arrow Navigation ---
+                const SizedBox(height: 14),
+
+                // ---------- MONTH + ARROWS ----------
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _arrowButton(Icons.chevron_left, enabled: true, onTap: goToPreviousWeek),
-                    // 👇 Selected date + month display
-                    Column(
-                      children: [
-                        Text(
-                          "${selectedDate.day} ${_monthName(selectedDate.month)} ${selectedDate.year}",
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    _arrowButton(Icons.chevron_left,
+                        enabled: true, onTap: goToPreviousWeek),
+                    Text(
+                      "${provider.selectedDate!.day} ${_monthName(provider.selectedDate!.month)} ${provider.selectedDate!.year}",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
                     ),
-                    _arrowButton(Icons.chevron_right, enabled: true, onTap: goToNextWeek),
+                    _arrowButton(Icons.chevron_right,
+                        enabled: true, onTap: goToNextWeek),
                   ],
                 ),
 
                 const SizedBox(height: 16),
 
-                // --- Weekday Selection ---
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: currentWeekDays.map((day) {
-                      bool isSelected = day.day == selectedDate.day &&
-                          day.month == selectedDate.month &&
-                          day.year == selectedDate.year;
-                      bool hasAvailability = (availability[day.weekday % 7] ?? []).isNotEmpty;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: GestureDetector(
-                          onTap:  () => setState(() => selectedDate = day),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 60,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isSelected ? Colors.redAccent : Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: hasAvailability
-                                    ? Colors.redAccent
-                                    : Colors.grey.shade300,
-                                width: 1.3,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  _weekdayShortName(day),
-                                  style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.redAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  "${day.day}",
-                                  style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.redAccent,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
+                // ---------- DATE SELECTOR ----------
+                _buildDateSelector(provider, availability),
 
                 const SizedBox(height: 20),
 
-                // --- Time Slots ---
-                Builder(
-                  builder: (_) {
-                    final selectedSlots = getSlotsForDay(selectedDate);
-                    if (selectedSlots.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Text(
-                          "No slots available for this day",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      );
-                    }
-
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 2.6,
-                      ),
-                      itemCount: selectedSlots.length,
-                      itemBuilder: (context, index) {
-                        final slot = selectedSlots[index];
-                        return GestureDetector(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Selected ${slot.startTime} - ${slot.endTime}"),
-                                duration: const Duration(seconds: 1),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.redAccent),
-                            ),
-                            child: Text(
-                              slot.startTime,
-                              style: const TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                // ---------- TIME SLOTS ----------
+                _buildTimeSlots(provider, availability),
               ],
             ),
           ),
@@ -505,21 +607,6 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
       },
     );
   }
-
-// 🔹 Helper methods
-  String _weekdayShortName(DateTime date) {
-    const names = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    return names[date.weekday % 7];
-  }
-
-  String _monthName(int month) {
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-    return months[month - 1];
-  }
-
 
   Widget _arrowButton(
       IconData icon, {
@@ -529,7 +616,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 180),
         width: 38,
         height: 38,
         decoration: BoxDecoration(
@@ -557,48 +644,202 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
     );
   }
 
+  Widget _buildDateSelector(
+      InstructorProvider provider,
+      Map<int, List<AvailabilitySlot>> availability,
+      ) {
+    List<DateTime> weekDays = List.generate(7, (i) {
+      final date = provider.weekStartDate!.add(Duration(days: i));
+      int key = date.weekday % 7;
 
+      if ((availability[key] ?? []).isNotEmpty) return date;
+      return null;
+    }).whereType<DateTime>().toList();
 
-  Widget _buildNotesSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: ColorConstants.whiteColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-            spreadRadius: 0,                     // How wide the shadow spreads
-            blurRadius: 4,                       // How soft the shadow looks
-            offset: const Offset(0, 4),          // x and y offset (move shadow)
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Session Notes (Optional)", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 14,color: ColorConstants.textColor),),
-            const SizedBox(height: 8),
-            Text(
-              "Add your notes or topics you’d like  to discuss", style: TextStyle(fontWeight: FontWeight.w400,fontSize: 12,color: ColorConstants.textColor),),
-            const SizedBox(height: 8),
-            const TextField(
-              maxLength: 500,
-              maxLines: 3,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                hintText: "What would you like to focus on in this session?",
-                hintStyle:  TextStyle(fontWeight: FontWeight.w400,fontSize: 8,color: ColorConstants.textColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: ColorConstants.backgroundTextFormFieldColor,width: 1)
+    if (weekDays.isEmpty) {
+      return const Center(
+        child: Text("No available days this week",
+            style: TextStyle(color: Colors.grey)),
+      );
+    }
+
+    provider.selectedDate ??= weekDays.first;
+
+    return SizedBox(
+      height: 75,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemCount: weekDays.length,
+        itemBuilder: (_, index) {
+          final day = weekDays[index];
+
+          final isSelected =
+              provider.selectedDate!.day == day.day &&
+                  provider.selectedDate!.month == day.month &&
+                  provider.selectedDate!.year == day.year;
+
+          return GestureDetector(
+            onTap: () => provider.setSelectedDate(day),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 60,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.redAccent : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.redAccent,
+                  width: isSelected ? 2 : 1.2,
                 ),
+                boxShadow: isSelected
+                    ? [
+                  BoxShadow(
+                    color: Colors.redAccent.withOpacity(0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+                    : [],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _weekdayShort(day),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : Colors.redAccent,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "${day.day}",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isSelected ? Colors.white : Colors.redAccent,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
+    );
+  }
+  Widget _buildTimeSlots(
+      InstructorProvider provider,
+      Map<int, List<AvailabilitySlot>> availability,
+      ) {
+    final selectedDate = provider.selectedDate!;
+    final slots = availability[selectedDate.weekday % 7] ?? [];
+
+    final hourlySlots = slots.expand((slot) => generateHourlySlots(slot)).toList();
+
+    if (hourlySlots.isEmpty) {
+      return const Text("No times available for this day");
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: hourlySlots.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 2.9,
+      ),
+      itemBuilder: (_, i) {
+        final slot = hourlySlots[i];
+        final isSelected =
+            provider.selectedSlot?.startTime == slot.startTime &&
+                provider.selectedSlot?.endTime == slot.endTime;
+
+        return GestureDetector(
+          onTap: () => provider.setSelectedSlot(slot),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.redAccent : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.redAccent,
+                width: isSelected ? 2 : 1.2,
+              ),
+              boxShadow: isSelected
+                  ? [
+                BoxShadow(
+                  color: Colors.redAccent.withOpacity(0.25),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ]
+                  : [],
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              "${slot.startTime} - ${slot.endTime}",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.redAccent,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  String _weekdayShort(DateTime date) {
+    return DateFormat("EEE").format(date).toUpperCase();
+  }
+
+  String _monthName(int month) {
+    const names = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+    return names[month - 1];
+  }
+
+  List<AvailabilitySlot> generateHourlySlots(AvailabilitySlot slot) {
+    final start = DateFormat("HH:mm").parse(slot.startTime);
+    final end = DateFormat("HH:mm").parse(slot.endTime);
+
+    List<AvailabilitySlot> result = [];
+
+    DateTime current = start;
+    while (current.isBefore(end)) {
+      final next = current.add(const Duration(hours: 1));
+
+      result.add(AvailabilitySlot(
+        id: slot.id,
+        dayOfWeek: slot.dayOfWeek,
+        startTime: DateFormat("HH:mm").format(current),
+        endTime: DateFormat("HH:mm").format(next),
+      ));
+
+      current = next;
+    }
+
+    return result;
+  }
+
+  // Generate hourly time slots
+
+  BoxDecoration _boxDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.25),
+          blurRadius: 4,
+          offset: const Offset(0, 4),
+        ),
+      ],
     );
   }
 }

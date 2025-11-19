@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/presentation/booking_and_search/widgets/search_bottom_sheet.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
 import 'package:link_learner/presentation/instructor/screens/calendar_screen.dart';
@@ -27,7 +28,7 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
     _controller.addListener(_paginationLogic);
 
     Future.microtask(
-          () => context.read<InstructorProvider>().getInstructorList(),
+      () => context.read<InstructorProvider>().getInstructorList(),
     );
   }
 
@@ -35,7 +36,7 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
     final provider = context.read<InstructorProvider>();
 
     if (_controller.position.pixels >=
-        _controller.position.maxScrollExtent - 200 &&
+            _controller.position.maxScrollExtent - 200 &&
         !provider.isPaginating &&
         provider.hasMore) {
       provider.getInstructorList(); // fetch next page
@@ -75,8 +76,8 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                 ),
               )
             /// ✅ NO DATA
-            else if (response?.data?.instructors == null ||
-                response!.data!.instructors!.isEmpty)
+            else if (response?.data.instructors == null ||
+                response!.data.instructors.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
@@ -92,13 +93,16 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
             else
               Expanded(
                 child: ListView.separated(
-                  controller: _controller,           // ✅ added
+                  controller: _controller,
+                  // ✅ added
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: response.data!.instructors!.length +
-                      (provider.isPaginating ? 1 : 0), // ✅ loader row
+                  itemCount:
+                      response.data.instructors.length +
+                      (provider.isPaginating ? 1 : 0),
+                  // ✅ loader row
                   separatorBuilder: (_, __) => const SizedBox(height: 18),
                   itemBuilder: (context, index) {
-                    if (index == response.data!.instructors!.length) {
+                    if (index == response.data.instructors.length) {
                       return const Padding(
                         padding: EdgeInsets.all(12),
                         child: Center(
@@ -109,11 +113,11 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                       );
                     }
 
-                    final instructor = response.data!.instructors![index];
+                    final instructor = response.data!.instructors[index];
                     return _instructorCard(instructor);
                   },
                 ),
-              )
+              ),
           ],
         ),
       ),
@@ -147,9 +151,14 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                     _searchDebounce!.cancel();
                   }
 
-                  _searchDebounce = Timer(const Duration(milliseconds: 400), () {
-                    provider.getInstructorList(isRefresh: true);   // ✅ IMPORTANT
-                  });
+                  _searchDebounce = Timer(
+                    const Duration(milliseconds: 400),
+                    () {
+                      provider.getInstructorList(
+                        isRefresh: true,
+                      ); // ✅ IMPORTANT
+                    },
+                  );
                 },
                 decoration: const InputDecoration(
                   hintText: "Find Instructors",
@@ -163,16 +172,26 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
             ),
 
             /// ✅ FILTER ICON
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: ColorConstants.containerAndFillColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.filter_list,
-                color: ColorConstants.disabledColor,
-                size: 22,
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const SearchFilterBottomSheet(),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: ColorConstants.containerAndFillColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.filter_list,
+                  color: ColorConstants.disabledColor,
+                  size: 22,
+                ),
               ),
             ),
           ],
@@ -184,16 +203,14 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
   /// ✅ Instructor Card UI (Dynamic from API)
   Widget _instructorCard(Instructor instructor) {
     final String initials = [
-      (instructor.user.firstName?.isNotEmpty ?? false)
-          ? instructor.user.firstName![0].toUpperCase()
-          : "",
-      (instructor.user.lastName?.isNotEmpty ?? false)
-          ? instructor.user.lastName![0].toUpperCase()
+      if (instructor.user.firstName.isNotEmpty) instructor.user.firstName[0].toUpperCase() else "",
+      (instructor.user.lastName.isNotEmpty)
+          ? instructor.user.lastName[0].toUpperCase()
           : "",
     ].join("");
 
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         AppRoutes.push(
           context,
           RouteNames.instructorDetailsScreen,
@@ -359,8 +376,10 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          final provider =
-                          Provider.of<InstructorProvider>(context, listen: false);
+                          final provider = Provider.of<InstructorProvider>(
+                            context,
+                            listen: false,
+                          );
 
                           // ✅ 1. Call availability API
                           await provider.getWeeklyAvailabilityProvider(
@@ -371,16 +390,30 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CalendarBookingScreen(
-                                availability: provider.weeklyAvailability!,
-                              ),
+                              builder:
+                                  (_) => CalendarBookingScreen(
+                                    availability: provider.weeklyAvailability!,
+                                  ),
                             ),
                           );
                         },
                         child: _actionButton("Book Session"),
                       ),
                       SizedBox(width: 10),
-                      _actionButton("Add Credits"),
+                      GestureDetector(
+                        onTap: () async {
+                          AppRoutes.push(
+                            context,
+                            RouteNames.bookInstructorPackageScreen,
+                            arguments: {'instructorId': instructor.id,
+                              'user':instructor.user,
+                              'ratings':instructor.rating,
+                              'hourlyRate':instructor.hourlyRate
+                            },
+                          );
+                        },
+                        child: _actionButton("Add Credits"),
+                      ),
                     ],
                   ),
                 ],

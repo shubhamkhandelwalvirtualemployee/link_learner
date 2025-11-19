@@ -7,7 +7,6 @@ class RouteNames {
   static const String profileScreen = "/ProfileScreen";
   static const String bottomNavBarScreens = "/BottomNavBarScreens";
   static const String buyBookingScreen = "/BuyBookingScreen";
-  static const String checkoutScreen = "/CheckoutScreen";
   static const String paymentSuccessScreen = "/PaymentSuccessScreen";
   static const String paymentFailedScreen = "/PaymentFailedScreen";
   static const String bookingDetailsScreen = "/BookingDetailsScreen";
@@ -17,4 +16,8 @@ class RouteNames {
   static const String changePasswordScreen = "/ChangePasswordScreen";
   static const String instructorListScreen = "/InstructorListScreen";
   static const String instructorDetailsScreen = "/InstructorDetailsScreen";
+  static const String bookLessonScreen = "/BookLessonScreen";
+  static const String bookInstructorPackageScreen = "/BookInstructorPackageScreen";
+  static const String checkoutPage = "/CheckoutPage";
+  static const String paymentHistoryScreen = "/PaymentHistoryScreen";
 }

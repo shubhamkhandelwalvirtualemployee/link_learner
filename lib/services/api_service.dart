@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/api_urls.dart';
+import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
+import 'package:link_learner/main.dart';
+import 'package:link_learner/routes/app_routes.dart';
 
 class ApiService {
   late final Dio _dio;
@@ -54,8 +58,14 @@ class ApiService {
         onError: (DioException error, handler) async {
           final statusCode = error.response?.statusCode;
 
+
           if (statusCode == 401 || statusCode == 403) {
             await SessionManager().clearAll();
+            AppRoutes.pushAndRemoveUntil(
+              navigatorKey.currentContext!,
+              RouteNames.loginScreen,
+                  (Route<dynamic> route) => false,
+            );
 
             return handler.reject(
               DioException(

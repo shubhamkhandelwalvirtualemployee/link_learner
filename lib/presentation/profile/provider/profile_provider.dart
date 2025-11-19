@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // ✅ for date formatting
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/presentation/profile/model/get_user_profile_model.dart';
+import 'package:link_learner/presentation/profile/model/payment_history_response.dart';
+import 'package:link_learner/services/api_calling.dart';
 import 'package:link_learner/services/api_service.dart';
 import '../../../core/utils/pick_image.dart';
 
@@ -91,6 +93,14 @@ class ProfileProvider extends ChangeNotifier {
   // --- Profile model ---
   ProfileResponse? _profileResponse;
   ProfileResponse? get profileResponse => _profileResponse;
+
+// ------- PAYMENT HISTORY -------
+  PaymentHistoryResponse? _paymentHistory;
+  PaymentHistoryResponse? get paymentHistory => _paymentHistory;
+
+  bool _loadingPayments = false;
+  bool get loadingPayments => _loadingPayments;
+
 
   // --- Fetch profile from API ---
   Future<void> getProfile() async {
@@ -194,4 +204,22 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  Future<void> loadPaymentHistory() async {
+    try {
+      _loadingPayments = true;
+      notifyListeners();
+
+      final response = await ApiCalling().getPaymentHistory();
+      print(response);
+
+      _paymentHistory = response;
+    } catch (e) {
+      print("❌ Error fetching payment history: $e");
+    } finally {
+      _loadingPayments = false;
+      notifyListeners();
+    }
+  }
+
 }

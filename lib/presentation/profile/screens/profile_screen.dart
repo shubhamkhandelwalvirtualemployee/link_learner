@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/core/utils/session_manager.dart';
 import 'package:link_learner/presentation/profile/provider/profile_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -153,6 +154,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: ColorConstants.primaryColor,
                       ),
                     ),
+                    onTap: (){
+                      AppRoutes.push(context, RouteNames.paymentHistoryScreen);
+                    },
                     title: Text(
                       "Payment History",
                       style: TextStyle(
@@ -340,6 +344,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: ColorConstants.primaryColor,
                       ),
                     ),
+                    onTap: (){
+                      SessionManager().clearAll().then((value) {
+                        AppRoutes.pushAndRemoveUntil(
+                          context,
+                          RouteNames.loginScreen,
+                              (Route<dynamic> route) => false,
+                        );
+                      });
+                    },
                     title: Text(
                       "Log out",
                       style: TextStyle(

@@ -5,9 +5,14 @@ import 'package:link_learner/main.dart';
 import 'package:link_learner/presentation/booking/screens/booking_details_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/buy_booking_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/checkout_screen.dart';
-import 'package:link_learner/presentation/booking_and_search/screens/payment_failed_screen.dart';
-import 'package:link_learner/presentation/booking_and_search/screens/payment_success_screen.dart';
+import 'package:link_learner/presentation/checkout/screens/payment_failed_screen.dart';
+import 'package:link_learner/presentation/checkout/screens/payment_success_screen.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/screens/bottom_nav_bar_screens.dart';
+import 'package:link_learner/presentation/checkout/screens/checkout_screen.dart';
+import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
+import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
+import 'package:link_learner/presentation/instructor/screens/book_lesson_screen.dart';
+import 'package:link_learner/presentation/instructor/screens/book_package_page.dart';
 import 'package:link_learner/presentation/instructor/screens/instructor_detail_screen.dart';
 import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/reset_password_screen.dart';
@@ -15,7 +20,8 @@ import 'package:link_learner/presentation/login_signup/screens/login_screen.dart
 import 'package:link_learner/presentation/login_signup/screens/mobile_verify_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/sign_up_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/verify_phone.dart';
-import 'package:link_learner/presentation/onboarding/screens/onboarding_screen.dart';
+import 'package:link_learner/presentation/profile/screens/payment_history_screen.dart';
+import 'package:link_learner/presentation/splash/screens/splash_screen.dart';
 import 'package:link_learner/presentation/profile/screens/change_password_screen.dart';
 import 'package:link_learner/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
@@ -31,7 +37,16 @@ class RouteManager {
       RouteNames.profileScreen: (context) => const ProfileScreen(),
       RouteNames.bottomNavBarScreens: (context) => BottomNavBarScreens(),
       RouteNames.buyBookingScreen: (context) => BuyBookingScreen(),
-      RouteNames.checkoutScreen: (context) => CheckoutScreen(),
+      RouteNames.paymentHistoryScreen: (context) => PaymentHistoryScreen(),
+      RouteNames.checkoutPage: (context) {
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return CheckoutPage(
+          instructor: args['instructor'],       // InstructorDetails object
+          selectedDate: args['selectedDate'],   // DateTime
+          selectedSlot: args['selectedSlot'],   // AvailabilitySlot
+        );
+      },
       RouteNames.paymentSuccessScreen: (context) => PaymentSuccessScreen(),
       RouteNames.paymentFailedScreen: (context) => PaymentFailedScreen(),
       RouteNames.bookingDetailsScreen: (context) => BookingDetailsScreen(),
@@ -40,11 +55,21 @@ class RouteManager {
       RouteNames.resetPasswordScreen: (context) => ResetPasswordScreen(),
       RouteNames.changePasswordScreen: (context) => ChangePasswordScreen(),
       RouteNames.instructorListScreen: (context) => InstructorListScreen(),
+      RouteNames.bookLessonScreen: (context) => BookLessonScreen(),
       RouteNames.instructorDetailsScreen: (context) {
         final args = settings.arguments as Map<String, dynamic>;
 
         final String instructorId = args['instructorId'];
         return InstructorDetailScreen(instructorId: instructorId);
+      },
+      RouteNames.bookInstructorPackageScreen: (context) {
+        final args = settings.arguments as Map<String, dynamic>;
+
+        final String instructorId = args['instructorId'];
+        final InstructorUser instructorUser = args['user'];
+        final double ratings = args['ratings'];
+        final int hourlyRate = args['hourlyRate'];
+        return BookInstructorPackageScreen(instructorId: instructorId,instructor: instructorUser,ratings: ratings,hourlyRate: hourlyRate,);
       },
     };
 
