@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
+import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
+import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import '../provider/instructor_provider.dart';
 import '../model/instructor_package_model.dart'; // adjust as per your file
@@ -68,6 +70,12 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
   }
 
   Widget _instructorCard(instructor) {
+    final String initials = [
+      if (instructor.firstName.isNotEmpty) instructor.firstName[0].toUpperCase() else "",
+      (instructor.lastName.isNotEmpty)
+          ? instructor.lastName[0].toUpperCase()
+          : "",
+    ].join("");
     return Container(
       decoration: BoxDecoration(
         color: ColorConstants.whiteColor,
@@ -85,11 +93,27 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage:
-              NetworkImage(instructor.avatar ?? ''),
-              backgroundColor: ColorConstants.textColor,
+            Container(
+              height: 75,
+              width: 75,
+              decoration: BoxDecoration(
+                color: ColorConstants.disabledColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ColorConstants.disabledColor,
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: ColorConstants.disabledColor,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -136,6 +160,7 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
 
   Widget _packageCard(InstructorPackage pkg) {
     bool isSelected = selectedPackageId == pkg.id;
+    final provider = Provider.of<InstructorProvider>(context, listen: false);
 
     return GestureDetector(
       onTap: () => setState(() => selectedPackageId = pkg.id),
@@ -179,9 +204,34 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
                 Text("Total: \$${pkg.totalPrice}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor)),
                Spacer(),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() => selectedPackageId = pkg.id);
-                    // your booking action here
+                    bool intentOK = await provider.createPaymentIntent(
+                      widget.instructorId,
+                      pkg.id
+                    );
+                    if (!intentOK) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(provider.paymentIntentError ?? "Failed to create payment intent")),
+                      );
+                      return;
+                    }
+
+                    // 4️⃣ Show Stripe Payment Sheet
+                    bool paid = await provider.makePayment();
+                    if (!paid) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(provider.stripePaymentError ?? "Payment Failed")),
+                      );
+                      AppRoutes.push(context, RouteNames.paymentFailedScreen);
+                      return;
+                    }
+
+                    // 5️⃣ Payment Success
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Payment Completed Successfully!")),
+                    );
+                    AppRoutes.push(context, RouteNames.paymentSuccessScreen);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorConstants.primaryColor,

@@ -6,7 +6,6 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/booking_and_search/widgets/search_bottom_sheet.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
-import 'package:link_learner/presentation/instructor/screens/calendar_screen.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
@@ -209,218 +208,205 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
           : "",
     ].join("");
 
-    return GestureDetector(
-      onTap: () {
-        AppRoutes.push(
-          context,
-          RouteNames.instructorDetailsScreen,
-          arguments: {'instructorId': instructor.id},
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: ColorConstants.whiteColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: ColorConstants.disabledColor.withOpacity(0.15),
-              blurRadius: 8,
-              spreadRadius: 2,
-              offset: const Offset(0, 3),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorConstants.whiteColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: ColorConstants.disabledColor.withOpacity(0.15),
+            blurRadius: 8,
+            spreadRadius: 2,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// ✅ IMAGE BOX
+          // firstName and lastName should come from your model
+          Container(
+            height: 75,
+            width: 75,
+            decoration: BoxDecoration(
+              color: ColorConstants.disabledColor.withOpacity(0.2),
+              shape: BoxShape.circle, // ✅ Make it circular
+              border: Border.all(
+                color: ColorConstants.disabledColor,
+                width: 2, // ✅ nice border like you wanted
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// ✅ IMAGE BOX
-            // firstName and lastName should come from your model
-            Container(
-              height: 75,
-              width: 75,
-              decoration: BoxDecoration(
-                color: ColorConstants.disabledColor.withOpacity(0.2),
-                shape: BoxShape.circle, // ✅ Make it circular
-                border: Border.all(
+            child: Center(
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
                   color: ColorConstants.disabledColor,
-                  width: 2, // ✅ nice border like you wanted
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: ColorConstants.disabledColor,
-                  ),
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(width: 16),
+          const SizedBox(width: 16),
 
-            /// ✅ INFO
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// ✅ Name + Rating Badge + Price
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      /// ✅ Name + Bio + Address
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// ✅ Instructor Name
-                            Text(
-                              "${instructor.user.firstName} ${instructor.user.lastName}",
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-
-                            const SizedBox(height: 4),
-
-                            /// ✅ Address Row (Icon + text)
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 16,
-                                  color: Colors.red,
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    "${instructor.address}, ${instructor.city}",
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: ColorConstants.disabledColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.red,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  instructor.rating.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Spacer(),
-                                Text(
-                                  "${instructor.experience.toString()} years",
-                                  style: const TextStyle(
-                                    color: ColorConstants.primaryTextColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 10),
-
-                      /// ✅ Rating + Hourly Rate
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+          /// ✅ INFO
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// ✅ Name + Rating Badge + Price
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    /// ✅ Name + Bio + Address
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /// ✅ Rating Badge with star
-                          const SizedBox(height: 6),
-
-                          /// ✅ Hourly Rate
+                          /// ✅ Instructor Name
                           Text(
-                            "£${instructor.hourlyRate}",
+                            "${instructor.user.firstName} ${instructor.user.lastName}",
                             style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Text(
-                            "per hour",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: ColorConstants.disabledColor,
-                            ),
+
+                          const SizedBox(height: 4),
+
+                          /// ✅ Address Row (Icon + text)
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  "${instructor.address}, ${instructor.city}",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: ColorConstants.disabledColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.red,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                instructor.rating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                "${instructor.experience.toString()} years",
+                                style: const TextStyle(
+                                  color: ColorConstants.primaryTextColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
 
-                  const SizedBox(height: 12),
+                    const SizedBox(width: 10),
 
-                  /// ✅ Buttons row
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          final provider = Provider.of<InstructorProvider>(
-                            context,
-                            listen: false,
-                          );
+                    /// ✅ Rating + Hourly Rate
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        /// ✅ Rating Badge with star
+                        const SizedBox(height: 6),
 
-                          // ✅ 1. Call availability API
-                          await provider.getWeeklyAvailabilityProvider(
-                            instructor.id,
-                          );
+                        /// ✅ Hourly Rate
+                        Text(
+                          "£${instructor.hourlyRate}",
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const Text(
+                          "per hour",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: ColorConstants.disabledColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
-                          // ✅ 2. After data is loaded → go to calendar screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (_) => CalendarBookingScreen(
-                                    availability: provider.weeklyAvailability!,
-                                  ),
-                            ),
-                          );
-                        },
-                        child: _actionButton("Book Session"),
-                      ),
-                      SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: () async {
-                          AppRoutes.push(
-                            context,
-                            RouteNames.bookInstructorPackageScreen,
-                            arguments: {'instructorId': instructor.id,
-                              'user':instructor.user,
-                              'ratings':instructor.rating,
-                              'hourlyRate':instructor.hourlyRate
-                            },
-                          );
-                        },
-                        child: _actionButton("Add Credits"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                const SizedBox(height: 12),
+
+                /// ✅ Buttons row
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        final provider = Provider.of<InstructorProvider>(
+                          context,
+                          listen: false,
+                        );
+
+                        // ✅ 1. Call availability API
+                        await provider.getWeeklyAvailabilityProvider(
+                          instructor.id,
+                        );
+
+                        // ✅ 2. After data is loaded → go to calendar screen
+                        AppRoutes.push(
+                          context,
+                          RouteNames.instructorDetailsScreen,
+                          arguments: {'instructorId': instructor.id},
+                        );
+                      },
+                      child: _actionButton("Book Session"),
+                    ),
+                    SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        AppRoutes.push(
+                          context,
+                          RouteNames.bookInstructorPackageScreen,
+                          arguments: {'instructorId': instructor.id,
+                            'user':instructor.user,
+                            'ratings':instructor.rating,
+                            'hourlyRate':instructor.hourlyRate
+                          },
+                        );
+                      },
+                      child: _actionButton("Add Credits"),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -2,10 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
+import 'package:link_learner/presentation/booking/model/booking_list_response.dart';
 import 'package:link_learner/presentation/checkout/model/calculate_price_model.dart';
 import 'package:link_learner/presentation/checkout/model/check_availablity_model.dart';
 import 'package:link_learner/presentation/checkout/model/create_booking_model.dart';
+import 'package:link_learner/presentation/checkout/model/package_credit_list_response.dart';
 import 'package:link_learner/presentation/checkout/model/paymnet_intent_model.dart';
+import 'package:link_learner/presentation/instructor/model/availablity_slot.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_package_model.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
@@ -103,6 +106,7 @@ class ApiCalling {
   }
 
 
+
   Future<LoginResponseModel> login({
     required String email,
     required String password,
@@ -120,12 +124,6 @@ class ApiCalling {
           SessionConstants.accessToken,
           accessToken,
         );
-
-        // Get FCM token
-        // String? firebaseToken = await _messaging.getToken();
-        // if (firebaseToken != null) {
-        //   await updateFirebaseToken(firebaseToken: firebaseToken);
-        // }
       }
       if (refreshToken != null) {
         await _sessionManager.setValue(
@@ -189,6 +187,15 @@ class ApiCalling {
     );
 
     return InstructorPackagesResponse.fromJson(res);
+  }
+
+  Future<AvailableSlotsResponse> getAvailableSlot(
+      String instructorId,String date) async {
+    final res = await _api.get(
+      "/v1/instructors/$instructorId/availability/slots?date=$date&duration=60&includeBuffers=false",
+    );
+
+    return AvailableSlotsResponse.fromJson(res);
   }
 
   Future<InstructorDetailResponse> getInstructorDetails(
@@ -260,6 +267,23 @@ class ApiCalling {
     }
   }
 
+  Future<PaymentIntentResponse> createPaymentIntentForPackage({
+    required String packageId,
+    required String instructorId,
+  }) async {
+    try {
+
+      final response = await _api.post(
+          ApiEndpoint.paymentForPackage,   // "/v1/payments/booking"
+          { "packageId": packageId,
+            "instructorId": instructorId}
+      );
+      return PaymentIntentResponse.fromJson(response);
+    } catch (e) {
+      throw Exception("Payment Intent Error: $e");
+    }
+  }
+
   Future<PaymentHistoryResponse> getPaymentHistory() async {
     final response = await _api.get(ApiEndpoint.paymentHistory);
     print(response);
@@ -288,5 +312,52 @@ class ApiCalling {
     }
   }
 
+  Future<PackageCreditListResponse> getBookingCredits(
+      String instructorId) async {
+    final res = await _api.get(
+      "/v1/bookings/credits?instructorId=$instructorId",
+    );
+    print(res);
+
+    return PackageCreditListResponse.fromJson(res);
+  }
+
+  Future<CreateBookingResponse> createBookingForCredits({
+    required String instructorId,
+    required String scheduledAt,
+    required int duration,
+    required String location,
+    required String notes,
+    required String packageId,
+    required bool usePackageCredit,
+  }) async {
+    try {
+      print(scheduledAt);
+
+      final response = await _api.post(
+          ApiEndpoint.createBooking,   // "/v1/bookings"
+          {
+            "instructorId": instructorId,
+            "scheduledAt":scheduledAt,
+            "duration": duration,
+            "location":location,
+            "notes": notes,
+            "usePackageCredit": usePackageCredit,
+            "packagePurchaseId":packageId
+          }
+      );
+
+      return CreateBookingResponse.fromJson(response);
+    } catch (e) {
+      throw Exception("Create Booking Error: $e");
+    }
+  }
+
+  Future<BookingListResponse> getBooking(String status) async {
+    final response = await _api.get(
+        "/v1/bookings?page=1&limit=20",
+    );
+    return BookingListResponse.fromJson(response);
+  }
 
 }

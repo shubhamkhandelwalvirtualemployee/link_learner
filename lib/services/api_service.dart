@@ -57,10 +57,36 @@ class ApiService {
         },
         onError: (DioException error, handler) async {
           final statusCode = error.response?.statusCode;
+          print("satus code$statusCode");
 
+          // ---------------- TOKEN EXPIRED LOGIC ----------------
+          if (statusCode == 401) {
+            final refreshed = await _refreshToken();
 
-          if (statusCode == 401 || statusCode == 403) {
+            if (refreshed) {
+              // Retry original request with the new token
+              final newToken =
+              await _sessionManager.getValue(SessionConstants.accessToken);
+
+              final RequestOptions requestOptions = error.requestOptions;
+              requestOptions.headers["Authorization"] = "Bearer $newToken";
+
+              final retryResponse = await _dio.request(
+                requestOptions.path,
+                data: requestOptions.data,
+                queryParameters: requestOptions.queryParameters,
+                options: Options(
+                  method: requestOptions.method,
+                  headers: requestOptions.headers,
+                ),
+              );
+
+              return handler.resolve(retryResponse);
+            }
+
+            // Refresh FAILED → Force logout
             await SessionManager().clearAll();
+
             AppRoutes.pushAndRemoveUntil(
               navigatorKey.currentContext!,
               RouteNames.loginScreen,
@@ -70,32 +96,25 @@ class ApiService {
             return handler.reject(
               DioException(
                 requestOptions: error.requestOptions,
-                error: "Unauthorized access. Please log in again.",
-                type: error.type,
-                response: error.response,
+                error: "Session expired. Please log in again.",
               ),
             );
           }
 
-          String errorMessage = "Something went wrong. Please try again.";
-          final data = error.response?.data;
+          // ---------------- OTHER ERRORS ----------------
+          String errMsg = "Something went wrong. Please try again.";
 
+          final data = error.response?.data;
           if (data is Map<String, dynamic>) {
-            if (data["errors"] != null) {
-              errorMessage = data["errors"].toString();
-            } else if (data["message"] != null) {
-              errorMessage = data["message"];
-            } else if (data["success"] == false) {
-              errorMessage = "Request failed.";
-            }
-          } else if (data is bool && data == false) {
-            errorMessage = "Request failed.";
+            errMsg = data["message"] ??
+                data["errors"]?.toString() ??
+                errMsg;
           }
 
           return handler.reject(
             DioException(
               requestOptions: error.requestOptions,
-              error: errorMessage,
+              error: errMsg,
               response: error.response,
               type: error.type,
             ),
@@ -203,4 +222,36 @@ class ApiService {
       throw Exception(e.error ?? e.message ?? "Unknown error");
     }
   }
+
+  Future<bool> _refreshToken() async {
+    final refreshToken =
+    await _sessionManager.getValue(SessionConstants.refreshToken);
+
+    if (refreshToken == null) return false;
+
+    try {
+      final res = await _dio.post(
+        "/v1/auth/refresh",
+        data: {
+          "refreshToken": refreshToken, // ← sent in request body
+        },
+      );
+      print(res);
+
+      final newAccess = res.data["data"]["accessToken"];
+      final newRefresh = res.data["data"]["refreshToken"];
+
+      if (newAccess != null) {
+        await _sessionManager.setValue(SessionConstants.accessToken, newAccess);
+      }
+      if (newRefresh != null) {
+        await _sessionManager.setValue(SessionConstants.refreshToken, newRefresh);
+      }
+      print("djfvndfm");
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }

@@ -27,21 +27,26 @@ import 'package:link_learner/widgets/asset_images.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
+
 String? fcmToken;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Stripe.publishableKey = StripeConstants.publishableKey;   // YOUR PUBLISHABLE KEY
   Stripe.merchantIdentifier = "merchant.com.linklearner"; // For Apple Pay
   await Stripe.instance.applySettings();
-   await Firebase.initializeApp();
-   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-     alert: true,
-     sound: true,
-     badge: true,
-   );
-   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    sound: true,
+    badge: true,
+  );
+
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  await Stripe.instance.applySettings();
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
@@ -72,26 +77,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initializeNotifications();
-    _handleIncomingLinks();
     _setupInternetListener();
   }
 
-  void _handleIncomingLinks() async {
-    // For app already opened
-    _appLinks.uriLinkStream.listen((Uri? uri) {
-      if (uri != null) _handleUri(uri);
-    });
-
-    // For cold start
-    final initialLink = await _appLinks.getInitialLink();
-    if (initialLink != null) {
-      _handleUri(initialLink);
-    }
-  }
-
-  void _handleUri(Uri uri) async {}
 
   void _handleForegroundNotification(RemoteMessage message) {
+    print('Foreground Notification: ${message.notification?.title}');
     print('Foreground Notification: ${message.notification?.title}');
     if (message.notification != null) {
       if (Platform.isIOS) {
@@ -116,20 +107,18 @@ class _MyAppState extends State<MyApp> {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      if (Platform.isIOS) {
-        _messaging.onTokenRefresh.listen((token) {
-          print("🔄 FCM Token Refreshed: $token");
-          fcmToken = token;
-        });
+      String? token;
 
-       // String? apnsToken = await _messaging.getAPNSToken();
-     //   print("📱 APNS Token: $apnsToken");
-
-        Future.delayed(const Duration(seconds: 3), () async {
-          fcmToken = await _messaging.getToken();
-          print("🎉 FCM Token (after delay): $fcmToken");
-        });
+      try {
+        token = await _messaging.getToken();
+      } catch (e) {
+        print("⚠️ FCM token failed, retrying...");
+        await Future.delayed(const Duration(seconds: 2));
+        token = await _messaging.getToken();
       }
+
+      fcmToken = token;
+      print("FCM Token: $fcmToken");
 
 
       // Firebase foreground notifications
@@ -178,6 +167,7 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
+
 
   // BACKGROUND NOTIFICATION
   void _handleBackgroundNotification(RemoteMessage message) {

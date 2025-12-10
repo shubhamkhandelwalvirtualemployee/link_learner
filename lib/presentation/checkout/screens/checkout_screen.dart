@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
+import 'package:link_learner/presentation/checkout/model/package_credit_list_response.dart';
 import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/weekly_available_model.dart';
@@ -29,6 +30,9 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
+  bool useCredits = false;
+  int selectedPackageIndex = 0;
+  int selectedCreditIndex = -1;  // -1 = not using credits
 
   @override
   void initState() {
@@ -39,6 +43,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         selectedDate: widget.selectedDate,
         startTime: widget.selectedSlot.startTime,
       );
+      Provider.of<CheckoutProvider>(context, listen: false).getBookingCreditProvider(widget.instructor.id);
     });
   }
 
@@ -79,7 +84,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
               _buildPriceSummary(provider),
 
             const SizedBox(height: 20),
-
+            if (provider.packageCreditListResponse != null &&
+                provider.packageCreditListResponse!.data.isNotEmpty)
+              _buildPaymentMethod(provider),
+            const SizedBox(height: 20),
             _buildConfirmButton(),
           ],
         ),
@@ -215,6 +223,128 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  Widget _buildPaymentMethod(CheckoutProvider provider) {
+    final response = provider.packageCreditListResponse;
+
+    if (response == null || response.data == null || response.data!.isEmpty) {
+      return SizedBox();
+    }
+
+    final creditsList = response.data!;
+    final priceData = provider.priceData;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: _box(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Payment Method",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 6),
+
+          // ---------------- AVAILABLE CREDITS ----------------
+          const Text("Available Credits",
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 12),
+
+          // ---------------- LIST OF CREDIT PACKAGES ----------------
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: creditsList.length,
+            itemBuilder: (_, index) {
+              final pkg = creditsList[index];
+              final isSelected = useCredits && selectedCreditIndex == index;
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    useCredits = true;
+                    selectedCreditIndex = index;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? ColorConstants.primaryColor
+                          : Colors.red.shade200,
+                      width: isSelected ? 2 : 1,
+                    ),
+                    color: isSelected
+                        ? ColorConstants.primaryColor.withOpacity(0.1)
+                        : Colors.red.shade50,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${pkg.lessonsIncluded} Sessions",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: ColorConstants.textColor,
+                          )),
+                      SizedBox(height: 4),
+                      Text(
+                        "${pkg.lessonsRemaining} of ${pkg.lessonsIncluded} sessions remaining",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // ---------------- PAY PER SESSION OPTION ----------------
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                useCredits = false;
+                selectedCreditIndex = -1;
+              });
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: !useCredits
+                      ? ColorConstants.primaryColor
+                      : Colors.red.shade200,
+                  width: !useCredits ? 2 : 1,
+                ),
+                color: !useCredits
+                    ? ColorConstants.primaryColor.withOpacity(0.1)
+                    : Colors.red.shade50,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Pay for session",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: ColorConstants.textColor)),
+                  SizedBox(height: 4),
+                  Text("€${priceData?.finalPrice ?? 0} per session",
+                      style: const TextStyle(fontSize: 12)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
   // -------------------------------------------------------------------
   // Confirm Button (Next Step)
   // -------------------------------------------------------------------
@@ -224,6 +354,54 @@ class _CheckoutPageState extends State<CheckoutPage> {
         height: 50,
         child: elevatedButton(
           onTap: () async {
+            if(useCredits){
+              final provider = Provider.of<CheckoutProvider>(context, listen: false);
+              final credits = provider.packageCreditListResponse!.data.first;
+              bool available = await provider.checkAvailability(
+                instructorId: widget.instructor.id,
+                selectedDate: widget.selectedDate,
+                startTime: widget.selectedSlot.startTime,
+              );
+              if (!available) {
+                final msg = provider.availabilityResponse?.data.message ?? "Slot unavailable";
+                final conflicts = provider.availabilityResponse?.data.conflictingBookings ?? [];
+
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text("Instructor Not Available"),
+                    content: Text("$msg\n\nConflicts: ${conflicts.join(", ")}"),
+                    actions: [
+                      TextButton(
+                        child: const Text("OK"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                );
+                return;
+              }
+              bool bookingOK = await provider.createBookingCredits(
+                instructorId: widget.instructor.id,
+                selectedDate: widget.selectedDate,
+                startTime: widget.selectedSlot.startTime,
+                location: locationController.text,
+                notes: notesController.text,
+                packageId: credits.id,
+                usePackageCredit: true,
+              );
+
+              if (!bookingOK) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(provider.bookingError ?? "Booking Failed")),
+                );
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Booking Completed Successfully!")),
+              );
+              AppRoutes.push(context, RouteNames.paymentSuccessScreen);
+            }else{
             final provider = Provider.of<CheckoutProvider>(context, listen: false);
 
             // 1️⃣ Check Availability First
@@ -293,7 +471,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               const SnackBar(content: Text("Payment Completed Successfully!")),
             );
             AppRoutes.push(context, RouteNames.paymentSuccessScreen);
-          },
+          }},
           title: "Confirm Booking",
           backgroundColor: ColorConstants.primaryColor,
         ),

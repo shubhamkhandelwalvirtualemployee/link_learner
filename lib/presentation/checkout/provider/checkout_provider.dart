@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:link_learner/presentation/checkout/model/calculate_price_model.dart';
 import 'package:link_learner/presentation/checkout/model/check_availablity_model.dart';
+import 'package:link_learner/presentation/checkout/model/package_credit_list_response.dart';
 import 'package:link_learner/services/api_calling.dart';
 
 class CheckoutProvider extends ChangeNotifier {
@@ -26,7 +27,7 @@ class CheckoutProvider extends ChangeNotifier {
   // ---------------------------------------------------------
   PriceData? priceData;
   CheckAvailabilityResponse? availabilityResponse;
-
+  PackageCreditListResponse? packageCreditListResponse;
   String? bookingId;
   double? finalPrice;
 
@@ -162,6 +163,56 @@ class CheckoutProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> createBookingCredits({
+    required String instructorId,
+    required DateTime selectedDate,
+    required String startTime,
+    required String location,
+    required String notes,
+    required String packageId,
+    required bool usePackageCredit,
+    int duration = 60,
+  }) async {
+    try {
+      print(startTime);
+      isLoading = true;
+      bookingError = null;
+      notifyListeners();
+      final hour = int.parse(startTime.split(":")[0]);
+      final minute = int.parse(startTime.split(":")[1]);
+      final scheduledAt = DateTime.utc(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        hour,
+        minute,
+      ).toIso8601String();
+
+      final res = await ApiCalling().createBookingForCredits(
+        instructorId: instructorId,
+        scheduledAt: scheduledAt,
+        duration: duration,
+        location: location,
+        notes: notes,
+        packageId: packageId,
+        usePackageCredit: usePackageCredit
+      );
+
+      bookingId = res.data.id;
+      finalPrice = (res.data.finalPrice as num).toDouble();
+
+      return true;
+
+    } catch (e) {
+      print(e);
+      bookingError = "Create Booking Failed: $e";
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // ---------------------------------------------------------
   // STEP 4 — CREATE PAYMENT INTENT (BACKEND)
   // ---------------------------------------------------------
@@ -219,5 +270,16 @@ class CheckoutProvider extends ChangeNotifier {
       stripePaymentError = "Stripe Payment Failed: $e";
       return false;
     }
+  }
+
+  Future<void> getBookingCreditProvider(String instructorId) async {
+
+    try {
+      final res = await ApiCalling().getBookingCredits(instructorId);
+      packageCreditListResponse = res;
+    } catch (e) {
+      debugPrint("Error fetching instructor detail: $e");
+    }
+    notifyListeners();
   }
 }

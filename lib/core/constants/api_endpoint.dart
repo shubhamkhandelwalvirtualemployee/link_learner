@@ -13,4 +13,6 @@ class ApiEndpoint {
   static const String paymentHistory = "/v1/payments/history";
   static const String checkAvailability = "/v1/bookings/check-availability";
   static const String refreshToken = "/v1/auth/refresh";
+  static const String bookingsCredits = "/v1/bookings/credits";
+  static const String paymentForPackage = "/v1/payments/package";
 }

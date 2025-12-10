@@ -1,4 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:intl/intl.dart';
+import 'package:link_learner/presentation/instructor/model/availablity_slot.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_package_model.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
@@ -20,8 +24,13 @@ class InstructorProvider extends ChangeNotifier {
   InstructorPackagesResponse? instructorPackagesResponse;
   bool isAvailabilityLoading = false;
   bool isInstructorPackageLoading = false;
-
+  String? paymentIntentError;
+  String? stripePaymentError;
   List<String> selectedSpecializations = [];
+  String? clientSecret;
+  String? paymentIntentId;
+  AvailableSlotsResponse? availableSlotsResponse;
+  bool isSlotsLoading = false;
 
   void toggleSpecialization(String spec) {
     if (selectedSpecializations.contains(spec)) {
@@ -31,6 +40,8 @@ class InstructorProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+
 
   void clearSpecializations() {
     selectedSpecializations.clear();
@@ -54,9 +65,12 @@ class InstructorProvider extends ChangeNotifier {
   DateTime? selectedDate;
   DateTime? weekStartDate;
 
-  void setSelectedDate(DateTime date) {
+  Future<void> setSelectedDate(String instructorId,DateTime date) async {
     selectedDate = date;
     notifyListeners();
+
+    final dateStr = DateFormat("yyyy-MM-dd").format(date);
+    await getAvailableSlotsProvider(instructorId, dateStr);
   }
 
   void setSelectedSlot(AvailabilitySlot slot) {
@@ -165,6 +179,23 @@ class InstructorProvider extends ChangeNotifier {
   }
 
 
+  Future<void> getAvailableSlotsProvider(
+      String instructorId, String date) async {
+    isSlotsLoading = true;
+    notifyListeners();
+
+    try {
+      final res = await ApiCalling().getAvailableSlot(instructorId, date);
+      availableSlotsResponse = res; // store data
+    } catch (e) {
+      debugPrint("Error fetching available slots: $e");
+    }
+
+    isSlotsLoading = false;
+    notifyListeners();
+  }
+
+
 
 
   Future<void> getWeeklyAvailabilityProvider(String instructorId) async {
@@ -187,7 +218,6 @@ class InstructorProvider extends ChangeNotifier {
 
   Future<void> getInstructorPackage(String instructorId) async {
     isInstructorPackageLoading = true;
-    notifyListeners();
 
     try {
       final res =
@@ -215,6 +245,63 @@ class InstructorProvider extends ChangeNotifier {
 
     isAvailabilityLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> createPaymentIntent(String instructorId, String packageId) async {
+    try {
+      isLoading = true;
+      paymentIntentError = null;
+      notifyListeners();
+
+      final response = await ApiCalling().createPaymentIntentForPackage(
+        packageId: packageId!,
+        instructorId: instructorId
+      );
+
+      clientSecret = response.data.clientSecret;
+      paymentIntentId = response.data.paymentIntentId;
+
+      return true;
+
+    } catch (e) {
+      paymentIntentError = "Payment Intent Error: $e";
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ---------------------------------------------------------
+  // STEP 5 — STRIPE PAYMENT
+  // ---------------------------------------------------------
+  Future<bool> makePayment() async {
+    try {
+      stripePaymentError = null;
+
+      if (clientSecret == null) {
+        stripePaymentError = "Client secret missing";
+        return false;
+      }
+
+      // 1. Initialize Stripe Sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret!,
+          merchantDisplayName: "Link Learner",
+          style: ThemeMode.system,
+        ),
+      );
+
+      // 2. Show Payment Sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      return true;
+
+    } catch (e) {
+      stripePaymentError = "Stripe Payment Failed: $e";
+      return false;
+    }
   }
 
 

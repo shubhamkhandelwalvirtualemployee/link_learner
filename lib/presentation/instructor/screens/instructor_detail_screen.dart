@@ -27,6 +27,8 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
       final provider = Provider.of<InstructorProvider>(context, listen: false);
       provider.getInstructorDetailProvider(widget.instructorId);
       provider.getWeeklyAvailabilityProvider(widget.instructorId);
+      final today = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      provider.getAvailableSlotsProvider(widget.instructorId, today);
     });
   }
 
@@ -344,7 +346,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                             const TextSpan(
                               text: "License Number: ",
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: ColorConstants.textColor,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -352,7 +354,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                             TextSpan(
                               text: instructor.rsaLicenseNumber,
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: ColorConstants.textColor,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -360,14 +362,14 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 2),
                       Text.rich(
                         TextSpan(
                           children: [
                             const TextSpan(
                               text: "Expiry: ",
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: ColorConstants.textColor,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -376,7 +378,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                               text: DateFormat('dd MMM yyyy')
                                   .format(DateTime.parse(instructor.licenseExpiryDate)),
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: ColorConstants.textColor,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -599,7 +601,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                 const SizedBox(height: 20),
 
                 // ---------- TIME SLOTS ----------
-                _buildTimeSlots(provider, availability),
+                _buildTimeSlots(provider),
               ],
             ),
           ),
@@ -680,7 +682,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                   provider.selectedDate!.year == day.year;
 
           return GestureDetector(
-            onTap: () => provider.setSelectedDate(day),
+            onTap: () => provider.setSelectedDate(widget.instructorId,day),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: 60,
@@ -728,39 +730,43 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
       ),
     );
   }
-  Widget _buildTimeSlots(
-      InstructorProvider provider,
-      Map<int, List<AvailabilitySlot>> availability,
-      ) {
-    final selectedDate = provider.selectedDate!;
-    final slots = availability[selectedDate.weekday % 7] ?? [];
 
-    final hourlySlots = slots.expand((slot) => generateHourlySlots(slot)).toList();
+  Widget _buildTimeSlots(InstructorProvider provider) {
+    final slots = provider.availableSlotsResponse?.data.slots ?? [];
 
-    if (hourlySlots.isEmpty) {
-      return const Text("No times available for this day");
+    if (provider.isSlotsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (slots.isEmpty) {
+      return const Text("No slots available for this date");
     }
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: hourlySlots.length,
+      itemCount: slots.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
         childAspectRatio: 2.9,
       ),
-      itemBuilder: (_, i) {
-        final slot = hourlySlots[i];
-        final isSelected =
-            provider.selectedSlot?.startTime == slot.startTime &&
-                provider.selectedSlot?.endTime == slot.endTime;
+      itemBuilder: (_, index) {
+        final slot = slots[index];
+        final isSelected = provider.selectedSlot?.startTime == slot.startTime;
 
         return GestureDetector(
-          onTap: () => provider.setSelectedSlot(slot),
+          onTap: () => provider.setSelectedSlot(
+            AvailabilitySlot(
+              id: "slot",
+              dayOfWeek: provider.selectedDate!.weekday,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+            ),
+          ),
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
+            duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: isSelected ? Colors.redAccent : Colors.white,
@@ -769,15 +775,6 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                 color: Colors.redAccent,
                 width: isSelected ? 2 : 1.2,
               ),
-              boxShadow: isSelected
-                  ? [
-                BoxShadow(
-                  color: Colors.redAccent.withOpacity(0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ]
-                  : [],
             ),
             alignment: Alignment.center,
             child: Text(
@@ -792,6 +789,7 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
       },
     );
   }
+
   String _weekdayShort(DateTime date) {
     return DateFormat("EEE").format(date).toUpperCase();
   }
