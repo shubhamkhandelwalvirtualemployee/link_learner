@@ -17,6 +17,7 @@ import 'package:link_learner/presentation/booking/provider/booking_provider.dart
 import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
 import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
+import 'package:link_learner/presentation/home/provider/home_provider.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
 import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
 import 'package:link_learner/presentation/profile/provider/change_password_provider.dart';
@@ -285,6 +286,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<ChangePasswordProvider>(create: (context) => ChangePasswordProvider(),),
         ChangeNotifierProvider<InstructorProvider>(create: (context) => InstructorProvider(),),
         ChangeNotifierProvider<CheckoutProvider>(create: (context) => CheckoutProvider(),),
+        ChangeNotifierProvider<HomeProvider>(create: (context) => HomeProvider(),),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,

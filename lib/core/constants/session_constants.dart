@@ -7,4 +7,5 @@ class SessionConstants {
   static const String userName = "userName";
   static const String userProfilePicture = "userProfilePicture";
   static const String userType = "userType";
+  static const String userEmail = "userEmail";
 }

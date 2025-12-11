@@ -8,6 +8,7 @@ import 'package:link_learner/presentation/checkout/model/check_availablity_model
 import 'package:link_learner/presentation/checkout/model/create_booking_model.dart';
 import 'package:link_learner/presentation/checkout/model/package_credit_list_response.dart';
 import 'package:link_learner/presentation/checkout/model/paymnet_intent_model.dart';
+import 'package:link_learner/presentation/home/model/dashboard_model.dart';
 import 'package:link_learner/presentation/instructor/model/availablity_slot.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_package_model.dart';
@@ -178,6 +179,12 @@ class ApiCalling {
     );
 
     return WeeklyAvailabilityResponse.fromJson(res);
+  }
+
+  Future<DashboardResponse> getDashboardStats() async {
+    final res = await _api.get("/v1/learners/dashboard/stats");
+    print(res);
+    return DashboardResponse.fromJson(res);
   }
 
   Future<InstructorPackagesResponse> getInstructorPackage(
@@ -354,10 +361,16 @@ class ApiCalling {
   }
 
   Future<BookingListResponse> getBooking(String status) async {
-    final response = await _api.get(
-        "/v1/bookings?page=1&limit=20",
-    );
+    String url = "/v1/bookings?page=1&limit=20";
+
+    // Add status only when it's NOT empty
+    if (status.isNotEmpty) {
+      url += "&status=$status";
+    }
+
+    final response = await _api.get(url);
     return BookingListResponse.fromJson(response);
   }
+
 
 }

@@ -14,24 +14,22 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      await provider.getProfile();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (context, profileProvider, child) {
         return Scaffold(
           backgroundColor: ColorConstants.whiteColor,
-          // appBar: AppBar(
-          //   title: const Text(
-          //     "Account",
-          //     style: TextStyle(
-          //       fontSize: 30,
-          //       fontWeight: FontWeight.bold,
-          //       color: ColorConstants.primaryTextColor,
-          //     ),
-          //   ),
-          //   backgroundColor: ColorConstants.whiteColor,
-          //   surfaceTintColor: ColorConstants.whiteColor,
-          // ),
           body: Container(
             padding: EdgeInsets.all(20),
             height: MediaQuery.of(context).size.height,
@@ -51,11 +49,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Icon(Icons.person_3_rounded),
                       ),
                       title: Text(
-                        "Alex Marker",
+                        profileProvider.profileResponse!.data.user.firstName,
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       subtitle: Text(
-                        "@alexmarker",
+                        profileProvider.profileResponse!.data.user.email,
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       trailing: IconButton(
@@ -69,82 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  // Stack(
-                  //   clipBehavior: Clip.none,
-                  //   alignment: Alignment.center,
-                  //   children: [
-                  //     // Profile Icon or Image
-                  //     Container(
-                  //       height: 150,
-                  //       width: 150,
-                  //       decoration: BoxDecoration(
-                  //         shape: BoxShape.circle,
-                  //         color: ColorConstants.containerAndFillColor,
-                  //       ),
-                  //       child:
-                  //           profileProvider.coverImage != null
-                  //               ? CircleAvatar(
-                  //                 backgroundColor: ColorConstants.whiteColor,
-                  //                 backgroundImage: FileImage(
-                  //                   profileProvider.coverImage!,
-                  //                 ),
-                  //               )
-                  //               : const Icon(
-                  //                 Icons.person_rounded,
-                  //                 size: 100,
-                  //                 color: ColorConstants.primaryColor,
-                  //               ),
-                  //     ),
-                  //     Positioned(
-                  //       top: 10,
-                  //       right: 15,
-                  //       child: GestureDetector(
-                  //         onTap: () {
-                  //           profileProvider.pickImage(context);
-                  //         },
-                  //         // Pick image on tap
-                  //         child: Container(
-                  //           padding: const EdgeInsets.all(4),
-                  //           decoration: const BoxDecoration(
-                  //             shape: BoxShape.circle,
-                  //             color: ColorConstants.primaryColor,
-                  //           ),
-                  //           child: const Icon(
-                  //             Icons.camera_alt,
-                  //             size: 16,
-                  //             color: ColorConstants.whiteColor,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   SizedBox(height: 20),
-                  ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      backgroundColor: ColorConstants.containerAndFillColor,
-                      child: Icon(
-                        Icons.favorite_border_rounded,
-                        color: ColorConstants.primaryColor,
-                      ),
-                    ),
-                    onTap: () {},
-
-                    title: Text(
-                      "Favourite",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: ColorConstants.disabledColor,
-                      size: 18,
-                    ),
-                  ),
-                  SizedBox(height: 10),
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
@@ -159,29 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     title: Text(
                       "Payment History",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: ColorConstants.disabledColor,
-                      size: 18,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      backgroundColor: ColorConstants.containerAndFillColor,
-                      child: Icon(
-                        Icons.list_rounded,
-                        color: ColorConstants.primaryColor,
-                      ),
-                    ),
-                    title: Text(
-                      "Booking List",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -219,29 +119,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 10),
                   ListTile(
                     dense: true,
-                    leading: CircleAvatar(
-                      backgroundColor: ColorConstants.containerAndFillColor,
-                      child: Icon(
-                        Icons.bookmarks_rounded,
-                        color: ColorConstants.primaryColor,
-                      ),
-                    ),
-                    title: Text(
-                      "Test booking",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: ColorConstants.disabledColor,
-                      size: 18,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  ListTile(
-                    dense: true,
                     onTap: (){
                       AppRoutes.push(context, RouteNames.changePasswordScreen);
                     },
@@ -254,29 +131,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     title: Text(
                       "Change Password",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: ColorConstants.disabledColor,
-                      size: 18,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  ListTile(
-                    dense: true,
-                    leading: CircleAvatar(
-                      backgroundColor: ColorConstants.containerAndFillColor,
-                      child: Icon(
-                        Icons.privacy_tip_rounded,
-                        color: ColorConstants.primaryColor,
-                      ),
-                    ),
-                    title: Text(
-                      "Setting & Privacy",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,

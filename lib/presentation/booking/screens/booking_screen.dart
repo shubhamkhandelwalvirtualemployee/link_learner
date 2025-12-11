@@ -14,19 +14,25 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
+
   final List<String> filterChips = [
     'All Bookings',
-    'Upcoming',
-    'Completed',
-    'Cancelled'
+    'PENDING',
+    'CONFIRMED',
+    'CANCELLED',
+    'COMPLETED',
+    'REJECTED'
   ];
 
   final List<String> filterApiValues = [
-    "", // All
-    "UPCOMING",
-    "COMPLETED",
+    "",            // All Bookings → empty status
+    "PENDING",
+    "CONFIRMED",
     "CANCELLED",
+    "COMPLETED",
+    "REJECTED",
   ];
+
 
   int selectedIndex = 0;
 

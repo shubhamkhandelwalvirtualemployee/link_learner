@@ -25,14 +25,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     Future.microtask(() async {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
-
       await provider.getProfile(); // fetch profile first
-
       final learner = provider.profileResponse?.data.user.learner;
-
-      setState(() {
-        _gender = null; // since gender isn’t in API yet
-      });
 
       // Sync dropdown selections from fetched data into provider state
       if (learner?.preferences != null) {
@@ -192,13 +186,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      _underlinedDropdown(
+                     /* _underlinedDropdown(
                         value: _gender,
                         items: const ["Male", "Female", "Other"],
                         hint: "Choose gender",
                         onChanged: (val) =>
                             setState(() => _gender = val),
-                      ),
+                      ),*/
                       const SizedBox(height: 24),
                       GestureDetector(
                         onTap: () => _pickDate(context, profileProvider.dateOfBirthController),
