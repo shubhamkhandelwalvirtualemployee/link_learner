@@ -72,7 +72,7 @@ class ApiCalling {
     try {
       final response = await _api.post(ApiEndpoint.resetPassword, {
         "email": email,
-        "callbackUrl": "http://localhost:3013",
+        "callbackUrl": "https://learner.l2l.ie",
       });
       return response;
     } catch (e) {

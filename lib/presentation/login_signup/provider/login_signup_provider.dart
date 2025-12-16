@@ -283,8 +283,7 @@ class LoginSignupProvider extends ChangeNotifier {
         _showSnackBar(context,response.message ?? "Invalid credentials");
       }
     } catch (e) {
-      _showSnackBar(context,"Login failed. Please try again.");
-      debugPrint("Login error: $e");
+      _showSnackBar(context,"$e");
     } finally {
       _isLoading = false;
       notifyListeners(); // ✅ restore UI

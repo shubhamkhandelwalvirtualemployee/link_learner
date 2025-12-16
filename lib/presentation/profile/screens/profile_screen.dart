@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
+import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
 import 'package:link_learner/presentation/profile/provider/profile_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -115,6 +116,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: ColorConstants.disabledColor,
                       size: 18,
                     ),
+                    onTap: (){
+                      AppRoutes.push(context, RouteNames.feedbackScreen);
+                    },
                   ),
                   SizedBox(height: 10),
                   ListTile(
@@ -164,6 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: ColorConstants.disabledColor,
                       size: 18,
                     ),
+                    onTap: (){
+                      AppRoutes.push(context, RouteNames.helpSupportScreen);
+                    },
                   ),
                   SizedBox(height: 10),
                   ListTile(
@@ -187,6 +194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: ColorConstants.disabledColor,
                       size: 18,
                     ),
+                    onTap: (){
+                      AppRoutes.push(context, RouteNames.aboutAppScreen);
+                    },
                   ),
                   SizedBox(height: 10),
                   ListTile(
@@ -199,6 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     onTap: (){
+                      Provider.of<LoginSignupProvider>(context, listen: false).clearTextFields();
                       SessionManager().clearAll().then((value) {
                         AppRoutes.pushAndRemoveUntil(
                           context,

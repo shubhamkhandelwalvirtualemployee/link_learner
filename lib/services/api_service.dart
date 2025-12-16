@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/api_urls.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
@@ -61,10 +62,26 @@ class ApiService {
 
           // ---------------- TOKEN EXPIRED LOGIC ----------------
           if (statusCode == 401) {
+            final requestPath = error.requestOptions.path;
+
+            // ❌ CASE 1: Login API → invalid credentials
+            if (requestPath.contains(ApiEndpoint.login)) {
+              // Just forward the error, NO redirect, NO refresh
+              return handler.reject(
+                DioException(
+                  requestOptions: error.requestOptions,
+                  error: error.response?.data?["message"] ??
+                      "Invalid email or password",
+                  response: error.response,
+                  type: error.type,
+                ),
+              );
+            }
+
+            // 🔄 CASE 2: Token expired → try refresh
             final refreshed = await _refreshToken();
 
             if (refreshed) {
-              // Retry original request with the new token
               final newToken =
               await _sessionManager.getValue(SessionConstants.accessToken);
 
@@ -84,13 +101,13 @@ class ApiService {
               return handler.resolve(retryResponse);
             }
 
-            // Refresh FAILED → Force logout
-            await SessionManager().clearAll();
+            // ❌ CASE 3: Refresh failed → force logout
+            await _sessionManager.clearAll();
 
             AppRoutes.pushAndRemoveUntil(
               navigatorKey.currentContext!,
               RouteNames.loginScreen,
-                  (Route<dynamic> route) => false,
+                  (route) => false,
             );
 
             return handler.reject(
@@ -100,6 +117,7 @@ class ApiService {
               ),
             );
           }
+
 
           // ---------------- OTHER ERRORS ----------------
           String errMsg = "Something went wrong. Please try again.";

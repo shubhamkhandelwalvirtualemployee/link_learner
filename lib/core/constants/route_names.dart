@@ -20,4 +20,7 @@ class RouteNames {
   static const String bookInstructorPackageScreen = "/BookInstructorPackageScreen";
   static const String checkoutPage = "/CheckoutPage";
   static const String paymentHistoryScreen = "/PaymentHistoryScreen";
+  static const String aboutAppScreen= "/AboutAppScreen";
+  static const String helpSupportScreen= "/HelpSupportScreen";
+  static const String feedbackScreen= "/FeedbackScreen";
 }

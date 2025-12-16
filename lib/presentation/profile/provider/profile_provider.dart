@@ -222,4 +222,14 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> submitFeedback({
+    required String name,
+    required String email,
+    required String description,
+    required String instructor,
+  }) async {
+    notifyListeners();
+    await Future.delayed(const Duration(seconds: 2)); // API call here
+    notifyListeners();
+  }
 }

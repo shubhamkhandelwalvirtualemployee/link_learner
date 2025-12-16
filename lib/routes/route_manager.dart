@@ -4,12 +4,10 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/main.dart';
 import 'package:link_learner/presentation/booking/screens/booking_details_screen.dart';
 import 'package:link_learner/presentation/booking_and_search/screens/buy_booking_screen.dart';
-import 'package:link_learner/presentation/booking_and_search/screens/checkout_screen.dart';
 import 'package:link_learner/presentation/checkout/screens/payment_failed_screen.dart';
 import 'package:link_learner/presentation/checkout/screens/payment_success_screen.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/screens/bottom_nav_bar_screens.dart';
 import 'package:link_learner/presentation/checkout/screens/checkout_screen.dart';
-import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/presentation/instructor/screens/book_lesson_screen.dart';
 import 'package:link_learner/presentation/instructor/screens/book_package_page.dart';
@@ -20,6 +18,9 @@ import 'package:link_learner/presentation/login_signup/screens/login_screen.dart
 import 'package:link_learner/presentation/login_signup/screens/mobile_verify_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/sign_up_screen.dart';
 import 'package:link_learner/presentation/login_signup/screens/verify_phone.dart';
+import 'package:link_learner/presentation/profile/screens/about_app_screen.dart';
+import 'package:link_learner/presentation/profile/screens/feedback_screen.dart';
+import 'package:link_learner/presentation/profile/screens/help_support_screen.dart';
 import 'package:link_learner/presentation/profile/screens/payment_history_screen.dart';
 import 'package:link_learner/presentation/splash/screens/splash_screen.dart';
 import 'package:link_learner/presentation/profile/screens/change_password_screen.dart';
@@ -56,6 +57,9 @@ class RouteManager {
       RouteNames.changePasswordScreen: (context) => ChangePasswordScreen(),
       RouteNames.instructorListScreen: (context) => InstructorListScreen(),
       RouteNames.bookLessonScreen: (context) => BookLessonScreen(),
+      RouteNames.aboutAppScreen: (context) => AboutAppScreen(),
+      RouteNames.helpSupportScreen: (context) => HelpSupportScreen(),
+      RouteNames.feedbackScreen: (context) => FeedbackScreen(),
       RouteNames.instructorDetailsScreen: (context) {
         final args = settings.arguments as Map<String, dynamic>;
 
