@@ -35,7 +35,6 @@ class TransactionData {
   final String currency;
   final String status;
   final String? stripePaymentId;     // 👈 FIXED
-  final String? metadata;            // 👈 FIXED
   final String createdAt;
   final String? processedAt;         // 👈 FIXED
   final String? failedAt;            // 👈 FIXED
@@ -53,7 +52,6 @@ class TransactionData {
     required this.currency,
     required this.status,
     required this.stripePaymentId,
-    required this.metadata,
     required this.createdAt,
     required this.processedAt,
     required this.failedAt,
@@ -73,7 +71,6 @@ class TransactionData {
       currency: json['currency'] ?? "",
       status: json['status'] ?? "",
       stripePaymentId: json['stripePaymentId'],       // nullable
-      metadata: json['metadata'],                     // nullable
       createdAt: json['createdAt'] ?? "",
       processedAt: json['processedAt'],               // nullable
       failedAt: json['failedAt'],                     // nullable

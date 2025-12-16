@@ -259,6 +259,8 @@ class LoginSignupProvider extends ChangeNotifier {
 
   Future<void> login(BuildContext context) async {
     _isLoading = true;
+    notifyListeners(); // ✅ IMPORTANT
+
     try {
       final response = await ApiCalling().login(
         email: _loginEmailController.text.trim(),
@@ -267,27 +269,25 @@ class LoginSignupProvider extends ChangeNotifier {
 
       if (response.success == true) {
         _loginResponseModel.data = response.data;
-        commonSnackBar(
-          "${response.message}",
-          color: ColorConstants.primaryColor,
-        );
+
+        _showSnackBar(context,response.message ?? "Login successful");
+
+        if (!context.mounted) return;
+
         AppRoutes.pushAndRemoveUntil(
           context,
           RouteNames.bottomNavBarScreens,
-          (Route<dynamic> route) => false,
+              (route) => false,
         );
       } else {
-        commonSnackBar(
-          "${response.message}",
-          color: ColorConstants.primaryColor,
-        );
+        _showSnackBar(context,response.message ?? "Invalid credentials");
       }
     } catch (e) {
-      print("e$e");
-      commonSnackBar('Sign up error: $e', color: ColorConstants.primaryColor);
+      _showSnackBar(context,"Login failed. Please try again.");
+      debugPrint("Login error: $e");
     } finally {
       _isLoading = false;
-      notifyListeners();
+      notifyListeners(); // ✅ restore UI
     }
   }
 
@@ -320,5 +320,16 @@ class LoginSignupProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void _showSnackBar(BuildContext context, String message) {
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+  }
+
 
 }

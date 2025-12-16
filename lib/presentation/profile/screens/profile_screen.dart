@@ -49,11 +49,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Icon(Icons.person_3_rounded),
                       ),
                       title: Text(
-                        profileProvider.profileResponse!.data.user.firstName,
+                        profileProvider.profileResponse?.data?.user?.firstName ?? '',
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       subtitle: Text(
-                        profileProvider.profileResponse!.data.user.email,
+                        profileProvider.profileResponse?.data?.user?.email ?? '',
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       trailing: IconButton(

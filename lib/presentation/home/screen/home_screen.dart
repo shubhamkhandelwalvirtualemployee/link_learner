@@ -60,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Row(
                           children: [
-                             Text(
-                              "Hi, ${homeProvider.profileResponse!.data.user.firstName}",
+                            Text(
+                              "Hi, ${homeProvider.profileResponse?.data?.user?.firstName ?? ''}",
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
