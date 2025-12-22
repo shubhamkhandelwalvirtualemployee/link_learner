@@ -35,10 +35,8 @@ class HomeProvider extends ChangeNotifier {
   Future<void> getProfile() async {
     try {
       isLoading = true;
-
       final response = await _api.get(ApiEndpoint.getProfile);
       profileResponse = ProfileResponse.fromJson(response);
-
       notifyListeners();
     } catch (e) {
       rethrow;

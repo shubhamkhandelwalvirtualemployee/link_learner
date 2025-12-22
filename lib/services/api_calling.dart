@@ -345,10 +345,11 @@ class ApiCalling {
           "packagePurchaseId": packageId,
         },
       );
+      print(response);
 
       return CreateBookingResponse.fromJson(response);
     } catch (e) {
-      throw Exception("Create Booking Error: $e");
+      throw Exception("Create Booking Error test: $e");
     }
   }
 

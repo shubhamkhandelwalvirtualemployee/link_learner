@@ -16,19 +16,19 @@ class BookingProvider extends ChangeNotifier {
 
   /// Fetch Booking List
   Future<void> fetchBookings({String status = ""}) async {
-    try {
-      isLoading = true;
+    //try {
+     // isLoading = true;
       notifyListeners();
       selectedStatus = status;
       final response = await ApiCalling().getBooking(status);
       print(response.bookings[0].instructor);
       bookings = response.bookings;
-    } catch (e) {
+   /* } catch (e) {
       print("Booking error: $e");
     } finally {
       isLoading = false;
       notifyListeners();
-    }
+    }*/
   }
 
   Future<bool> createPaymentIntent(String bookingId) async {

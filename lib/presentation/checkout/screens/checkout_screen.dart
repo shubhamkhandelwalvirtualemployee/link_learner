@@ -440,19 +440,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                 showDialog(
                   context: context,
-                  builder:
-                      (_) => AlertDialog(
-                        title: const Text("Instructor Not Available"),
-                        content: Text(
-                          "$msg\n\nConflicts: ${conflicts.join(", ")}",
-                        ),
-                        actions: [
-                          TextButton(
-                            child: const Text("OK"),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
+                  builder: (_) {
+                    final conflictText = conflicts.isNotEmpty
+                        ? conflicts.map((c) => c.displayText).join("\n")
+                        : "No details available";
+
+                    return AlertDialog(
+                      title: const Text(
+                        "Instructor Not Available",
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
+                      content: Text(
+                        "$msg\n\nConflicting bookings:\n$conflictText",
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    );
+                  },
                 );
                 return;
               }

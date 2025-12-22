@@ -28,11 +28,11 @@ class CreateBookingData {
   final String scheduledAt;
   final int duration;
 
-  final double basePrice;
-  final double peakSurcharge;
-  final double weekendSurcharge;
-  final double demandSurcharge;
-  final double finalPrice;
+  final double? basePrice;
+  final double? peakSurcharge;
+  final double? weekendSurcharge;
+  final double? demandSurcharge;
+  final double? finalPrice;
 
   final String? paymentIntentId;
   final String paymentStatus;
@@ -93,18 +93,15 @@ class CreateBookingData {
       status: json['status'],
       scheduledAt: json['scheduledAt'],
       duration: json['duration'],
-
-      basePrice: (json['basePrice'] as num).toDouble(),
-      peakSurcharge: (json['peakSurcharge'] as num).toDouble(),
-      weekendSurcharge: (json['weekendSurcharge'] as num).toDouble(),
-      demandSurcharge: (json['demandSurcharge'] as num).toDouble(),
-      finalPrice: (json['finalPrice'] as num).toDouble(),
-
+      basePrice: (json['basePrice'] as num?)?.toDouble()??0.0,
+      peakSurcharge: (json['peakSurcharge'] as num?)?.toDouble()??0.0,
+      weekendSurcharge: (json['weekendSurcharge'] as num?)?.toDouble()??0.0,
+      demandSurcharge: (json['demandSurcharge'] as num?)?.toDouble()??0.0,
+      finalPrice: (json['finalPrice'] as num?)?.toDouble()??0.0,
       paymentIntentId: json['paymentIntentId'],
       paymentStatus: json['paymentStatus'],
       paidAt: json['paidAt'],
       usedCredit: json['usedCredit'],
-
       location: json['location'],
       notes: json['notes'],
       lessonNotes: json['lessonNotes'],
@@ -142,9 +139,9 @@ class Instructor {
   final String id;
   final String userId;
   final User user;
-  final double hourlyRate;
+  final double? hourlyRate;
   final String city;
-  final double rating;
+  final double? rating;
 
   Instructor({
     required this.id,
@@ -160,9 +157,9 @@ class Instructor {
       id: json['id'],
       userId: json['userId'],
       user: User.fromJson(json['user']),
-      hourlyRate: (json['hourlyRate'] as num).toDouble(),
+      hourlyRate: (json['hourlyRate'] as num?)?.toDouble()??0.0,
       city: json['city'],
-      rating: (json['rating'] as num).toDouble(),
+      rating: (json['rating'] as num?)?.toDouble()??0.0,
     );
   }
 }

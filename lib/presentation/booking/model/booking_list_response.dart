@@ -490,7 +490,7 @@ class PackageModel {
   final String id;
   final String instructorId;
   final String name;
-  final String description;
+  final String? description;
   final int lessonCount;
   final double pricePerLesson;
   final double totalPrice;
@@ -502,7 +502,7 @@ class PackageModel {
     required this.id,
     required this.instructorId,
     required this.name,
-    required this.description,
+     this.description,
     required this.lessonCount,
     required this.pricePerLesson,
     required this.totalPrice,
@@ -516,7 +516,7 @@ class PackageModel {
       id: json['id'],
       instructorId: json['instructorId'],
       name: json['name'],
-      description: json['description'],
+      description: json['description']??"",
       lessonCount: json['lessonCount'],
       pricePerLesson: (json['pricePerLesson'] ?? 0).toDouble(),
       totalPrice: (json['totalPrice'] ?? 0).toDouble(),

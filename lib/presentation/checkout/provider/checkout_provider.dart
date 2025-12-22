@@ -204,10 +204,9 @@ class CheckoutProvider extends ChangeNotifier {
         packageId: packageId,
         usePackageCredit: usePackageCredit,
       );
+      print(res);
 
       bookingId = res.data.id;
-      finalPrice = (res.data.finalPrice as num).toDouble();
-
       return true;
     } catch (e) {
       print(e);
