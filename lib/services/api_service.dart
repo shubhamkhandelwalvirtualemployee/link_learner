@@ -1,5 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/api_urls.dart';
 import 'package:link_learner/core/constants/route_names.dart';
@@ -10,8 +12,10 @@ import 'package:link_learner/routes/app_routes.dart';
 
 class ApiService {
   late final Dio _dio;
-  // bool _isRefreshingToken = false;
   final SessionManager _sessionManager = SessionManager();
+  bool _isRefreshing = false;
+  final List<Function()> _pendingRequests = [];
+  bool _hasLoggedOut = false;
 
   ApiService() {
     String baseUrl = ApiUrls.baseUrl;
@@ -64,69 +68,77 @@ class ApiService {
           if (statusCode == 401) {
             final requestPath = error.requestOptions.path;
 
-            // ❌ CASE 1: Login API → invalid credentials
+            // ❌ Login API → don't refresh
             if (requestPath.contains(ApiEndpoint.login)) {
-              // Just forward the error, NO redirect, NO refresh
-              return handler.reject(
-                DioException(
-                  requestOptions: error.requestOptions,
-                  error: error.response?.data?["message"] ??
-                      "Invalid email or password",
-                  response: error.response,
-                  type: error.type,
-                ),
-              );
+              return handler.reject(error);
             }
 
-            // 🔄 CASE 2: Token expired → try refresh
-            final refreshed = await _refreshToken();
+            // 🔒 IF refresh already in progress → QUEUE request
+            if (_isRefreshing) {
+              final completer = Completer<Response>();
 
-            if (refreshed) {
-              final newToken =
-              await _sessionManager.getValue(SessionConstants.accessToken);
+              _pendingRequests.add(() async {
+                try {
+                  final newToken = await _sessionManager.getValue(
+                    SessionConstants.accessToken,
+                  );
 
-              final RequestOptions requestOptions = error.requestOptions;
-              requestOptions.headers["Authorization"] = "Bearer $newToken";
+                  error.requestOptions.headers['Authorization'] =
+                      'Bearer $newToken';
 
-              final retryResponse = await _dio.request(
-                requestOptions.path,
-                data: requestOptions.data,
-                queryParameters: requestOptions.queryParameters,
-                options: Options(
-                  method: requestOptions.method,
-                  headers: requestOptions.headers,
-                ),
+                  final retryResponse = await _dio.fetch(error.requestOptions);
+                  completer.complete(retryResponse);
+                } catch (e) {
+                  completer.completeError(e);
+                }
+              });
+
+              return completer.future
+                  .then(handler.resolve)
+                  .catchError(handler.reject);
+            }
+
+            // 🚀 START refresh
+            _isRefreshing = true;
+
+            try {
+              final refreshed = await _refreshToken();
+
+              if (!refreshed) {
+                await _forceLogout();
+                return handler.reject(error);
+              }
+              final queuedRequests = List<Function()>.from(_pendingRequests);
+              _pendingRequests.clear();
+
+              for (final retry in queuedRequests) {
+                retry();
+              }
+
+              // 🔁 Retry current request
+              final newToken = await _sessionManager.getValue(
+                SessionConstants.accessToken,
               );
 
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newToken';
+
+              final retryResponse = await _dio.fetch(error.requestOptions);
               return handler.resolve(retryResponse);
+            } catch (e) {
+              await _forceLogout();
+              return handler.reject(error);
+            } finally {
+              _isRefreshing = false;
             }
-
-            // ❌ CASE 3: Refresh failed → force logout
-            await _sessionManager.clearAll();
-
-            AppRoutes.pushAndRemoveUntil(
-              navigatorKey.currentContext!,
-              RouteNames.loginScreen,
-                  (route) => false,
-            );
-
-            return handler.reject(
-              DioException(
-                requestOptions: error.requestOptions,
-                error: "Session expired. Please log in again.",
-              ),
-            );
           }
-
 
           // ---------------- OTHER ERRORS ----------------
           String errMsg = "Something went wrong. Please try again.";
 
           final data = error.response?.data;
           if (data is Map<String, dynamic>) {
-            errMsg = data["message"] ??
-                data["errors"]?.toString() ??
-                errMsg;
+            errMsg = data["message"] ?? data["errors"]?.toString() ?? errMsg;
           }
 
           return handler.reject(
@@ -142,6 +154,19 @@ class ApiService {
     );
   }
 
+  Future<void> _forceLogout() async {
+    if (_hasLoggedOut) return;
+    _hasLoggedOut = true;
+
+    await _sessionManager.clearAll();
+
+    AppRoutes.pushAndRemoveUntil(
+      navigatorKey.currentContext!,
+      RouteNames.loginScreen,
+      (route) => false,
+    );
+  }
+
   // GET
   Future<dynamic> get(String path, [Map<String, String>? headers]) async {
     try {
@@ -153,31 +178,90 @@ class ApiService {
   }
 
   // POST
-  Future<dynamic> post(
-    String path,
-    dynamic data, {
-    Map<String, String>? headers,
-    ProgressCallback? onSendProgress,
-  }) async {
+  Future<dynamic> post(String path, dynamic data) async {
     try {
-      Options options = Options(
-        headers: headers,
-        contentType:
-            (data is FormData)
-                ? Headers.multipartFormDataContentType
-                : Headers.jsonContentType,
-      );
+      dynamic requestBody;
+      bool isMultipart = false;
 
+      // -----------------------------------------------------
+      // CASE 1: Caller already passed FormData
+      // -----------------------------------------------------
+      if (data is FormData) {
+        requestBody = data;
+        isMultipart = true;
+      }
+      // -----------------------------------------------------
+      // CASE 2: Caller passed a Map (dynamic or typed)
+      // -----------------------------------------------------
+      else if (data is Map) {
+        // Convert dynamic map to <String, dynamic>
+        final Map<String, dynamic> fixedMap = data.map(
+          (key, value) => MapEntry(key.toString(), value),
+        );
+
+        // Prepare new processed map
+        final processed = <String, dynamic>{};
+
+        for (final entry in fixedMap.entries) {
+          if (entry.value is File) {
+            isMultipart = true;
+            processed[entry.key] = await MultipartFile.fromFile(
+              (entry.value as File).path,
+              filename: (entry.value as File).path.split('/').last,
+            );
+          } else {
+            processed[entry.key] = entry.value;
+          }
+        }
+
+        requestBody = isMultipart ? FormData.fromMap(processed) : processed;
+      }
+      // -----------------------------------------------------
+      // CASE 3: Unknown type (not allowed)
+      // -----------------------------------------------------
+      else {
+        throw Exception("🚫 Unsupported POST body type: ${data.runtimeType}");
+      }
+
+      // -----------------------------------------------------
+      // DEBUG LOG
+      // -----------------------------------------------------
+      print("🔥 FINAL BODY SENT TO SERVER:");
+
+      if (requestBody is FormData) {
+        for (var f in requestBody.fields) {
+          print("Field: ${f.key} = ${f.value}");
+        }
+        for (var f in requestBody.files) {
+          print("File: ${f.key} => ${f.value.filename}");
+        }
+      } else {
+        print(requestBody);
+      }
+
+      // -----------------------------------------------------
+      // SEND REQUEST
+      // -----------------------------------------------------
       final response = await _dio.post(
         path,
-        data: data,
-        options: options,
-        onSendProgress: onSendProgress,
+        data: requestBody,
+        options: Options(
+          contentType:
+              isMultipart
+                  ? Headers.multipartFormDataContentType
+                  : Headers.jsonContentType,
+        ),
       );
+
+      if (response.data is String &&
+          response.data.startsWith("<!DOCTYPE html")) {
+        throw Exception("Invalid response — received HTML instead of JSON");
+      }
 
       return response.data;
     } on DioException catch (e) {
-      throw Exception(e.error ?? e.message ?? "Unknown error");
+      print("❗ POST Error Response: ${e.response?.data}");
+      throw Exception(e.response?.data ?? e.message ?? "Unknown POST error");
     }
   }
 
@@ -242,19 +326,24 @@ class ApiService {
   }
 
   Future<bool> _refreshToken() async {
-    final refreshToken =
-    await _sessionManager.getValue(SessionConstants.refreshToken);
+    final refreshToken = await _sessionManager.getValue(
+      SessionConstants.refreshToken,
+    );
 
     if (refreshToken == null) return false;
 
     try {
-      final res = await _dio.post(
-        "/v1/auth/refresh",
-        data: {
-          "refreshToken": refreshToken, // ← sent in request body
-        },
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: ApiUrls.baseUrl,
+          contentType: Headers.jsonContentType,
+        ),
       );
-      print(res);
+
+      final res = await dio.post(
+        ApiEndpoint.refreshToken,
+        data: {"refreshToken": refreshToken},
+      );
 
       final newAccess = res.data["data"]["accessToken"];
       final newRefresh = res.data["data"]["refreshToken"];
@@ -263,13 +352,15 @@ class ApiService {
         await _sessionManager.setValue(SessionConstants.accessToken, newAccess);
       }
       if (newRefresh != null) {
-        await _sessionManager.setValue(SessionConstants.refreshToken, newRefresh);
+        await _sessionManager.setValue(
+          SessionConstants.refreshToken,
+          newRefresh,
+        );
       }
-      print("djfvndfm");
+
       return true;
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }
-
 }

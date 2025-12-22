@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
-import 'package:link_learner/presentation/booking_and_search/widgets/search_bottom_sheet.dart';
+import 'package:link_learner/core/utils/search_bottom_sheet.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';

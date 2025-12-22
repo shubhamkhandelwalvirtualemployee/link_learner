@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // ✅ for date formatting
 import 'package:link_learner/core/constants/api_endpoint.dart';
@@ -62,6 +63,8 @@ class ProfileProvider extends ChangeNotifier {
   // --- Image handling ---
   File? _coverImage;
   File? get coverImage => _coverImage;
+  String? _profileImageUrl;
+  String? get profileImageUrl => _profileImageUrl;
 
   void setMobileNumber(String number) {
     _phoneController.text = number;
@@ -118,6 +121,7 @@ class ProfileProvider extends ChangeNotifier {
       _lastNameController.text = user.lastName;
       _emailController.text = user.email;
       _phoneController.text = user.phone ?? '';
+      _profileImageUrl = user.avatar??"";
 
       // ✅ Format date for UI (dd-MMM-yyyy)
       if (learner?.dateOfBirth != null && learner!.dateOfBirth!.isNotEmpty) {
@@ -139,7 +143,6 @@ class ProfileProvider extends ChangeNotifier {
       _emergencyContactController.text = learner?.emergencyContact ?? '';
       _goalsController.text = learner?.goals ?? '';
       _experienceController.text = learner?.experience ?? '';
-
       _selectedTransmissionType = learner?.preferences?.transmissionType ?? 'Manual';
       _selectedPreferenceTime = learner?.preferences?.preferredTime ?? 'Evenings';
 
@@ -153,7 +156,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // --- Update profile ---
-  Future<bool> updateProfile() async {
+  /*Future<bool> updateProfile() async {
     try {
       _setLoading(true);
 
@@ -171,7 +174,6 @@ class ProfileProvider extends ChangeNotifier {
         "firstName": _firstNameController.text.trim(),
         "lastName": _lastNameController.text.trim(),
         "phone": _phoneController.text.trim(),
-        "avatar": _coverImage,
         "dateOfBirth": formattedDob,
         "address": _addressController.text.trim(),
         "city": _cityController.text.trim(),
@@ -203,7 +205,61 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }*/
+  Future<bool> updateProfile() async {
+    try {
+      _setLoading(true);
+      String? formattedDob;
+      if (_dateOfBirthController.text.isNotEmpty) {
+        try {
+          final parsed = DateFormat('dd-MMM-yyyy').parse(_dateOfBirthController.text);
+          formattedDob = DateFormat('yyyy-MM-dd').format(parsed); // ✅ convert back for API
+        } catch (_) {
+          formattedDob = _dateOfBirthController.text;
+        }
+      }
+
+      /// BUILD FORM DATA SAFELY
+      final formData = FormData.fromMap({
+        "firstName": _firstNameController.text.trim(),
+        "lastName": _lastNameController.text.trim(),
+        "phone": _phoneController.text.trim(),
+        "dateOfBirth": formattedDob,
+        "address": _addressController.text.trim(),
+        "city": _cityController.text.trim(),
+        "county": _countyController.text.trim(),
+        "postcode": _postcodeController.text.trim(),
+        "licenseNumber": _licenseNumberController.text.trim(),
+        "emergencyContact": _emergencyContactController.text.trim(),
+        "goals": _goalsController.text.trim(),
+        "experience": _experienceController.text.trim(),
+        "preferences": {
+          "transmissionType": _selectedTransmissionType,
+          "preferredTime": _selectedPreferenceTime,
+        }
+      });
+
+      if (coverImage != null) {
+        formData.files.add(
+          MapEntry(
+            "avatar",
+            await MultipartFile.fromFile(coverImage!.path),
+          ),
+        );
+      }
+
+      final res = await _api.put(ApiEndpoint.updateProfile, formData);
+      print("✅ Update profile response: $res");
+
+      return true;
+    } catch (e) {
+      print("❌ Error updating profile: $e");
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
   }
+
 
   Future<void> loadPaymentHistory() async {
     try {

@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       size: 18,
                     ),
                   ),
-                  SizedBox(height: 10),
+                 /* SizedBox(height: 10),
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
@@ -119,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: (){
                       AppRoutes.push(context, RouteNames.feedbackScreen);
                     },
-                  ),
+                  ),*/
                   SizedBox(height: 10),
                   ListTile(
                     dense: true,

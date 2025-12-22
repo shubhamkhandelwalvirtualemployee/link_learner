@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:link_learner/presentation/booking/model/booking_Detail_response.dart';
 import 'package:link_learner/presentation/booking/model/booking_list_response.dart';
 import 'package:link_learner/services/api_calling.dart';
-
 
 class BookingProvider extends ChangeNotifier {
   bool isLoading = false;
@@ -12,6 +12,7 @@ class BookingProvider extends ChangeNotifier {
   String? stripePaymentError;
   String? clientSecret;
   String? paymentIntentId;
+  BookingDetail? bookingDetail;
 
   /// Fetch Booking List
   Future<void> fetchBookings({String status = ""}) async {
@@ -43,7 +44,6 @@ class BookingProvider extends ChangeNotifier {
       paymentIntentId = response.data.paymentIntentId;
 
       return true;
-
     } catch (e) {
       paymentIntentError = "Payment Intent Error: $e";
       return false;
@@ -78,10 +78,61 @@ class BookingProvider extends ChangeNotifier {
       await Stripe.instance.presentPaymentSheet();
 
       return true;
-
     } catch (e) {
       stripePaymentError = "Stripe Payment Failed: $e";
       return false;
+    }
+  }
+
+  Future<void> fetchBookingDetail(String bookingId) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final response = await ApiCalling().getBookingDetails(bookingId);
+      bookingDetail = response.data;
+    } catch (e) {
+      print("❌ Booking detail error: $e");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> submitReview({
+    required String bookingId,
+    required int punctualityRating,
+    required int communicationRating,
+    required int teachingQualityRating,
+    required int patienceRating,
+    required int vehicleConditionRating,
+    String? comment,
+    required bool isPublic,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final body = {
+        "bookingId": bookingId,
+        "punctualityRating": punctualityRating,
+        "communicationRating": communicationRating,
+        "teachingQualityRating": teachingQualityRating,
+        "patienceRating": patienceRating,
+        "vehicleConditionRating": vehicleConditionRating,
+        "comment": comment,
+        "isPublic": isPublic,
+      };
+
+      await ApiCalling().submitReview(body);
+      await fetchBookings();
+      return true;
+    } catch (e) {
+      debugPrint("❌ Submit review error: $e");
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

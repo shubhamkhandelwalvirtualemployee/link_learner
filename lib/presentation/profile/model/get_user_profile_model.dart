@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ProfileResponse {
   final bool success;
   final String message;
@@ -76,6 +78,7 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+
     return User(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
@@ -115,6 +118,7 @@ class User {
   };
 }
 
+
 class Learner {
   final String id;
   final String userId;
@@ -149,6 +153,17 @@ class Learner {
   });
 
   factory Learner.fromJson(Map<String, dynamic> json) {
+    Preferences? prefs;
+
+    if (json['preferences'] != null) {
+      if (json['preferences'] is String) {
+        final decoded = jsonDecode(json['preferences']);
+        prefs = Preferences.fromJson(decoded);
+      } else if (json['preferences'] is Map<String, dynamic>) {
+        prefs = Preferences.fromJson(json['preferences']);
+      }
+    }
+
     return Learner(
       id: json['id'] ?? '',
       userId: json['userId'] ?? '',
@@ -161,9 +176,7 @@ class Learner {
       emergencyContact: json['emergencyContact'],
       goals: json['goals'],
       experience: json['experience'],
-      preferences: json['preferences'] != null
-          ? Preferences.fromJson(json['preferences'])
-          : null,
+      preferences: prefs,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

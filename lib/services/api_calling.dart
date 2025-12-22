@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
+import 'package:link_learner/presentation/booking/model/booking_Detail_response.dart';
 import 'package:link_learner/presentation/booking/model/booking_list_response.dart';
 import 'package:link_learner/presentation/checkout/model/calculate_price_model.dart';
 import 'package:link_learner/presentation/checkout/model/check_availablity_model.dart';
@@ -362,15 +363,22 @@ class ApiCalling {
 
   Future<BookingListResponse> getBooking(String status) async {
     String url = "/v1/bookings?page=1&limit=20";
-
-    // Add status only when it's NOT empty
     if (status.isNotEmpty) {
       url += "&status=$status";
     }
-
     final response = await _api.get(url);
     return BookingListResponse.fromJson(response);
   }
 
+  Future<BookingDetailResponse> getBookingDetails(String id) async {
+    final response = await _api.get("/v1/bookings/$id");
+    return BookingDetailResponse.fromJson(response);
+  }
 
+  Future<void> submitReview(Map<String, dynamic> body) async {
+    await ApiService().post(
+      "/v1/reviews",
+      body,
+    );
+  }
 }

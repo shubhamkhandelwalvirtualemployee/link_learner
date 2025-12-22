@@ -3,7 +3,6 @@ import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/main.dart';
 import 'package:link_learner/presentation/booking/screens/booking_details_screen.dart';
-import 'package:link_learner/presentation/booking_and_search/screens/buy_booking_screen.dart';
 import 'package:link_learner/presentation/checkout/screens/payment_failed_screen.dart';
 import 'package:link_learner/presentation/checkout/screens/payment_success_screen.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/screens/bottom_nav_bar_screens.dart';
@@ -37,7 +36,6 @@ class RouteManager {
       RouteNames.verifyPhone: (context) => const VerifyPhone(),
       RouteNames.profileScreen: (context) => const ProfileScreen(),
       RouteNames.bottomNavBarScreens: (context) => BottomNavBarScreens(),
-      RouteNames.buyBookingScreen: (context) => BuyBookingScreen(),
       RouteNames.paymentHistoryScreen: (context) => PaymentHistoryScreen(),
       RouteNames.checkoutPage: (context) {
         final args = settings.arguments as Map<String, dynamic>;
@@ -50,7 +48,10 @@ class RouteManager {
       },
       RouteNames.paymentSuccessScreen: (context) => PaymentSuccessScreen(),
       RouteNames.paymentFailedScreen: (context) => PaymentFailedScreen(),
-      RouteNames.bookingDetailsScreen: (context) => BookingDetailsScreen(),
+      RouteNames.bookingDetailsScreen: (context) {
+        final item = ModalRoute.of(context)!.settings.arguments as String;
+        return BookingDetailScreen(bookingId: item);
+      },
       RouteNames.noNetworkScreen: (context) => NoNetworkScreen(),
       RouteNames.editProfileScreen: (context) => EditProfileScreen(),
       RouteNames.resetPasswordScreen: (context) => ResetPasswordScreen(),

@@ -63,7 +63,6 @@ class User {
   final bool? profileComplete;
   final String? createdAt;
   final String? updatedAt;
-  final Learner? learner;
 
   User({
     this.id,
@@ -78,7 +77,6 @@ class User {
     this.profileComplete,
     this.createdAt,
     this.updatedAt,
-    this.learner,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -95,7 +93,6 @@ class User {
       profileComplete: json["profileComplete"],
       createdAt: json["createdAt"],
       updatedAt: json["updatedAt"],
-      learner: json["learner"] != null ? Learner.fromJson(json["learner"]) : null,
     );
   }
 
@@ -112,99 +109,7 @@ class User {
     "profileComplete": profileComplete,
     "createdAt": createdAt,
     "updatedAt": updatedAt,
-    if (learner != null) "learner": learner!.toJson(),
   };
 }
 
-
-class Learner {
-  final String id;
-  final String userId;
-  final String? dateOfBirth;
-  final String? address;
-  final String? city;
-  final String? county;
-  final String? postcode;
-  final String? licenseNumber;
-  final String? emergencyContact;
-  final String? goals;
-  final String? experience;
-  final Preferences? preferences;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
-  Learner({
-    required this.id,
-    required this.userId,
-    this.dateOfBirth,
-    this.address,
-    this.city,
-    this.county,
-    this.postcode,
-    this.licenseNumber,
-    this.emergencyContact,
-    this.goals,
-    this.experience,
-    this.preferences,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory Learner.fromJson(Map<String, dynamic> json) {
-    return Learner(
-      id: json['id'] ?? '',
-      userId: json['userId'] ?? '',
-      dateOfBirth: json['dateOfBirth'],
-      address: json['address'],
-      city: json['city'],
-      county: json['county'],
-      postcode: json['postcode'],
-      licenseNumber: json['licenseNumber'],
-      emergencyContact: json['emergencyContact'],
-      goals: json['goals'],
-      experience: json['experience'],
-      preferences: json['preferences'] != null
-          ? Preferences.fromJson(json['preferences'])
-          : null,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'userId': userId,
-    'dateOfBirth': dateOfBirth,
-    'address': address,
-    'city': city,
-    'county': county,
-    'postcode': postcode,
-    'licenseNumber': licenseNumber,
-    'emergencyContact': emergencyContact,
-    'goals': goals,
-    'experience': experience,
-    'preferences': preferences?.toJson(),
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
-  };
-}
-
-class Preferences {
-  final String? preferredTime;
-  final String? transmissionType;
-
-  Preferences({this.preferredTime, this.transmissionType});
-
-  factory Preferences.fromJson(Map<String, dynamic> json) {
-    return Preferences(
-      preferredTime: json['preferredTime'],
-      transmissionType: json['transmissionType'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'preferredTime': preferredTime,
-    'transmissionType': transmissionType,
-  };
-}
 

@@ -14,7 +14,6 @@ import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/core/constants/stripe_Constant.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
-import 'package:link_learner/presentation/booking_and_search/provider/booking_search_provider.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
 import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
 import 'package:link_learner/presentation/home/provider/home_provider.dart';
@@ -273,9 +272,6 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<ProfileProvider>(
           create: (context) => ProfileProvider(),
-        ),
-        ChangeNotifierProvider<BookingSearchProvider>(
-          create: (context) => BookingSearchProvider(),
         ),
         ChangeNotifierProvider<BottomNavProvider>(
           create: (context) => BottomNavProvider(),

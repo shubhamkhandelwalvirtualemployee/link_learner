@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class BookingListResponse {
   final bool success;
   final String message;
@@ -47,7 +49,7 @@ class Booking {
   final String? cancelledBy;
   final String createdAt;
   final String updatedAt;
-
+  final Review? review;
   final Learner learner;
   final Instructor instructor;
   final PackagePurchase? packagePurchase;
@@ -82,6 +84,7 @@ class Booking {
     required this.learner,
     required this.instructor,
     this.packagePurchase,
+    this.review,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
@@ -117,22 +120,26 @@ class Booking {
       packagePurchase: json['packagePurchase'] != null
           ? PackagePurchase.fromJson(json['packagePurchase'])
           : null,
+      review: json['review'] != null
+          ? Review.fromJson(json['review'])
+          : null,
     );
   }
 }
+
 class Learner {
   final String id;
   final String userId;
-  final String dateOfBirth;
-  final String address;
-  final String city;
+  final String? dateOfBirth;
+  final String? address;
+  final String? city;
   final String? county;
-  final String postcode;
+  final String? postcode;
   final String? licenseNumber;
-  final String emergencyContact;
+  final String? emergencyContact;
   final String? goals;
   final String? experience;
-  final Preferences preferences;
+  final Preferences? preferences;
   final String createdAt;
   final String updatedAt;
   final UserModel user;
@@ -140,22 +147,32 @@ class Learner {
   Learner({
     required this.id,
     required this.userId,
-    required this.dateOfBirth,
-    required this.address,
-    required this.city,
+    this.dateOfBirth,
+    this.address,
+    this.city,
     this.county,
-    required this.postcode,
+    this.postcode,
     this.licenseNumber,
-    required this.emergencyContact,
+    this.emergencyContact,
     this.goals,
     this.experience,
-    required this.preferences,
+    this.preferences,
     required this.createdAt,
     required this.updatedAt,
     required this.user,
   });
 
   factory Learner.fromJson(Map<String, dynamic> json) {
+    Preferences? prefs;
+
+    if (json['preferences'] != null) {
+      if (json['preferences'] is String) {
+        prefs = Preferences.fromJson(jsonDecode(json['preferences']));
+      } else if (json['preferences'] is Map<String, dynamic>) {
+        prefs = Preferences.fromJson(json['preferences']);
+      }
+    }
+
     return Learner(
       id: json['id'],
       userId: json['userId'],
@@ -168,7 +185,7 @@ class Learner {
       emergencyContact: json['emergencyContact'],
       goals: json['goals'],
       experience: json['experience'],
-      preferences: Preferences.fromJson(json['preferences']),
+      preferences: prefs,
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       user: UserModel.fromJson(json['user']),
@@ -176,13 +193,10 @@ class Learner {
   }
 }
 class Preferences {
-  final String preferredTime;
-  final String transmissionType;
+  final String? preferredTime;
+  final String? transmissionType;
 
-  Preferences({
-    required this.preferredTime,
-    required this.transmissionType,
-  });
+  Preferences({this.preferredTime, this.transmissionType});
 
   factory Preferences.fromJson(Map<String, dynamic> json) {
     return Preferences(
@@ -191,6 +205,63 @@ class Preferences {
     );
   }
 }
+
+class Review {
+  final String id;
+  final String bookingId;
+  final String learnerId;
+  final String instructorId;
+  final int punctualityRating;
+  final int communicationRating;
+  final int teachingQualityRating;
+  final int patienceRating;
+  final int vehicleConditionRating;
+  final double overallRating;
+  final String? comment;
+  final bool isPublic;
+  final String status;
+  final String createdAt;
+  final String updatedAt;
+
+  Review({
+    required this.id,
+    required this.bookingId,
+    required this.learnerId,
+    required this.instructorId,
+    required this.punctualityRating,
+    required this.communicationRating,
+    required this.teachingQualityRating,
+    required this.patienceRating,
+    required this.vehicleConditionRating,
+    required this.overallRating,
+    this.comment,
+    required this.isPublic,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      id: json['id'],
+      bookingId: json['bookingId'],
+      learnerId: json['learnerId'],
+      instructorId: json['instructorId'],
+      punctualityRating: json['punctualityRating'] ?? 0,
+      communicationRating: json['communicationRating'] ?? 0,
+      teachingQualityRating: json['teachingQualityRating'] ?? 0,
+      patienceRating: json['patienceRating'] ?? 0,
+      vehicleConditionRating: json['vehicleConditionRating'] ?? 0,
+      overallRating: (json['overallRating'] as num).toDouble(),
+      comment: json['comment'],
+      isPublic: json['isPublic'] ?? false,
+      status: json['status'] ?? '',
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
+    );
+  }
+}
+
 class UserModel {
   final String id;
   final String email;
