@@ -171,27 +171,12 @@ class ApiService {
   // GET
   Future<dynamic> get(String path, [Map<String, String>? headers]) async {
     try {
-      final response = await _dio.get(
-        path,
-        options: Options(
-          headers: headers,
-          validateStatus: (_) => true, // 🔥 THIS LINE IS REQUIRED
-        ),
-      );
-
-      if (response.statusCode != 200) {
-        throw DioException(
-          requestOptions: response.requestOptions,
-          response: response,
-        );
-      }
-
+      final response = await _dio.get(path, options: Options(headers: headers));
       return response.data;
     } on DioException catch (e) {
-      throw Exception(e.message ?? "API error");
+      throw Exception(e.error ?? e.message ?? "Unknown error");
     }
   }
-
 
   // POST
   Future<dynamic> post(String path, dynamic data) async {
