@@ -3,11 +3,7 @@ class LoginResponseModel {
   final String? message;
   LoginData? data;
 
-  LoginResponseModel({
-     this.success,
-     this.message,
-    this.data,
-  });
+  LoginResponseModel({this.success, this.message, this.data});
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
@@ -29,11 +25,7 @@ class LoginData {
   final String? accessToken;
   final String? refreshToken;
 
-  LoginData({
-    this.user,
-    this.accessToken,
-    this.refreshToken,
-  });
+  LoginData({this.user, this.accessToken, this.refreshToken});
 
   factory LoginData.fromJson(Map<String, dynamic> json) {
     return LoginData(
@@ -111,5 +103,3 @@ class User {
     "updatedAt": updatedAt,
   };
 }
-
-

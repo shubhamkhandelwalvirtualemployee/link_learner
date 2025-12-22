@@ -32,14 +32,10 @@ class ProfileData {
   ProfileData({required this.user});
 
   factory ProfileData.fromJson(Map<String, dynamic> json) {
-    return ProfileData(
-      user: User.fromJson(json['user'] ?? {}),
-    );
+    return ProfileData(user: User.fromJson(json['user'] ?? {}));
   }
 
-  Map<String, dynamic> toJson() => {
-    'user': user.toJson(),
-  };
+  Map<String, dynamic> toJson() => {'user': user.toJson()};
 }
 
 class User {
@@ -78,7 +74,6 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-
     return User(
       id: json['id'] ?? '',
       email: json['email'] ?? '',
@@ -93,7 +88,7 @@ class User {
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       learner:
-      json['learner'] != null ? Learner.fromJson(json['learner']) : null,
+          json['learner'] != null ? Learner.fromJson(json['learner']) : null,
       instructor: json['instructor'],
       agency: json['agency'],
     );
@@ -117,7 +112,6 @@ class User {
     'agency': agency,
   };
 }
-
 
 class Learner {
   final String id;

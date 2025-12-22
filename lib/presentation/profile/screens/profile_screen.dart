@@ -15,7 +15,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -50,11 +49,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Icon(Icons.person_3_rounded),
                       ),
                       title: Text(
-                        profileProvider.profileResponse?.data?.user?.firstName ?? '',
+                        profileProvider
+                                .profileResponse
+                                ?.data
+                                ?.user
+                                ?.firstName ??
+                            '',
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       subtitle: Text(
-                        profileProvider.profileResponse?.data?.user?.email ?? '',
+                        profileProvider.profileResponse?.data?.user?.email ??
+                            '',
                         style: TextStyle(color: ColorConstants.whiteColor),
                       ),
                       trailing: IconButton(
@@ -78,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: ColorConstants.primaryColor,
                       ),
                     ),
-                    onTap: (){
+                    onTap: () {
                       AppRoutes.push(context, RouteNames.paymentHistoryScreen);
                     },
                     title: Text(
@@ -94,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       size: 18,
                     ),
                   ),
-                 /* SizedBox(height: 10),
+                  /* SizedBox(height: 10),
                   ListTile(
                     dense: true,
                     leading: CircleAvatar(
@@ -123,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 10),
                   ListTile(
                     dense: true,
-                    onTap: (){
+                    onTap: () {
                       AppRoutes.push(context, RouteNames.changePasswordScreen);
                     },
                     leading: CircleAvatar(
@@ -168,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: ColorConstants.disabledColor,
                       size: 18,
                     ),
-                    onTap: (){
+                    onTap: () {
                       AppRoutes.push(context, RouteNames.helpSupportScreen);
                     },
                   ),
@@ -194,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: ColorConstants.disabledColor,
                       size: 18,
                     ),
-                    onTap: (){
+                    onTap: () {
                       AppRoutes.push(context, RouteNames.aboutAppScreen);
                     },
                   ),
@@ -208,13 +213,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: ColorConstants.primaryColor,
                       ),
                     ),
-                    onTap: (){
-                      Provider.of<LoginSignupProvider>(context, listen: false).clearTextFields();
+                    onTap: () {
+                      Provider.of<LoginSignupProvider>(
+                        context,
+                        listen: false,
+                      ).clearTextFields();
                       SessionManager().clearAll().then((value) {
                         AppRoutes.pushAndRemoveUntil(
                           context,
                           RouteNames.loginScreen,
-                              (Route<dynamic> route) => false,
+                          (Route<dynamic> route) => false,
                         );
                       });
                     },

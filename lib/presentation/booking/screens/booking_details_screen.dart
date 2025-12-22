@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/presentation/booking/model/booking_Detail_response.dart';
-import 'package:link_learner/presentation/booking/model/booking_list_response.dart';
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:provider/provider.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final String bookingId;
 
-  const BookingDetailScreen({
-    super.key,
-    required this.bookingId,
-  });
+  const BookingDetailScreen({super.key, required this.bookingId});
 
   @override
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
@@ -24,9 +20,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     super.initState();
 
     Future.microtask(() {
-      context
-          .read<BookingProvider>()
-          .fetchBookingDetail(widget.bookingId);
+      context.read<BookingProvider>().fetchBookingDetail(widget.bookingId);
     });
   }
 
@@ -43,14 +37,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ),
         backgroundColor: ColorConstants.whiteColor,
       ),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : provider.bookingDetail == null
-          ? const Center(child: Text("Booking not found"))
-          : _buildContent(provider.bookingDetail!),
+      body:
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : provider.bookingDetail == null
+              ? const Center(child: Text("Booking not found"))
+              : _buildContent(provider.bookingDetail!),
     );
   }
-
 
   Widget _buildContent(BookingDetail booking) {
     return SingleChildScrollView(
@@ -90,13 +84,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                "Created on ${DateFormat('dd MMM yyyy, HH:mm').format(
-                  DateTime.parse(booking.createdAt),
-                )}",
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 13,
-                ),
+                "Created on ${DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking.createdAt))}",
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
               ),
             ],
           ),
@@ -153,7 +142,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
   }
 
-
   Widget _lessonDetails(BookingDetail booking) {
     final date = DateTime.parse(booking.scheduledAt);
 
@@ -161,21 +149,22 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       title: "Lesson Details",
       child: Column(
         children: [
-          _infoRow(Icons.calendar_today, "Date",
-              DateFormat('EEEE, dd MMM yyyy').format(date)),
-          _infoRow(Icons.access_time, "Time",
-              DateFormat('HH:mm').format(date)),
+          _infoRow(
+            Icons.calendar_today,
+            "Date",
+            DateFormat('EEEE, dd MMM yyyy').format(date),
+          ),
+          _infoRow(Icons.access_time, "Time", DateFormat('HH:mm').format(date)),
           _infoRow(Icons.timelapse, "Duration", "${booking.duration} min"),
           const Divider(height: 24),
 
           // ✅ PACKAGE vs SINGLE
-          booking.type == "PACKAGE"
-              ? _packageChip()
-              : _singleLessonChip(),
+          booking.type == "PACKAGE" ? _packageChip() : _singleLessonChip(),
         ],
       ),
     );
   }
+
   Widget _packageChip() {
     return Align(
       alignment: Alignment.centerLeft,
@@ -189,15 +178,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       ),
     );
   }
+
   Widget _singleLessonChip() {
     return Align(
       alignment: Alignment.centerLeft,
       child: Chip(
         label: const Text("Single Lesson"),
         backgroundColor: Colors.grey.shade200,
-        labelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -232,10 +220,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         children: [
           Text(
             "€${booking.finalPrice}",
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           const Text("Total Price"),
@@ -243,7 +228,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       ),
     );
   }
-
 
   Widget _instructorCard(BookingDetail booking) {
     final instructor = booking.instructor.user;
@@ -283,11 +267,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 12),
-         /* OutlinedButton(
+          /* OutlinedButton(
             onPressed: () {},
             child: const Text("View Profile"),
           ),*/
@@ -295,6 +279,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       ),
     );
   }
+
   Widget _card({required String title, required Widget child}) {
     return Container(
       width: double.infinity,
@@ -303,10 +288,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-          )
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -314,10 +296,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           const SizedBox(height: 12),
           child,
@@ -331,7 +310,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       title: "Your Notes",
       child: Text(
         "${booking.notes}"
-             "No notes added",
+        "No notes added",
         style: TextStyle(color: Colors.grey.shade700),
       ),
     );
@@ -342,17 +321,18 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       title: "Timeline",
       child: Column(
         children: [
-          _timelineRow("Created",
-              DateFormat('dd MMM yyyy').format(
-                  DateTime.parse(booking.createdAt))),
-          _timelineRow("Last Updated",
-              DateFormat('dd MMM yyyy').format(
-                  DateTime.parse(booking.updatedAt))),
+          _timelineRow(
+            "Created",
+            DateFormat('dd MMM yyyy').format(DateTime.parse(booking.createdAt)),
+          ),
+          _timelineRow(
+            "Last Updated",
+            DateFormat('dd MMM yyyy').format(DateTime.parse(booking.updatedAt)),
+          ),
         ],
       ),
     );
   }
-
 
   Widget _infoRow(IconData icon, String label, String value) {
     return Padding(
@@ -361,8 +341,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         children: [
           Icon(icon, size: 18, color: Colors.grey),
           const SizedBox(width: 8),
-          Text("$label: ",
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text("$label: ", style: const TextStyle(fontWeight: FontWeight.w600)),
           Expanded(child: Text(value)),
         ],
       ),

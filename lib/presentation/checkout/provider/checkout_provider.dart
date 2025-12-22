@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:link_learner/presentation/checkout/model/calculate_price_model.dart';
@@ -48,13 +47,16 @@ class CheckoutProvider extends ChangeNotifier {
       priceData = null;
       notifyListeners();
 
-      final scheduledAt = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        int.parse(startTime.split(":")[0]),
-        int.parse(startTime.split(":")[1]),
-      ).toUtc().toIso8601String();
+      final parts = startTime.split(":");
+
+      final scheduledAt =
+          DateTime.utc(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+          ).toIso8601String();
 
       final response = await ApiCalling().calculatePrice(
         instructorId: instructorId,
@@ -85,30 +87,32 @@ class CheckoutProvider extends ChangeNotifier {
     required String startTime,
     int duration = 60,
   }) async {
+    print(startTime);
     try {
       isCheckingAvailability = true;
       availabilityError = null;
       notifyListeners();
 
-      final scheduledAt = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        int.parse(startTime.split(":")[0]),
-        int.parse(startTime.split(":")[1]),
-      ).toUtc().toIso8601String();
+      final parts = startTime.split(":");
+
+      final scheduledAt =
+          DateTime.utc(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+          ).toIso8601String();
 
       final res = await ApiCalling().checkAvailability(
         instructorId: instructorId,
         scheduledAt: scheduledAt,
         duration: duration,
       );
-      print(res);
 
       availabilityResponse = res;
 
       return res.data.isAvailable;
-
     } catch (e) {
       availabilityError = "Availability Check Failed: $e";
       return false;
@@ -133,13 +137,16 @@ class CheckoutProvider extends ChangeNotifier {
       isLoading = true;
       bookingError = null;
       notifyListeners();
-      final scheduledAt = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        int.parse(startTime.split(":")[0]),
-        int.parse(startTime.split(":")[1]),
-      ).toUtc().toIso8601String();
+      final parts = startTime.split(":");
+
+      final scheduledAt =
+          DateTime.utc(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+          ).toIso8601String();
 
       final res = await ApiCalling().createBooking(
         instructorId: instructorId,
@@ -153,7 +160,6 @@ class CheckoutProvider extends ChangeNotifier {
       finalPrice = (res.data.finalPrice as num).toDouble();
 
       return true;
-
     } catch (e) {
       bookingError = "Create Booking Failed: $e";
       return false;
@@ -178,15 +184,16 @@ class CheckoutProvider extends ChangeNotifier {
       isLoading = true;
       bookingError = null;
       notifyListeners();
-      final hour = int.parse(startTime.split(":")[0]);
-      final minute = int.parse(startTime.split(":")[1]);
-      final scheduledAt = DateTime.utc(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        hour,
-        minute,
-      ).toIso8601String();
+      final parts = startTime.split(":");
+
+      final scheduledAt =
+          DateTime.utc(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+          ).toIso8601String();
 
       final res = await ApiCalling().createBookingForCredits(
         instructorId: instructorId,
@@ -195,14 +202,13 @@ class CheckoutProvider extends ChangeNotifier {
         location: location,
         notes: notes,
         packageId: packageId,
-        usePackageCredit: usePackageCredit
+        usePackageCredit: usePackageCredit,
       );
 
       bookingId = res.data.id;
       finalPrice = (res.data.finalPrice as num).toDouble();
 
       return true;
-
     } catch (e) {
       print(e);
       bookingError = "Create Booking Failed: $e";
@@ -230,7 +236,6 @@ class CheckoutProvider extends ChangeNotifier {
       paymentIntentId = response.data.paymentIntentId;
 
       return true;
-
     } catch (e) {
       paymentIntentError = "Payment Intent Error: $e";
       return false;
@@ -265,7 +270,6 @@ class CheckoutProvider extends ChangeNotifier {
       await Stripe.instance.presentPaymentSheet();
 
       return true;
-
     } catch (e) {
       stripePaymentError = "Stripe Payment Failed: $e";
       return false;
@@ -273,7 +277,6 @@ class CheckoutProvider extends ChangeNotifier {
   }
 
   Future<void> getBookingCreditProvider(String instructorId) async {
-
     try {
       final res = await ApiCalling().getBookingCredits(instructorId);
       packageCreditListResponse = res;

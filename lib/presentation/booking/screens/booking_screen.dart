@@ -210,18 +210,28 @@ class _BookingScreenState extends State<BookingScreen> {
           // ---------------- TOP ROW ----------------
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            // ✅ CENTER vertically
             children: [
               initialsAvatar(
-                booking.instructor.user.firstName,
-                booking.instructor.user.lastName,
+                booking.instructor?.user?.firstName ?? "",
+                booking.instructor?.user?.lastName ?? "",
               ),
 
-              const SizedBox(width: 12), // spacing after avatar
+              const SizedBox(width: 12),
 
               Expanded(
                 child: Text(
-                  "${booking.instructor.user.firstName} ${booking.instructor.user.lastName}",
+                  [
+                            booking.instructor?.user?.firstName,
+                            booking.instructor?.user?.lastName,
+                          ]
+                          .where((e) => e != null && e!.isNotEmpty)
+                          .join(" ")
+                          .isNotEmpty
+                      ? [
+                        booking.instructor?.user?.firstName,
+                        booking.instructor?.user?.lastName,
+                      ].where((e) => e != null && e!.isNotEmpty).join(" ")
+                      : "Instructor",
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -234,10 +244,13 @@ class _BookingScreenState extends State<BookingScreen> {
 
               const SizedBox(width: 8),
 
-              _chip(statusBg, statusText, booking.status.toUpperCase()),
+              _chip(
+                statusBg,
+                statusText,
+                (booking.status ?? "unknown").toUpperCase(),
+              ),
             ],
           ),
-
           const SizedBox(height: 16),
 
           Row(
@@ -323,6 +336,16 @@ class _BookingScreenState extends State<BookingScreen> {
                   ],
                 ),
               ),
+              Spacer(),
+              if (!isPaid)
+                Text(
+                  " €${booking.finalPrice}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: ColorConstants.primaryTextColor,
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 10),
@@ -387,7 +410,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     );
                   },
                   child: _actionButton(
-                    "Make Payment €${booking.finalPrice}",
+                    "Make Payment",
                     color: ColorConstants.paymentColor,
                   ),
                 ),
@@ -400,7 +423,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         builder:
                             (_) => ReviewScreen(
                               instructorName:
-                                  "${booking.instructor.user.firstName} ${booking.instructor.user.lastName}",
+                                  "${booking.instructor?.user.firstName} ${booking.instructor?.user.lastName}",
                               bookingId: booking.id,
                               lessonDate: booking.scheduledAt,
                               review: booking.review, // 👈 YOUR Review MODEL

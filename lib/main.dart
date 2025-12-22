@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:app_links/app_links.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'dart:async';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
@@ -34,7 +34,8 @@ String? fcmToken;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  Stripe.publishableKey = StripeConstants.publishableKey;   // YOUR PUBLISHABLE KEY
+  Stripe.publishableKey =
+      StripeConstants.publishableKey; // YOUR PUBLISHABLE KEY
   Stripe.merchantIdentifier = "merchant.com.linklearner"; // For Apple Pay
   await Stripe.instance.applySettings();
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -59,16 +60,14 @@ class MyApp extends StatefulWidget {
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-   await Firebase.initializeApp();
-   if (Platform.isIOS) {
-
-   }
+  await Firebase.initializeApp();
+  if (Platform.isIOS) {}
 }
 
 class _MyAppState extends State<MyApp> {
   late final StreamSubscription<InternetStatus> _internetSubscription;
   bool _isNoInternetDialogVisible = false;
-   late FirebaseMessaging _messaging;
+  late FirebaseMessaging _messaging;
   late final FlutterLocalNotificationsPlugin _localNotifications;
   final _appLinks = AppLinks();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -79,7 +78,6 @@ class _MyAppState extends State<MyApp> {
     _initializeNotifications();
     _setupInternetListener();
   }
-
 
   void _handleForegroundNotification(RemoteMessage message) {
     print('Foreground Notification: ${message.notification?.title}');
@@ -120,7 +118,6 @@ class _MyAppState extends State<MyApp> {
       fcmToken = token;
       print("FCM Token: $fcmToken");
 
-
       // Firebase foreground notifications
       FirebaseMessaging.onMessage.listen(_handleForegroundNotification);
 
@@ -142,18 +139,18 @@ class _MyAppState extends State<MyApp> {
     _localNotifications = FlutterLocalNotificationsPlugin();
 
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@drawable/ic_notification');
+        AndroidInitializationSettings('@drawable/ic_notification');
 
     const DarwinInitializationSettings iosSettings =
-    DarwinInitializationSettings(
-      defaultPresentAlert: true,
-      defaultPresentBadge: true,
-      defaultPresentSound: true,
-      requestProvisionalPermission: true,
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+        DarwinInitializationSettings(
+          defaultPresentAlert: true,
+          defaultPresentBadge: true,
+          defaultPresentSound: true,
+          requestProvisionalPermission: true,
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -167,7 +164,6 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
-
 
   // BACKGROUND NOTIFICATION
   void _handleBackgroundNotification(RemoteMessage message) {
@@ -268,7 +264,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<LoginSignupProvider>(
-        create: (context) => LoginSignupProvider(),
+          create: (context) => LoginSignupProvider(),
         ),
         ChangeNotifierProvider<ProfileProvider>(
           create: (context) => ProfileProvider(),
@@ -279,10 +275,18 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<BookingProvider>(
           create: (context) => BookingProvider(),
         ),
-        ChangeNotifierProvider<ChangePasswordProvider>(create: (context) => ChangePasswordProvider(),),
-        ChangeNotifierProvider<InstructorProvider>(create: (context) => InstructorProvider(),),
-        ChangeNotifierProvider<CheckoutProvider>(create: (context) => CheckoutProvider(),),
-        ChangeNotifierProvider<HomeProvider>(create: (context) => HomeProvider(),),
+        ChangeNotifierProvider<ChangePasswordProvider>(
+          create: (context) => ChangePasswordProvider(),
+        ),
+        ChangeNotifierProvider<InstructorProvider>(
+          create: (context) => InstructorProvider(),
+        ),
+        ChangeNotifierProvider<CheckoutProvider>(
+          create: (context) => CheckoutProvider(),
+        ),
+        ChangeNotifierProvider<HomeProvider>(
+          create: (context) => HomeProvider(),
+        ),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,

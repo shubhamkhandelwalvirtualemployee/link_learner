@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
@@ -67,9 +66,7 @@ class ApiCalling {
     }
   }
 
-  Future<dynamic> resetPassword({
-    required String email,
-  }) async {
+  Future<dynamic> resetPassword({required String email}) async {
     try {
       final response = await _api.post(ApiEndpoint.resetPassword, {
         "email": email,
@@ -83,8 +80,8 @@ class ApiCalling {
 
   Future<dynamic> logout({String? refreshToken}) async {
     try {
-      final response = await _api.post(ApiEndpoint.logout,{
-        "refreshToken": refreshToken
+      final response = await _api.post(ApiEndpoint.logout, {
+        "refreshToken": refreshToken,
       });
       return response;
     } catch (e) {
@@ -99,15 +96,13 @@ class ApiCalling {
     try {
       final response = await _api.put(ApiEndpoint.changePassword, {
         "currentPassword": oldPassword,
-        "newPassword": newPassword
+        "newPassword": newPassword,
       });
       return response;
     } catch (e) {
       rethrow;
     }
   }
-
-
 
   Future<LoginResponseModel> login({
     required String email,
@@ -152,20 +147,21 @@ class ApiCalling {
     String? minRating,
   }) async {
     try {
-      final queryParams = [
-        "page=$page",
-        "limit=$limit",
-        if (search != null && search.isNotEmpty) "search=$search",
-        if (county != null && county.isNotEmpty) "county=$county",
-        if (sortBy != null && sortBy.isNotEmpty) "sortBy=$sortBy",
-        if (minRate != null && minRate.isNotEmpty) "minRate=$minRate",
-        if (maxRate != null && maxRate.isNotEmpty) "maxRate=$maxRate",
-        if (minRating != null && minRating.isNotEmpty) "minRating=$minRating",
-      ].join("&");
-      print("${ApiEndpoint.instructorList}}?$queryParams");
+      final queryParams = <String, dynamic>{
+        "page": page,
+        "limit": limit,
+        if (search != null && search.isNotEmpty) "search": search,
+        if (county != null && county.isNotEmpty) "county": county,
+        if (sortBy != null && sortBy.isNotEmpty) "sortBy": sortBy,
+        if (minRate != null && minRate.isNotEmpty) "minRate": minRate,
+        if (maxRate != null && maxRate.isNotEmpty) "maxRate": maxRate,
+        if (minRating != null && minRating.isNotEmpty) "minRating": minRating,
+      };
 
-      final response = await _api.get("${ApiEndpoint.instructorList}");
-      //final response = await _api.get("${ApiEndpoint.instructorList}?$queryParams");
+      final response = await _api.get(
+        ApiEndpoint.instructorList,
+        queryParameters: queryParams, // ✅ THIS IS IMPORTANT
+      );
 
       return InstructorListResponse.fromJson(response);
     } catch (e) {
@@ -174,7 +170,8 @@ class ApiCalling {
   }
 
   Future<WeeklyAvailabilityResponse> getWeeklyAvailability(
-      String instructorId) async {
+    String instructorId,
+  ) async {
     final res = await _api.get(
       "/v1/instructors/$instructorId/availability/weekly",
     );
@@ -189,16 +186,17 @@ class ApiCalling {
   }
 
   Future<InstructorPackagesResponse> getInstructorPackage(
-      String instructorId) async {
-    final res = await _api.get(
-      "/v1/instructors/$instructorId/packages",
-    );
+    String instructorId,
+  ) async {
+    final res = await _api.get("/v1/instructors/$instructorId/packages");
 
     return InstructorPackagesResponse.fromJson(res);
   }
 
   Future<AvailableSlotsResponse> getAvailableSlot(
-      String instructorId,String date) async {
+    String instructorId,
+    String date,
+  ) async {
     final res = await _api.get(
       "/v1/instructors/$instructorId/availability/slots?date=$date&duration=60&includeBuffers=false",
     );
@@ -207,10 +205,9 @@ class ApiCalling {
   }
 
   Future<InstructorDetailResponse> getInstructorDetails(
-      String instructorId) async {
-    final res = await _api.get(
-      "/v1/instructors/$instructorId",
-    );
+    String instructorId,
+  ) async {
+    final res = await _api.get("/v1/instructors/$instructorId");
     return InstructorDetailResponse.fromJson(res);
   }
 
@@ -221,10 +218,9 @@ class ApiCalling {
   }) async {
     try {
       final response = await _api.post(ApiEndpoint.calculatePrice, {
-          "instructorId": instructorId,
-          "scheduledAt": selectedDate,
-          "duration": 60
-
+        "instructorId": instructorId,
+        "scheduledAt": selectedDate,
+        "duration": 60,
       });
       return CalculatePriceResponse.fromJson(response);
     } catch (e) {
@@ -241,17 +237,16 @@ class ApiCalling {
     bool usePackageCredit = false,
   }) async {
     try {
-
       final response = await _api.post(
-        ApiEndpoint.createBooking,   // "/v1/bookings"
-          {
-            "instructorId": instructorId,
-            "scheduledAt": scheduledAt,
-            "duration": duration,
-            "location": location,
-            "notes": notes,
-            "usePackageCredit": usePackageCredit,
-          }
+        ApiEndpoint.createBooking, // "/v1/bookings"
+        {
+          "instructorId": instructorId,
+          "scheduledAt": scheduledAt,
+          "duration": duration,
+          "location": location,
+          "notes": notes,
+          "usePackageCredit": usePackageCredit,
+        },
       );
 
       return CreateBookingResponse.fromJson(response);
@@ -264,10 +259,9 @@ class ApiCalling {
     required String bookingId,
   }) async {
     try {
-
       final response = await _api.post(
-        ApiEndpoint.paymentForBooking,   // "/v1/payments/booking"
-          {"bookingId": bookingId}
+        ApiEndpoint.paymentForBooking, // "/v1/payments/booking"
+        {"bookingId": bookingId},
       );
       return PaymentIntentResponse.fromJson(response);
     } catch (e) {
@@ -280,11 +274,9 @@ class ApiCalling {
     required String instructorId,
   }) async {
     try {
-
       final response = await _api.post(
-          ApiEndpoint.paymentForPackage,   // "/v1/payments/booking"
-          { "packageId": packageId,
-            "instructorId": instructorId}
+        ApiEndpoint.paymentForPackage, // "/v1/payments/booking"
+        {"packageId": packageId, "instructorId": instructorId},
       );
       return PaymentIntentResponse.fromJson(response);
     } catch (e) {
@@ -297,20 +289,18 @@ class ApiCalling {
     print(response);
     return PaymentHistoryResponse.fromJson(response);
   }
+
   Future<CheckAvailabilityResponse> checkAvailability({
     required String instructorId,
     required String scheduledAt,
     required int duration,
   }) async {
     try {
-      final response = await _api.post(
-        ApiEndpoint.checkAvailability,
-        {
-          "instructorId": instructorId,
-          "scheduledAt": scheduledAt,
-          "duration": duration,
-        },
-      );
+      final response = await _api.post(ApiEndpoint.checkAvailability, {
+        "instructorId": instructorId,
+        "scheduledAt": scheduledAt,
+        "duration": duration,
+      });
       print(response);
 
       return CheckAvailabilityResponse.fromJson(response);
@@ -321,7 +311,8 @@ class ApiCalling {
   }
 
   Future<PackageCreditListResponse> getBookingCredits(
-      String instructorId) async {
+    String instructorId,
+  ) async {
     final res = await _api.get(
       "/v1/bookings/credits?instructorId=$instructorId",
     );
@@ -343,16 +334,16 @@ class ApiCalling {
       print(scheduledAt);
 
       final response = await _api.post(
-          ApiEndpoint.createBooking,   // "/v1/bookings"
-          {
-            "instructorId": instructorId,
-            "scheduledAt":scheduledAt,
-            "duration": duration,
-            "location":location,
-            "notes": notes,
-            "usePackageCredit": usePackageCredit,
-            "packagePurchaseId":packageId
-          }
+        ApiEndpoint.createBooking, // "/v1/bookings"
+        {
+          "instructorId": instructorId,
+          "scheduledAt": scheduledAt,
+          "duration": duration,
+          "location": location,
+          "notes": notes,
+          "usePackageCredit": usePackageCredit,
+          "packagePurchaseId": packageId,
+        },
       );
 
       return CreateBookingResponse.fromJson(response);
@@ -376,20 +367,13 @@ class ApiCalling {
   }
 
   Future<void> submitReview(Map<String, dynamic> body) async {
-    await ApiService().post(
-      "/v1/reviews",
-      body,
-    );
+    await ApiService().post("/v1/reviews", body);
   }
+
   Future<void> cancelBooking({
     required String bookingId,
     required Map<String, dynamic> body,
   }) async {
-    await ApiService().put(
-      "/v1/bookings/$bookingId/cancel",
-      body,
-    );
+    await ApiService().put("/v1/bookings/$bookingId/cancel", body);
   }
-
-
 }

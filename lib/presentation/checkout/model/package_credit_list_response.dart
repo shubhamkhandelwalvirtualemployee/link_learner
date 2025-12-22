@@ -14,10 +14,12 @@ class PackageCreditListResponse {
     return PackageCreditListResponse(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: json['data'] != null
-          ? List<PackageCredit>.from(
-          json['data'].map((e) => PackageCredit.fromJson(e)))
-          : [],
+      data:
+          json['data'] != null
+              ? List<PackageCredit>.from(
+                json['data'].map((e) => PackageCredit.fromJson(e)),
+              )
+              : [],
     );
   }
 }
@@ -199,9 +201,10 @@ class InstructorData {
       bio: json['bio'] ?? '',
       experience: json['experience'] ?? 0,
       specializations: List<String>.from(json['specializations'] ?? []),
-      vehicleDetails: json['vehicleDetails'] != null
-          ? VehicleDetails.fromJson(json['vehicleDetails'])
-          : null,
+      vehicleDetails:
+          json['vehicleDetails'] != null
+              ? VehicleDetails.fromJson(json['vehicleDetails'])
+              : null,
       hourlyRate: json['hourlyRate'] ?? 0,
       address: json['address'] ?? '',
       city: json['city'] ?? '',

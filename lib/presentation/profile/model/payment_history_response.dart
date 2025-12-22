@@ -15,9 +15,10 @@ class PaymentHistoryResponse {
     return PaymentHistoryResponse(
       success: json['success'],
       message: json['message'],
-      transactions: (json['transactions'] as List)
-          .map((t) => TransactionData.fromJson(t))
-          .toList(),
+      transactions:
+          (json['transactions'] as List)
+              .map((t) => TransactionData.fromJson(t))
+              .toList(),
       pagination: Pagination.fromJson(json['pagination']),
     );
   }
@@ -34,11 +35,11 @@ class TransactionData {
   final double amount;
   final String currency;
   final String status;
-  final String? stripePaymentId;     // 👈 FIXED
+  final String? stripePaymentId; // 👈 FIXED
   final String createdAt;
-  final String? processedAt;         // 👈 FIXED
-  final String? failedAt;            // 👈 FIXED
-  final String? refundedAt;          // 👈 FIXED
+  final String? processedAt; // 👈 FIXED
+  final String? failedAt; // 👈 FIXED
+  final String? refundedAt; // 👈 FIXED
 
   TransactionData({
     required this.id,
@@ -70,11 +71,14 @@ class TransactionData {
       amount: (json['amount'] ?? 0).toDouble(),
       currency: json['currency'] ?? "",
       status: json['status'] ?? "",
-      stripePaymentId: json['stripePaymentId'],       // nullable
+      stripePaymentId: json['stripePaymentId'],
+      // nullable
       createdAt: json['createdAt'] ?? "",
-      processedAt: json['processedAt'],               // nullable
-      failedAt: json['failedAt'],                     // nullable
-      refundedAt: json['refundedAt'],                 // nullable
+      processedAt: json['processedAt'],
+      // nullable
+      failedAt: json['failedAt'],
+      // nullable
+      refundedAt: json['refundedAt'], // nullable
     );
   }
 }

@@ -17,6 +17,7 @@ class CheckAvailabilityResponse {
     );
   }
 }
+
 class AvailabilityData {
   final bool isAvailable;
   final List<String> conflictingBookings;
@@ -31,9 +32,10 @@ class AvailabilityData {
   factory AvailabilityData.fromJson(Map<String, dynamic> json) {
     return AvailabilityData(
       isAvailable: json["isAvailable"] ?? false,
-      conflictingBookings: json["conflictingBookings"] != null
-          ? List<String>.from(json["conflictingBookings"])
-          : [],
+      conflictingBookings:
+          json["conflictingBookings"] != null
+              ? List<String>.from(json["conflictingBookings"])
+              : [],
       message: json["message"] ?? "",
     );
   }

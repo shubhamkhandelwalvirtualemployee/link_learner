@@ -31,9 +31,10 @@ class InstructorData {
 
   factory InstructorData.fromJson(Map<String, dynamic> json) {
     return InstructorData(
-      instructors: (json['instructors'] as List<dynamic>)
-          .map((e) => Instructor.fromJson(e))
-          .toList(),
+      instructors:
+          (json['instructors'] as List<dynamic>)
+              .map((e) => Instructor.fromJson(e))
+              .toList(),
     );
   }
 
@@ -47,7 +48,7 @@ class Instructor {
   final String userId;
   final String rsaLicenseNumber;
   final String licenseExpiryDate;
-  final String bio;
+  final String? bio;
   final int experience;
   final List<String> specializations;
   final VehicleDetails vehicleDetails;
@@ -56,14 +57,14 @@ class Instructor {
   final String city;
   final String county;
   final String postcode;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final int radius;
   final String status;
   final String? verifiedAt;
   final String? agencyId;
   final bool isActive;
-  final double rating;
+  final double? rating;
   final int totalReviews;
   final bool documentsUploaded;
   final String createdAt;
@@ -75,7 +76,7 @@ class Instructor {
     required this.userId,
     required this.rsaLicenseNumber,
     required this.licenseExpiryDate,
-    required this.bio,
+    this.bio,
     required this.experience,
     required this.specializations,
     required this.vehicleDetails,
@@ -91,7 +92,7 @@ class Instructor {
     required this.verifiedAt,
     required this.agencyId,
     required this.isActive,
-    required this.rating,
+    this.rating,
     required this.totalReviews,
     required this.documentsUploaded,
     required this.createdAt,
@@ -105,7 +106,7 @@ class Instructor {
       userId: json['userId'],
       rsaLicenseNumber: json['rsaLicenseNumber'],
       licenseExpiryDate: json['licenseExpiryDate'],
-      bio: json['bio'],
+      bio: json['bio'] ?? "",
       experience: json['experience'],
       specializations: List<String>.from(json['specializations']),
       vehicleDetails: VehicleDetails.fromJson(json['vehicleDetails']),
@@ -114,14 +115,14 @@ class Instructor {
       city: json['city'],
       county: json['county'],
       postcode: json['postcode'],
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       radius: json['radius'],
       status: json['status'],
       verifiedAt: json['verifiedAt'],
       agencyId: json['agencyId'],
       isActive: json['isActive'],
-      rating: (json['rating'] as num).toDouble(),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalReviews: json['totalReviews'],
       documentsUploaded: json['documentsUploaded'],
       createdAt: json['createdAt'],

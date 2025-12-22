@@ -9,9 +9,11 @@ class HelpSupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ColorConstants.whiteColor,
       appBar: AppBar(
-        title: const Text("Help & Support",style: TextStyle(fontSize: 24,
-            fontWeight: FontWeight.w400),),
-        backgroundColor:ColorConstants.whiteColor,
+        title: const Text(
+          "Help & Support",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+        ),
+        backgroundColor: ColorConstants.whiteColor,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -19,12 +21,11 @@ class HelpSupportScreen extends StatelessWidget {
           _helpTile(
             title: "How to book a session?",
             description:
-            "Go to Instructor list, select a teacher and choose a slot.",
+                "Go to Instructor list, select a teacher and choose a slot.",
           ),
           _helpTile(
             title: "Payment issues",
-            description:
-            "If payment fails, retry from Booking Details screen.",
+            description: "If payment fails, retry from Booking Details screen.",
           ),
           _helpTile(
             title: "Contact Support",
@@ -36,10 +37,7 @@ class HelpSupportScreen extends StatelessWidget {
     );
   }
 
-  Widget _helpTile({
-    required String title,
-    required String description,
-  }) {
+  Widget _helpTile({required String title, required String description}) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(

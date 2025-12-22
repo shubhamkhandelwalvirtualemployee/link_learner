@@ -6,13 +6,18 @@ import 'package:link_learner/widgets/common_snack_bar.dart';
 class ChangePasswordProvider extends ChangeNotifier {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   TextEditingController get oldPasswordController => _oldPasswordController;
+
   TextEditingController get newPasswordController => _newPasswordController;
-  TextEditingController get confirmPasswordController => _confirmPasswordController;
+
+  TextEditingController get confirmPasswordController =>
+      _confirmPasswordController;
 
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   bool _isOldPasswordVisible = false;
@@ -20,7 +25,9 @@ class ChangePasswordProvider extends ChangeNotifier {
   bool _isConfirmPasswordVisible = false;
 
   bool get isOldPasswordVisible => _isOldPasswordVisible;
+
   bool get isNewPasswordVisible => _isNewPasswordVisible;
+
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
 
   void toggleOldPasswordVisibility() {
@@ -55,7 +62,10 @@ class ChangePasswordProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<void> changePassword(BuildContext context, GlobalKey<FormState> formKey) async {
+  Future<void> changePassword(
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+  ) async {
     _isLoading = true;
     notifyListeners();
 
@@ -92,8 +102,10 @@ class ChangePasswordProvider extends ChangeNotifier {
       }
     } catch (e) {
       print("Error: $e");
-      commonSnackBar('Password change error: $e',
-          color: ColorConstants.primaryColor);
+      commonSnackBar(
+        'Password change error: $e',
+        color: ColorConstants.primaryColor,
+      );
     } finally {
       _isLoading = false;
       notifyListeners();

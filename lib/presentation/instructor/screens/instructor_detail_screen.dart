@@ -6,7 +6,6 @@ import 'package:link_learner/presentation/checkout/provider/checkout_provider.da
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/weekly_available_model.dart';
 import 'package:link_learner/presentation/instructor/provider/instructor_provider.dart';
-import 'package:link_learner/presentation/login_signup/widgets/hourly_widget.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
@@ -50,8 +49,10 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
           backgroundColor: ColorConstants.whiteColor,
           appBar: AppBar(
             backgroundColor: Colors.white,
-            title: const Text("Instructor Details",style: TextStyle(fontSize: 24,
-                fontWeight: FontWeight.w400),),
+            title: const Text(
+              "Instructor Details",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+            ),
             leading: BackButton(color: Colors.black),
           ),
           body: SingleChildScrollView(
@@ -95,8 +96,10 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
           ),
         ),
         onPressed: () async {
-
-          final checkOutProvider = Provider.of<CheckoutProvider>(context, listen: false);
+          final checkOutProvider = Provider.of<CheckoutProvider>(
+            context,
+            listen: false,
+          );
 
           if (provider.selectedDate == null || provider.selectedSlot == null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +111,6 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
           final selectedDate = provider.selectedDate!;
           final selectedSlot = provider.selectedSlot!;
 
-          // FIRST: Check availability BEFORE navigation
           bool isAvailable = await checkOutProvider.checkAvailability(
             instructorId: instructor.id,
             selectedDate: selectedDate,
@@ -119,10 +121,16 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
 
           if (!isAvailable) {
             // Show proper conflict dialog
-            final message = checkOutProvider.availabilityResponse?.data.message ??
+            final message =
+                checkOutProvider.availabilityResponse?.data.message ??
                 "This time slot is not available.";
 
-            final conflicts = checkOutProvider.availabilityResponse?.data.conflictingBookings ?? [];
+            final conflicts =
+                checkOutProvider
+                    .availabilityResponse
+                    ?.data
+                    .conflictingBookings ??
+                [];
 
             showDialog(
               context: context,
@@ -192,9 +200,12 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                           ),
                           const SizedBox(height: 6),
                           ...conflicts.map(
-                                (id) => Text(
+                            (id) => Text(
                               "• $id",
-                              style: const TextStyle(fontSize: 13, color: Colors.black54),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
                         ],
@@ -375,8 +386,9 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                               ),
                             ),
                             TextSpan(
-                              text: DateFormat('dd MMM yyyy')
-                                  .format(DateTime.parse(instructor.licenseExpiryDate)),
+                              text: DateFormat('dd MMM yyyy').format(
+                                DateTime.parse(instructor.licenseExpiryDate),
+                              ),
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: ColorConstants.textColor,
@@ -402,7 +414,11 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.star, size: 16,color: ColorConstants.detailIconColor,),
+                      const Icon(
+                        Icons.star,
+                        size: 16,
+                        color: ColorConstants.detailIconColor,
+                      ),
                       Text(
                         " ${instructor.rating} (${instructor.totalReviews} reviews)",
                         style: const TextStyle(
@@ -442,34 +458,43 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
         children: [
           const Text(
             "Specializations",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: ColorConstants.textColor,
+            ),
           ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: specs.map(
-                  (e) => Chip(
-                backgroundColor: ColorConstants.specializationColor, // chip background
-                label: Text(
-                  e,
-                  style: const TextStyle(
-                    color: ColorConstants.textColor, // text color
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: const BorderSide( // NO BORDER
-                    color: Colors.transparent,
-                    width: 0,
-                  ),
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ).toList(),
-          )
+            children:
+                specs
+                    .map(
+                      (e) => Chip(
+                        backgroundColor: ColorConstants.specializationColor,
+                        // chip background
+                        label: Text(
+                          e,
+                          style: const TextStyle(
+                            color: ColorConstants.textColor, // text color
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(
+                            // NO BORDER
+                            color: Colors.transparent,
+                            width: 0,
+                          ),
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    )
+                    .toList(),
+          ),
         ],
       ),
     );
@@ -485,7 +510,11 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
         children: [
           const Text(
             "Vehicle Details",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: ColorConstants.textColor,
+            ),
           ),
           Row(
             children: [
@@ -493,18 +522,38 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Make: ${vehicle.make}",style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
-                    ),),
-                    Text("Model: ${vehicle.model}",style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
-                    ),),
-                    Text("Year: ${vehicle.year}",style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
-                    ),),
-                    Text("Transmission: ${vehicle.transmission}",style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700,color: ColorConstants.textColor
-                    ),),
+                    Text(
+                      "Make: ${vehicle.make}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: ColorConstants.textColor,
+                      ),
+                    ),
+                    Text(
+                      "Model: ${vehicle.model}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: ColorConstants.textColor,
+                      ),
+                    ),
+                    Text(
+                      "Year: ${vehicle.year}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: ColorConstants.textColor,
+                      ),
+                    ),
+                    Text(
+                      "Transmission: ${vehicle.transmission}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: ColorConstants.textColor,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -519,8 +568,8 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
   // ---------------- AVAILABILITY SECTION ----------------
   // ------------------ MAIN AVAILABILITY SECTION ------------------
   Widget _buildAvailabilitySection(
-      Map<int, List<AvailabilitySlot>> availability,
-      ) {
+    Map<int, List<AvailabilitySlot>> availability,
+  ) {
     return Consumer<InstructorProvider>(
       builder: (context, provider, _) {
         provider.selectedDate ??= DateTime.now();
@@ -578,8 +627,11 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _arrowButton(Icons.chevron_left,
-                        enabled: true, onTap: goToPreviousWeek),
+                    _arrowButton(
+                      Icons.chevron_left,
+                      enabled: true,
+                      onTap: goToPreviousWeek,
+                    ),
                     Text(
                       "${provider.selectedDate!.day} ${_monthName(provider.selectedDate!.month)} ${provider.selectedDate!.year}",
                       style: const TextStyle(
@@ -588,8 +640,11 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                         color: Colors.black87,
                       ),
                     ),
-                    _arrowButton(Icons.chevron_right,
-                        enabled: true, onTap: goToNextWeek),
+                    _arrowButton(
+                      Icons.chevron_right,
+                      enabled: true,
+                      onTap: goToNextWeek,
+                    ),
                   ],
                 ),
 
@@ -611,10 +666,10 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
   }
 
   Widget _arrowButton(
-      IconData icon, {
-        required bool enabled,
-        required VoidCallback onTap,
-      }) {
+    IconData icon, {
+    required bool enabled,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: AnimatedContainer(
@@ -647,21 +702,24 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
   }
 
   Widget _buildDateSelector(
-      InstructorProvider provider,
-      Map<int, List<AvailabilitySlot>> availability,
-      ) {
-    List<DateTime> weekDays = List.generate(7, (i) {
-      final date = provider.weekStartDate!.add(Duration(days: i));
-      int key = date.weekday % 7;
+    InstructorProvider provider,
+    Map<int, List<AvailabilitySlot>> availability,
+  ) {
+    List<DateTime> weekDays =
+        List.generate(7, (i) {
+          final date = provider.weekStartDate!.add(Duration(days: i));
+          int key = date.weekday % 7;
 
-      if ((availability[key] ?? []).isNotEmpty) return date;
-      return null;
-    }).whereType<DateTime>().toList();
+          if ((availability[key] ?? []).isNotEmpty) return date;
+          return null;
+        }).whereType<DateTime>().toList();
 
     if (weekDays.isEmpty) {
       return const Center(
-        child: Text("No available days this week",
-            style: TextStyle(color: Colors.grey)),
+        child: Text(
+          "No available days this week",
+          style: TextStyle(color: Colors.grey),
+        ),
       );
     }
 
@@ -678,11 +736,11 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
 
           final isSelected =
               provider.selectedDate!.day == day.day &&
-                  provider.selectedDate!.month == day.month &&
-                  provider.selectedDate!.year == day.year;
+              provider.selectedDate!.month == day.month &&
+              provider.selectedDate!.year == day.year;
 
           return GestureDetector(
-            onTap: () => provider.setSelectedDate(widget.instructorId,day),
+            onTap: () => provider.setSelectedDate(widget.instructorId, day),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: 60,
@@ -694,15 +752,16 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                   color: Colors.redAccent,
                   width: isSelected ? 2 : 1.2,
                 ),
-                boxShadow: isSelected
-                    ? [
-                  BoxShadow(
-                    color: Colors.redAccent.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-                    : [],
+                boxShadow:
+                    isSelected
+                        ? [
+                          BoxShadow(
+                            color: Colors.redAccent.withOpacity(0.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                        : [],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -757,14 +816,15 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
         final isSelected = provider.selectedSlot?.startTime == slot.startTime;
 
         return GestureDetector(
-          onTap: () => provider.setSelectedSlot(
-            AvailabilitySlot(
-              id: "slot",
-              dayOfWeek: provider.selectedDate!.weekday,
-              startTime: slot.startTime,
-              endTime: slot.endTime,
-            ),
-          ),
+          onTap:
+              () => provider.setSelectedSlot(
+                AvailabilitySlot(
+                  id: "slot",
+                  dayOfWeek: provider.selectedDate!.weekday,
+                  startTime: slot.startTime,
+                  endTime: slot.endTime,
+                ),
+              ),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -796,8 +856,18 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
 
   String _monthName(int month) {
     const names = [
-      "January","February","March","April","May","June",
-      "July","August","September","October","November","December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     return names[month - 1];
   }
@@ -812,12 +882,14 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
     while (current.isBefore(end)) {
       final next = current.add(const Duration(hours: 1));
 
-      result.add(AvailabilitySlot(
-        id: slot.id,
-        dayOfWeek: slot.dayOfWeek,
-        startTime: DateFormat("HH:mm").format(current),
-        endTime: DateFormat("HH:mm").format(next),
-      ));
+      result.add(
+        AvailabilitySlot(
+          id: slot.id,
+          dayOfWeek: slot.dayOfWeek,
+          startTime: DateFormat("HH:mm").format(current),
+          endTime: DateFormat("HH:mm").format(next),
+        ),
+      );
 
       current = next;
     }

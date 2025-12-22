@@ -169,9 +169,17 @@ class ApiService {
   }
 
   // GET
-  Future<dynamic> get(String path, [Map<String, String>? headers]) async {
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  }) async {
     try {
-      final response = await _dio.get(path, options: Options(headers: headers));
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(e.error ?? e.message ?? "Unknown error");

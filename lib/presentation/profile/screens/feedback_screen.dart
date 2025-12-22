@@ -33,7 +33,7 @@ class FeedbackScreen extends StatelessWidget {
                     height: 50,
                     child: elevatedButton(
                       onTap: () {
-                      //  AppRoutes.pop(context);
+                        //  AppRoutes.pop(context);
                       },
                       title: "Submit",
                       backgroundColor: ColorConstants.primaryColor,
@@ -49,17 +49,17 @@ class FeedbackScreen extends StatelessWidget {
   }
 
   Widget _inputField(
-      String label,
-      TextEditingController controller, {
-        int maxLines = 1,
-      }) {
+    String label,
+    TextEditingController controller, {
+    int maxLines = 1,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: customTextField(
         controller: controller,
         maxLines: maxLines,
         hintText: label,
-        color: ColorConstants.primaryTextColor
+        color: ColorConstants.primaryTextColor,
       ),
     );
   }

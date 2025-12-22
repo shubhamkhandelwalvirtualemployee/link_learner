@@ -18,11 +18,7 @@ class CalculatePriceResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "success": success,
-      "message": message,
-      "data": data.toJson(),
-    };
+    return {"success": success, "message": message, "data": data.toJson()};
   }
 }
 

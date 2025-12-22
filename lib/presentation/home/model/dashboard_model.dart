@@ -22,17 +22,15 @@ class DashboardData {
   final DashboardStats stats;
   final List<RecentActivity> recentActivity;
 
-  DashboardData({
-    required this.stats,
-    required this.recentActivity,
-  });
+  DashboardData({required this.stats, required this.recentActivity});
 
   factory DashboardData.fromJson(Map<String, dynamic> json) {
     return DashboardData(
       stats: DashboardStats.fromJson(json['stats'] ?? {}),
-      recentActivity: (json['recentActivity'] as List<dynamic>? ?? [])
-          .map((e) => RecentActivity.fromJson(e))
-          .toList(),
+      recentActivity:
+          (json['recentActivity'] as List<dynamic>? ?? [])
+              .map((e) => RecentActivity.fromJson(e))
+              .toList(),
     );
   }
 }
@@ -90,10 +88,7 @@ class Instructor {
   final String id;
   final User user;
 
-  Instructor({
-    required this.id,
-    required this.user,
-  });
+  Instructor({required this.id, required this.user});
 
   factory Instructor.fromJson(Map<String, dynamic> json) {
     return Instructor(
@@ -107,10 +102,7 @@ class User {
   final String firstName;
   final String lastName;
 
-  User({
-    required this.firstName,
-    required this.lastName,
-  });
+  User({required this.firstName, required this.lastName});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

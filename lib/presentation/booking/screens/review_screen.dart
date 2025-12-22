@@ -4,6 +4,7 @@ import 'package:link_learner/presentation/booking/provider/booking_provider.dart
 import 'package:link_learner/widgets/common_elevated_button.dart';
 import 'package:link_learner/widgets/custom_text_field.dart';
 import 'package:provider/provider.dart';
+
 import '../model/booking_list_response.dart';
 
 class ReviewScreen extends StatefulWidget {
@@ -53,7 +54,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
   /// ✅ All ratings must be given
   bool get isFormValid => ratings.values.every((r) => r > 0);
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,13 +85,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 Checkbox(
                   value: isPublic,
                   activeColor: ColorConstants.primaryColor,
-                  onChanged: isViewOnly
-                      ? null
-                      : (value) {
-                    setState(() {
-                      isPublic = value ?? true;
-                    });
-                  },
+                  onChanged:
+                      isViewOnly
+                          ? null
+                          : (value) {
+                            setState(() {
+                              isPublic = value ?? true;
+                            });
+                          },
                 ),
                 const Text(
                   "Make this review public",
@@ -119,11 +120,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           radius: 26,
           backgroundColor: ColorConstants.primaryColor,
           child: Text(
-            widget.instructorName
-                .split(' ')
-                .map((e) => e[0])
-                .take(2)
-                .join(),
+            widget.instructorName.split(' ').map((e) => e[0]).take(2).join(),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -162,20 +159,18 @@ class _ReviewScreenState extends State<ReviewScreen> {
   Widget _ratingCard() {
     return Column(
       children: [
-        _ratingSection(
-            "Punctuality", "Arrived on time for lessons"),
+        _ratingSection("Punctuality", "Arrived on time for lessons"),
+        _divider(),
+        _ratingSection("Communication", "Clear and helpful explanations"),
+        _divider(),
+        _ratingSection("Teaching Quality", "Effective teaching methods"),
+        _divider(),
+        _ratingSection("Patience", "Patient and supportive throughout"),
         _divider(),
         _ratingSection(
-            "Communication", "Clear and helpful explanations"),
-        _divider(),
-        _ratingSection(
-            "Teaching Quality", "Effective teaching methods"),
-        _divider(),
-        _ratingSection(
-            "Patience", "Patient and supportive throughout"),
-        _divider(),
-        _ratingSection(
-            "Vehicle Condition", "Clean and well-maintained vehicle"),
+          "Vehicle Condition",
+          "Clean and well-maintained vehicle",
+        ),
       ],
     );
   }
@@ -219,18 +214,20 @@ class _ReviewScreenState extends State<ReviewScreen> {
             final filled = index < currentRating;
 
             return GestureDetector(
-              onTap: isViewOnly
-                  ? null
-                  : () {
-                setState(() {
-                  ratings[title] = index + 1;
-                });
-              },
+              onTap:
+                  isViewOnly
+                      ? null
+                      : () {
+                        setState(() {
+                          ratings[title] = index + 1;
+                        });
+                      },
               child: Icon(
                 filled ? Icons.star : Icons.star_border,
-                color: filled
-                    ? ColorConstants.ratingColor
-                    : ColorConstants.disabledColor,
+                color:
+                    filled
+                        ? ColorConstants.ratingColor
+                        : ColorConstants.disabledColor,
                 size: 26,
               ),
             );
@@ -260,7 +257,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           maxLines: 4,
           readOnly: isViewOnly,
           hintText: "Share your experience with this instructor...",
-        )
+        ),
       ],
     );
   }
@@ -271,31 +268,31 @@ class _ReviewScreenState extends State<ReviewScreen> {
     return SizedBox(
       width: double.infinity,
       child: elevatedButton(
-          onTap: isViewOnly
-              ? () => Navigator.pop(context)
-              : isFormValid
-              ? () async {
-            final provider =
-            context.read<BookingProvider>();
+        onTap:
+            isViewOnly
+                ? () => Navigator.pop(context)
+                : isFormValid
+                ? () async {
+                  final provider = context.read<BookingProvider>();
 
-            final success = await provider.submitReview(
-              bookingId: widget.bookingId,
-              punctualityRating: ratings["Punctuality"] ?? 0,
-              communicationRating: ratings["Communication"] ?? 0,
-              teachingQualityRating: ratings["Teaching Quality"] ?? 0,
-              patienceRating: ratings["Patience"] ?? 0,
-              vehicleConditionRating: ratings["Vehicle Condition"] ?? 0,
-              comment: commentController.text.trim(),
-              isPublic: isPublic,
-            );
+                  final success = await provider.submitReview(
+                    bookingId: widget.bookingId,
+                    punctualityRating: ratings["Punctuality"] ?? 0,
+                    communicationRating: ratings["Communication"] ?? 0,
+                    teachingQualityRating: ratings["Teaching Quality"] ?? 0,
+                    patienceRating: ratings["Patience"] ?? 0,
+                    vehicleConditionRating: ratings["Vehicle Condition"] ?? 0,
+                    comment: commentController.text.trim(),
+                    isPublic: isPublic,
+                  );
 
-            if (success && context.mounted) {
-              Navigator.pop(context);
-            }
-          }
-              : () {},
-          title: isViewOnly ? "Close" : "Submit Review",
-        backgroundColor: ColorConstants.primaryColor
+                  if (success && context.mounted) {
+                    Navigator.pop(context);
+                  }
+                }
+                : () {},
+        title: isViewOnly ? "Close" : "Submit Review",
+        backgroundColor: ColorConstants.primaryColor,
       ),
     );
   }

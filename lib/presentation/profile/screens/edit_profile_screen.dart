@@ -109,24 +109,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 36,
-                                      backgroundColor: ColorConstants.containerAndFillColor,
+                                      backgroundColor:
+                                          ColorConstants.containerAndFillColor,
 
-                                      backgroundImage: profileProvider.coverImage != null
-                                          ? FileImage(profileProvider.coverImage!)
-                                          : (profileProvider.profileImageUrl != null &&
-                                          profileProvider.profileImageUrl!.isNotEmpty)
-                                          ? NetworkImage(profileProvider.profileImageUrl!)
-                                          : null,
+                                      backgroundImage:
+                                          profileProvider.coverImage != null
+                                              ? FileImage(
+                                                profileProvider.coverImage!,
+                                              )
+                                              : (profileProvider
+                                                          .profileImageUrl !=
+                                                      null &&
+                                                  profileProvider
+                                                      .profileImageUrl!
+                                                      .isNotEmpty)
+                                              ? NetworkImage(
+                                                profileProvider
+                                                    .profileImageUrl!,
+                                              )
+                                              : null,
 
-                                      child: (profileProvider.coverImage == null &&
-                                          (profileProvider.profileImageUrl == null ||
-                                              profileProvider.profileImageUrl!.isEmpty))
-                                          ? const Icon(
-                                        Icons.person,
-                                        size: 40,
-                                        color: ColorConstants.primaryColor,
-                                      )
-                                          : null,
+                                      child:
+                                          (profileProvider.coverImage == null &&
+                                                  (profileProvider
+                                                              .profileImageUrl ==
+                                                          null ||
+                                                      profileProvider
+                                                          .profileImageUrl!
+                                                          .isEmpty))
+                                              ? const Icon(
+                                                Icons.person,
+                                                size: 40,
+                                                color:
+                                                    ColorConstants.primaryColor,
+                                              )
+                                              : null,
                                     ),
                                     Positioned(
                                       right: -2,

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
@@ -14,7 +15,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   final SessionManager _sessionManager = SessionManager();
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -37,7 +39,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void _navigateUser() async {
-    String? accessToken = await _sessionManager.getValue(SessionConstants.accessToken);
+    String? accessToken = await _sessionManager.getValue(
+      SessionConstants.accessToken,
+    );
 
     Timer(const Duration(seconds: 2), () {
       if (!mounted) return; // ✅ Prevent navigation after dispose
@@ -45,13 +49,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         AppRoutes.pushAndRemoveUntil(
           context,
           RouteNames.bottomNavBarScreens,
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       } else {
         AppRoutes.pushAndRemoveUntil(
           context,
           RouteNames.loginScreen,
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       }
     });

@@ -17,6 +17,7 @@ class ReviewResponse {
     );
   }
 }
+
 class Review {
   final String id;
   final String bookingId;

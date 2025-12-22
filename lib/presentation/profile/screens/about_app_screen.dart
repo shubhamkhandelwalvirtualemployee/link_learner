@@ -28,9 +28,11 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
     return Scaffold(
       backgroundColor: ColorConstants.whiteColor,
       appBar: AppBar(
-        title: const Text("About App",style: TextStyle(fontSize: 24,
-            fontWeight: FontWeight.w400),),
-        backgroundColor:ColorConstants.whiteColor,
+        title: const Text(
+          "About App",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+        ),
+        backgroundColor: ColorConstants.whiteColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -48,7 +50,7 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
             const SizedBox(height: 24),
             const Text(
               "Link Learner helps students connect with certified instructors "
-                  "for personalized learning experiences.",
+              "for personalized learning experiences.",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16),
             ),

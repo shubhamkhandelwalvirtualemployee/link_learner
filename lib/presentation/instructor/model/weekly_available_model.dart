@@ -14,9 +14,10 @@ class WeeklyAvailabilityResponse {
     final Map<int, List<AvailabilitySlot>> parsed = {};
 
     rawData.forEach((key, value) {
-      parsed[int.parse(key)] = (value as List<dynamic>)
-          .map((item) => AvailabilitySlot.fromJson(item))
-          .toList();
+      parsed[int.parse(key)] =
+          (value as List<dynamic>)
+              .map((item) => AvailabilitySlot.fromJson(item))
+              .toList();
     });
 
     return WeeklyAvailabilityResponse(

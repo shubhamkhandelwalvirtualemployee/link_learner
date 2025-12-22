@@ -82,7 +82,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   _buildLabel("Confirm Password"),
                   customTextField(
-                    controller: changePasswordProvider.confirmPasswordController,
+                    controller:
+                        changePasswordProvider.confirmPasswordController,
                     obsecure: !changePasswordProvider.isConfirmPasswordVisible,
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -91,11 +92,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             : Icons.visibility_off,
                       ),
                       onPressed: () {
-                        changePasswordProvider.toggleConfirmPasswordVisibility();
+                        changePasswordProvider
+                            .toggleConfirmPasswordVisibility();
                       },
                     ),
                     validator: (value) {
-                      if (value != changePasswordProvider.newPasswordController.text) {
+                      if (value !=
+                          changePasswordProvider.newPasswordController.text) {
                         return 'Passwords do not match';
                       }
                       return changePasswordProvider.validatePassword(value);
@@ -106,39 +109,45 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: changePasswordProvider.isLoading
-                        ? const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                    )
-                        : ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          changePasswordProvider.changePassword(context, _formKey);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorConstants.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        "Change Password",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  )
+                    child:
+                        changePasswordProvider.isLoading
+                            ? const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                            : ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  changePasswordProvider.changePassword(
+                                    context,
+                                    _formKey,
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorConstants.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                "Change Password",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                  ),
                 ],
               ),
             ),

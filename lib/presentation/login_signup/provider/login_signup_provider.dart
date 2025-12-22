@@ -12,6 +12,7 @@ import 'package:otp_text_field_v2/otp_field_v2.dart';
 
 class LoginSignupProvider extends ChangeNotifier {
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
   final GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
@@ -22,6 +23,7 @@ class LoginSignupProvider extends ChangeNotifier {
   SignUpResponseModel get signUpResponseModel => _signUpResponseModel;
 
   final LoginResponseModel _loginResponseModel = LoginResponseModel();
+
   LoginResponseModel get loginResponseModel => _loginResponseModel;
 
   final TextEditingController _mobileNumberSignupController =
@@ -50,8 +52,10 @@ class LoginSignupProvider extends ChangeNotifier {
 
   TextEditingController get mobileNumberSignupController =>
       _mobileNumberSignupController;
+
   TextEditingController get mobileNumberVerifyController =>
       _mobileNumberVerifyController;
+
   TextEditingController get signUpFirstNameController =>
       _signUpFirstNameController;
 
@@ -61,20 +65,29 @@ class LoginSignupProvider extends ChangeNotifier {
   final TextEditingController _forgotEmailController = TextEditingController();
 
   TextEditingController get signUpAddressController => _signUpAddressController;
+
   TextEditingController get signUpEmailController => _signUpEmailController;
+
   TextEditingController get dateOfBirthController => _dateOfBirthController;
+
   TextEditingController get licenseNumberController => _licenseNumberController;
+
   TextEditingController get signUpPasswordController =>
       _signUpPasswordController;
+
   TextEditingController get loginEmailController => _loginEmailController;
+
   TextEditingController get forgotEmailController => _forgotEmailController;
+
   TextEditingController get loginPasswordController => _loginPasswordController;
+
   OtpFieldControllerV2 get verifyMobileOtpController =>
       _verifyMobileOtpController;
   bool _isPasswordVisible = false;
   bool _isChecked = false;
 
   bool get isPasswordVisible => _isPasswordVisible;
+
   bool get isChecked => _isChecked;
 
   void togglePasswordVisibility() {
@@ -127,6 +140,7 @@ class LoginSignupProvider extends ChangeNotifier {
   }
 
   DateTime? _selectedDate;
+
   DateTime? get selectedDate => _selectedDate;
 
   /// ✅ Clears all text fields (signup, login, and phone-related)
@@ -215,6 +229,7 @@ class LoginSignupProvider extends ChangeNotifier {
   String _fullMobileNumber = "";
 
   String get countryCode => _countryCode;
+
   String get fullMobileNumber => _fullMobileNumber;
 
   void setMobileNumber(String number) {
@@ -270,20 +285,20 @@ class LoginSignupProvider extends ChangeNotifier {
       if (response.success == true) {
         _loginResponseModel.data = response.data;
 
-        _showSnackBar(context,response.message ?? "Login successful");
+        _showSnackBar(context, response.message ?? "Login successful");
 
         if (!context.mounted) return;
 
         AppRoutes.pushAndRemoveUntil(
           context,
           RouteNames.bottomNavBarScreens,
-              (route) => false,
+          (route) => false,
         );
       } else {
-        _showSnackBar(context,response.message ?? "Invalid credentials");
+        _showSnackBar(context, response.message ?? "Invalid credentials");
       }
     } catch (e) {
-      _showSnackBar(context,"$e");
+      _showSnackBar(context, "$e");
     } finally {
       _isLoading = false;
       notifyListeners(); // ✅ restore UI
@@ -312,8 +327,10 @@ class LoginSignupProvider extends ChangeNotifier {
       }
     } catch (e) {
       print("Error: $e");
-      commonSnackBar('Password reset error: $e',
-          color: ColorConstants.primaryColor);
+      commonSnackBar(
+        'Password reset error: $e',
+        color: ColorConstants.primaryColor,
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -325,10 +342,6 @@ class LoginSignupProvider extends ChangeNotifier {
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
-
-
 }

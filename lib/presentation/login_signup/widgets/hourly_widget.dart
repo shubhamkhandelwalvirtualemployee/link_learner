@@ -9,14 +9,15 @@ List<AvailabilitySlot> generateHourlySlots(AvailabilitySlot original) {
 
   while (start.isBefore(end.add(const Duration(hours: 1)))) {
     DateTime next = start.add(const Duration(hours: 1));
-    out.add(AvailabilitySlot(
-      id: original.id,
-      dayOfWeek: original.dayOfWeek,
-      startTime: DateFormat("HH:mm").format(start),
-      endTime: DateFormat("HH:mm").format(next),
-    ));
+    out.add(
+      AvailabilitySlot(
+        id: original.id,
+        dayOfWeek: original.dayOfWeek,
+        startTime: DateFormat("HH:mm").format(start),
+        endTime: DateFormat("HH:mm").format(next),
+      ),
+    );
     start = next;
   }
   return out;
 }
-

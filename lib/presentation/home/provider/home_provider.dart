@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
-import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
 import 'package:link_learner/presentation/home/model/dashboard_model.dart';
 import 'package:link_learner/services/api_calling.dart';
@@ -15,6 +14,7 @@ class HomeProvider extends ChangeNotifier {
 
   DashboardResponse? dashboardResponse;
   ProfileResponse? profileResponse;
+
   Future<void> getDashboardStats() async {
     try {
       isLoading = true;
@@ -24,7 +24,6 @@ class HomeProvider extends ChangeNotifier {
 
       // Assign full dashboard data
       dashboardResponse = res;
-
     } catch (e) {
       debugPrint("Dashboard Error: $e");
     }
@@ -35,7 +34,7 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> getProfile() async {
     try {
-     isLoading = true;
+      isLoading = true;
 
       final response = await _api.get(ApiEndpoint.getProfile);
       profileResponse = ProfileResponse.fromJson(response);
@@ -44,7 +43,7 @@ class HomeProvider extends ChangeNotifier {
     } catch (e) {
       rethrow;
     } finally {
-isLoading = false;
+      isLoading = false;
     }
   }
 }

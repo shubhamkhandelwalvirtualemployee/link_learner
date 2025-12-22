@@ -98,8 +98,7 @@ class InstructorDetails {
       bio: json['bio'] ?? '',
       experience: json['experience'] ?? 0,
       specializations: List<String>.from(json['specializations'] ?? []),
-      vehicleDetails:
-      VehicleDetails.fromJson(json['vehicleDetails'] ?? {}),
+      vehicleDetails: VehicleDetails.fromJson(json['vehicleDetails'] ?? {}),
       hourlyRate: json['hourlyRate'] ?? 0,
       address: json['address'] ?? '',
       city: json['city'] ?? '',

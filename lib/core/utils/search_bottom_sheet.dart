@@ -26,13 +26,17 @@ class SearchFilterBottomSheet extends StatelessWidget {
                   // ---- Header ----
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 12.0),
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.close,
-                              color: ColorConstants.primaryTextColor),
+                          icon: const Icon(
+                            Icons.close,
+                            color: ColorConstants.primaryTextColor,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const Text(
@@ -63,8 +67,11 @@ class SearchFilterBottomSheet extends StatelessWidget {
                           _buildDropdown(
                             hint: "Select County",
                             items: _irelandCounties,
-                            value: provider.selectedCounty, // 👈 show selected county
-                            onChanged: (value) => provider.setSelectedCounty(value ?? ''),
+                            value: provider.selectedCounty,
+                            // 👈 show selected county
+                            onChanged:
+                                (value) =>
+                                    provider.setSelectedCounty(value ?? ''),
                           ),
                           const SizedBox(height: 16),
 
@@ -84,7 +91,9 @@ class SearchFilterBottomSheet extends StatelessWidget {
                           _buildDropdown(
                             hint: provider.selectedRating,
                             items: ["Any Rating", "1+", "2+", "3+", "4+", "5"],
-                            onChanged: (value) => provider.setSelectedRating(value ?? ''),
+                            onChanged:
+                                (value) =>
+                                    provider.setSelectedRating(value ?? ''),
                           ),
                           const SizedBox(height: 16),
 
@@ -135,7 +144,9 @@ class SearchFilterBottomSheet extends StatelessWidget {
                               "Highest Price",
                               "Closest Distance",
                             ],
-                            onChanged: (value) => provider.setSelectedSortBy(value ?? ''),
+                            onChanged:
+                                (value) =>
+                                    provider.setSelectedSortBy(value ?? ''),
                           ),
                           const SizedBox(height: 20),
 
@@ -168,7 +179,9 @@ class SearchFilterBottomSheet extends StatelessWidget {
                           child: OutlinedButton(
                             onPressed: () => provider.clearAllFilters(),
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: ColorConstants.primaryColor),
+                              side: const BorderSide(
+                                color: ColorConstants.primaryColor,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -192,13 +205,15 @@ class SearchFilterBottomSheet extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorConstants.primaryColor,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                             child: const Text(
                               "Apply Filter",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -225,10 +240,10 @@ class SearchFilterBottomSheet extends StatelessWidget {
   );
 
   Widget _buildTextField(
-      String hint, {
-        required ValueChanged<String> onChanged,
-        String? initialValue,
-      }) {
+    String hint, {
+    required ValueChanged<String> onChanged,
+    String? initialValue,
+  }) {
     final controller = TextEditingController(text: initialValue ?? "");
     controller.selection = TextSelection.fromPosition(
       TextPosition(offset: controller.text.length),
@@ -246,12 +261,13 @@ class SearchFilterBottomSheet extends StatelessWidget {
             width: 1,
           ),
         ),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
       ),
     );
   }
-
 
   Widget _buildDropdown({
     required String hint,
@@ -270,15 +286,16 @@ class SearchFilterBottomSheet extends StatelessWidget {
         underline: const SizedBox(),
         hint: Text(hint),
         icon: const Icon(Icons.keyboard_arrow_down),
-        value: value == "" ? null : value, // 👈 show selected value if available
-        items: items
-            .map((item) => DropdownMenuItem(value: item, child: Text(item)))
-            .toList(),
+        value: value == "" ? null : value,
+        // 👈 show selected value if available
+        items:
+            items
+                .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+                .toList(),
         onChanged: onChanged,
       ),
     );
   }
-
 
   Widget _buildToggleRow({
     required List<String> options,
@@ -286,39 +303,41 @@ class SearchFilterBottomSheet extends StatelessWidget {
     required Function(String) onSelected,
   }) {
     return Row(
-      children: options.map((option) {
-        final bool isSelected = option == selectedValue;
-        return Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(right: 10),
-            child: GestureDetector(
-              onTap: () => onSelected(option),
+      children:
+          options.map((option) {
+            final bool isSelected = option == selectedValue;
+            return Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? ColorConstants.primaryColor
-                      : ColorConstants.disabledColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  option,
-                  style: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : ColorConstants.primaryTextColor,
-                    fontWeight: FontWeight.w500,
+                margin: const EdgeInsets.only(right: 10),
+                child: GestureDetector(
+                  onTap: () => onSelected(option),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? ColorConstants.primaryColor
+                              : ColorConstants.disabledColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : ColorConstants.primaryTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
-
 
   Widget _buildSpecializationGrid(BuildContext context) {
     final specs = [
@@ -339,25 +358,30 @@ class SearchFilterBottomSheet extends StatelessWidget {
         return Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: specs.map((label) {
-            final isSelected = provider.selectedSpecializations.contains(label);
-            return FilterChip(
-              label: Text(
-                label,
-                style: TextStyle(
-                  color: isSelected
-                      ? Colors.white
-                      : ColorConstants.primaryTextColor,
-                ),
-              ),
-              selected: isSelected,
-              onSelected: (_) => provider.toggleSpecialization(label),
-              backgroundColor:
-              ColorConstants.disabledColor.withOpacity(0.15),
-              selectedColor: ColorConstants.primaryColor,
-              checkmarkColor: Colors.white,
-            );
-          }).toList(),
+          children:
+              specs.map((label) {
+                final isSelected = provider.selectedSpecializations.contains(
+                  label,
+                );
+                return FilterChip(
+                  label: Text(
+                    label,
+                    style: TextStyle(
+                      color:
+                          isSelected
+                              ? Colors.white
+                              : ColorConstants.primaryTextColor,
+                    ),
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) => provider.toggleSpecialization(label),
+                  backgroundColor: ColorConstants.disabledColor.withOpacity(
+                    0.15,
+                  ),
+                  selectedColor: ColorConstants.primaryColor,
+                  checkmarkColor: Colors.white,
+                );
+              }).toList(),
         );
       },
     );

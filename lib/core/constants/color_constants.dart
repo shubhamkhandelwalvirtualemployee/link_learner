@@ -20,7 +20,7 @@ class ColorConstants {
   static const Color detailIconColor = Color(0xFF1D1B20);
   static const Color specializationColor = Color(0xFFF9D2DD);
   static const Color ratingColor = Colors.yellow;
-  static const Color reviewColor =Color(0xFF3B82F6);
-  static const Color paymentColor =Color(0xFF16A34A);
-  static const Color greyViewColor =Color(0xFF424242);
+  static const Color reviewColor = Color(0xFF3B82F6);
+  static const Color paymentColor = Color(0xFF16A34A);
+  static const Color greyViewColor = Color(0xFF424242);
 }

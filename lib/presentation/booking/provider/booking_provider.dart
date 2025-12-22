@@ -21,6 +21,7 @@ class BookingProvider extends ChangeNotifier {
       notifyListeners();
       selectedStatus = status;
       final response = await ApiCalling().getBooking(status);
+      print(response.bookings[0].instructor);
       bookings = response.bookings;
     } catch (e) {
       print("Booking error: $e");
@@ -144,14 +145,9 @@ class BookingProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final body = {
-        "reason": reason,
-      };
+      final body = {"reason": reason};
 
-      await ApiCalling().cancelBooking(
-        bookingId: bookingId,
-        body: body,
-      );
+      await ApiCalling().cancelBooking(bookingId: bookingId, body: body);
 
       await fetchBookings(); // refresh list
       return true;
@@ -163,5 +159,4 @@ class BookingProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

@@ -18,10 +18,10 @@ void commonSnackBar(
 }
 
 void commonLongSnackBar(
-    String? text, {
-      ToastGravity gravity = ToastGravity.BOTTOM,
-      Color? color,
-    }) {
+  String? text, {
+  ToastGravity gravity = ToastGravity.BOTTOM,
+  Color? color,
+}) {
   Fluttertoast.showToast(
     msg: text ?? "",
     toastLength: Toast.LENGTH_LONG,

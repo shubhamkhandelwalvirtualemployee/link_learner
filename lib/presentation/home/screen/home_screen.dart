@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
-import 'package:link_learner/core/constants/session_constants.dart';
-import 'package:link_learner/core/utils/session_manager.dart';
 import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
 import 'package:link_learner/presentation/home/provider/home_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
@@ -17,18 +15,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
   void initState() {
     super.initState();
 
     Future.microtask(() {
       context.read<HomeProvider>().getDashboardStats();
       context.read<HomeProvider>().getProfile();
-
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +66,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             IconButton(
                               onPressed: () {
                                 AppRoutes.push(
-                                    context, RouteNames.paymentFailedScreen);
+                                  context,
+                                  RouteNames.paymentFailedScreen,
+                                );
                               },
                               icon: const Icon(
                                 Icons.notifications,
                                 color: ColorConstants.whiteColor,
                               ),
-                            )
+                            ),
                           ],
                         ),
                         const SizedBox(height: 3),
@@ -102,26 +98,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         _topSmallCard(
                           title: "Upcoming Bookings",
-                          count: dashboard?.stats.upcomingBookingsCount
-                              ?.toString() ??
+                          count:
+                              dashboard?.stats.upcomingBookingsCount
+                                  ?.toString() ??
                               "0",
                           buttonText: "View all bookings",
                           buttonColor: ColorConstants.primaryColor,
-                          onTap: (){
+                          onTap: () {
                             bottomNavProvider.onItemTapped(1);
-                          }
+                          },
                         ),
                         const SizedBox(width: 12),
                         _topSmallCard(
                           title: "Active Instructors",
-                          count: dashboard?.stats.activeInstructorsCount
-                              ?.toString() ??
+                          count:
+                              dashboard?.stats.activeInstructorsCount
+                                  ?.toString() ??
                               "0",
                           buttonText: "Find more instructors",
                           buttonColor: ColorConstants.primaryColor,
-                          onTap: (){
+                          onTap: () {
                             bottomNavProvider.onItemTapped(2);
-                          }
+                          },
                         ),
                       ],
                     ),
@@ -163,7 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             _quickButton("View Profile", () {
                               AppRoutes.push(
-                                  context, RouteNames.editProfileScreen);
+                                context,
+                                RouteNames.editProfileScreen,
+                              );
                             }),
                             const SizedBox(width: 12),
                             _quickButton("Settings", () {
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required String count,
     required String buttonText,
     required Color buttonColor,
-    required VoidCallback onTap,   // 👈 added callback
+    required VoidCallback onTap, // 👈 added callback
   }) {
     return Expanded(
       child: Container(
@@ -241,18 +241,12 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
             const SizedBox(height: 6),
             Text(
               count,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
@@ -267,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: onTap,   // 👈 added
+                onPressed: onTap, // 👈 added
                 child: Text(
                   buttonText,
                   style: const TextStyle(
@@ -276,13 +270,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
-
 
   // QUICK BUTTON
   Widget _quickButton(String text, Function() onTap) {
@@ -296,9 +289,13 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
-            child: Text(text,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ),
@@ -308,6 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String formatDate(DateTime dateTime) {
     return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
   }
+
   // RECENT ACTIVITY CARD
   Widget _recentActivityCard(activity) {
     return Container(
@@ -320,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey.shade300,
             blurRadius: 6,
             spreadRadius: 1,
-          )
+          ),
         ],
         borderRadius: BorderRadius.circular(18),
       ),
@@ -330,9 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
             activity.status == "COMPLETED"
                 ? Icons.check_circle
                 : Icons.access_time,
-            color: activity.status == "COMPLETED"
-                ? Colors.green
-                : Colors.orange,
+            color:
+                activity.status == "COMPLETED" ? Colors.green : Colors.orange,
             size: 30,
           ),
           const SizedBox(width: 12),
@@ -340,9 +337,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(activity.status,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(
+                  activity.status,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   "Session with ${activity.instructor.user.firstName} ${activity.instructor.user.lastName}",
@@ -350,16 +351,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  formatDate(activity.scheduledAt),    // 👈 formatted date
-                  style: const TextStyle(
-                      fontSize: 12, color: Colors.grey),
+                  formatDate(activity.scheduledAt), // 👈 formatted date
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
-
 }

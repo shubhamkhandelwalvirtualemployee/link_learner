@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:link_learner/core/constants/app_images.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/login_signup/provider/login_signup_provider.dart';
 import 'package:link_learner/routes/app_routes.dart';
-import 'package:link_learner/widgets/asset_images.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
 import 'package:link_learner/widgets/custom_text_field.dart';
-
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -178,7 +175,7 @@ class LoginScreen extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 20),
-                       /* Row(
+                        /* Row(
                           children: [
                             Expanded(child: Divider(endIndent: 20)),
                             Text(

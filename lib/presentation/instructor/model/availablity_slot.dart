@@ -42,9 +42,10 @@ class SlotData {
       timezone: json['timezone'],
       totalSlots: json['totalSlots'],
       availableSlots: json['availableSlots'],
-      slots: (json['slots'] as List<dynamic>)
-          .map((e) => Slot.fromJson(e))
-          .toList(),
+      slots:
+          (json['slots'] as List<dynamic>)
+              .map((e) => Slot.fromJson(e))
+              .toList(),
     );
   }
 }

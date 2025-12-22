@@ -4,8 +4,9 @@ import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
 import 'package:link_learner/routes/app_routes.dart';
 import 'package:provider/provider.dart';
-import '../provider/instructor_provider.dart';
+
 import '../model/instructor_package_model.dart'; // adjust as per your file
+import '../provider/instructor_provider.dart';
 
 class BookInstructorPackageScreen extends StatefulWidget {
   final InstructorUser instructor;
@@ -22,16 +23,21 @@ class BookInstructorPackageScreen extends StatefulWidget {
   });
 
   @override
-  State<BookInstructorPackageScreen> createState() => _BookInstructorPackageScreenState();
+  State<BookInstructorPackageScreen> createState() =>
+      _BookInstructorPackageScreenState();
 }
 
-class _BookInstructorPackageScreenState extends State<BookInstructorPackageScreen> {
+class _BookInstructorPackageScreenState
+    extends State<BookInstructorPackageScreen> {
   String? selectedPackageId;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<InstructorProvider>(context, listen: false).getInstructorPackage(widget.instructorId);
+    Provider.of<InstructorProvider>(
+      context,
+      listen: false,
+    ).getInstructorPackage(widget.instructorId);
   }
 
   @override
@@ -40,7 +46,10 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Book Package", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Book Package",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: ColorConstants.whiteColor,
         elevation: 0,
@@ -51,27 +60,32 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
       ),
       backgroundColor: ColorConstants.whiteColor,
 
+      body:
+          provider.isInstructorPackageLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _instructorCard(widget.instructor),
 
-      body: provider.isInstructorPackageLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _instructorCard(widget.instructor),
+                    const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
-
-            ...provider.instructorPackagesResponse!.data.map((pkg) => _packageCard(pkg)).toList(),
-          ],
-        ),
-      ),
+                    ...provider.instructorPackagesResponse!.data
+                        .map((pkg) => _packageCard(pkg))
+                        .toList(),
+                  ],
+                ),
+              ),
     );
   }
 
   Widget _instructorCard(instructor) {
     final String initials = [
-      if (instructor.firstName.isNotEmpty) instructor.firstName[0].toUpperCase() else "",
+      if (instructor.firstName.isNotEmpty)
+        instructor.firstName[0].toUpperCase()
+      else
+        "",
       (instructor.lastName.isNotEmpty)
           ? instructor.lastName[0].toUpperCase()
           : "",
@@ -82,10 +96,13 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-            spreadRadius: 0,                     // How wide the shadow spreads
-            blurRadius: 4,                       // How soft the shadow looks
-            offset: const Offset(0, 4),          // x and y offset (move shadow)
+            color: ColorConstants.primaryTextColor.withOpacity(0.25),
+            // Shadow color with opacity
+            spreadRadius: 0,
+            // How wide the shadow spreads
+            blurRadius: 4,
+            // How soft the shadow looks
+            offset: const Offset(0, 4), // x and y offset (move shadow)
           ),
         ],
       ),
@@ -123,35 +140,54 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
                   Text(
                     "${instructor.firstName} ${instructor.lastName}",
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold,color: ColorConstants.textColor),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ColorConstants.textColor,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.email, size: 12,color: ColorConstants.textColor),
-                      SizedBox(width: 4,),
-                      Text(instructor.email , style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      const Icon(
+                        Icons.email,
+                        size: 12,
+                        color: ColorConstants.textColor,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        instructor.email,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: ColorConstants.textColor,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       const Icon(Icons.star, size: 16),
-                      Text(" ${widget.ratings}", style: const TextStyle(
-                          fontSize: 10, color: ColorConstants.textColor),),
+                      Text(
+                        " ${widget.ratings}",
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: ColorConstants.textColor,
+                        ),
+                      ),
                       const Spacer(),
                       Text(
                         "\$${widget.hourlyRate}/session",
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: ColorConstants.primaryColor),
+                          fontWeight: FontWeight.bold,
+                          color: ColorConstants.primaryColor,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -176,7 +212,11 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
               children: [
                 Text(
                   "${pkg.name}",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: ColorConstants.textColor,
+                  ),
                 ),
                 if (isSelected)
                   const Icon(Icons.check_circle, color: Colors.green, size: 26),
@@ -184,7 +224,14 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
             ),
 
             const SizedBox(height: 4),
-            Text(pkg.description, style: const TextStyle(fontSize: 12, color: ColorConstants.textColor,fontWeight: FontWeight.w400)),
+            Text(
+              pkg.description,
+              style: const TextStyle(
+                fontSize: 12,
+                color: ColorConstants.textColor,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
 
             const SizedBox(height: 12),
 
@@ -201,18 +248,30 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
             const SizedBox(height: 12),
             Row(
               children: [
-                Text("Total: \$${pkg.totalPrice}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700,color: ColorConstants.textColor)),
-               Spacer(),
+                Text(
+                  "Total: \$${pkg.totalPrice}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: ColorConstants.textColor,
+                  ),
+                ),
+                Spacer(),
                 ElevatedButton(
                   onPressed: () async {
                     setState(() => selectedPackageId = pkg.id);
                     bool intentOK = await provider.createPaymentIntent(
                       widget.instructorId,
-                      pkg.id
+                      pkg.id,
                     );
                     if (!intentOK) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(provider.paymentIntentError ?? "Failed to create payment intent")),
+                        SnackBar(
+                          content: Text(
+                            provider.paymentIntentError ??
+                                "Failed to create payment intent",
+                          ),
+                        ),
                       );
                       return;
                     }
@@ -221,7 +280,11 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
                     bool paid = await provider.makePayment();
                     if (!paid) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(provider.stripePaymentError ?? "Payment Failed")),
+                        SnackBar(
+                          content: Text(
+                            provider.stripePaymentError ?? "Payment Failed",
+                          ),
+                        ),
                       );
                       AppRoutes.push(context, RouteNames.paymentFailedScreen);
                       return;
@@ -229,23 +292,28 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
 
                     // 5️⃣ Payment Success
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Payment Completed Successfully!")),
+                      const SnackBar(
+                        content: Text("Payment Completed Successfully!"),
+                      ),
                     );
                     AppRoutes.push(context, RouteNames.paymentSuccessScreen);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorConstants.primaryColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   child: const Text(
                     "Book Package",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                )
+                ),
               ],
             ),
-
-          
           ],
         ),
       ),
@@ -260,13 +328,29 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
           decoration: BoxDecoration(
             color: ColorConstants.whiteColor,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: ColorConstants.backgroundTextFormFieldColor),
+            border: Border.all(
+              color: ColorConstants.backgroundTextFormFieldColor,
+            ),
           ),
           child: Column(
             children: [
-              Text(title, style: const TextStyle(fontSize: 12, color: ColorConstants.textColor,fontWeight: FontWeight.w600)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: ColorConstants.textColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w400,fontSize: 12, color: ColorConstants.textColor,)),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: ColorConstants.textColor,
+                ),
+              ),
             ],
           ),
         ),
@@ -280,10 +364,13 @@ class _BookInstructorPackageScreenState extends State<BookInstructorPackageScree
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(
-          color:ColorConstants.primaryTextColor.withOpacity(0.25), // Shadow color with opacity
-          spreadRadius: 0,                     // How wide the shadow spreads
-          blurRadius: 4,                       // How soft the shadow looks
-          offset: const Offset(0, 4),          // x and y offset (move shadow)
+          color: ColorConstants.primaryTextColor.withOpacity(0.25),
+          // Shadow color with opacity
+          spreadRadius: 0,
+          // How wide the shadow spreads
+          blurRadius: 4,
+          // How soft the shadow looks
+          offset: const Offset(0, 4), // x and y offset (move shadow)
         ),
       ],
     );

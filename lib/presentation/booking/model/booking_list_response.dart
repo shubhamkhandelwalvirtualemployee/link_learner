@@ -15,9 +15,10 @@ class BookingListResponse {
     return BookingListResponse(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      bookings: (json['bookings'] as List<dynamic>)
-          .map((e) => Booking.fromJson(e))
-          .toList(),
+      bookings:
+          (json['bookings'] as List<dynamic>)
+              .map((e) => Booking.fromJson(e))
+              .toList(),
     );
   }
 }
@@ -51,7 +52,7 @@ class Booking {
   final String updatedAt;
   final Review? review;
   final Learner learner;
-  final Instructor instructor;
+  final Instructor? instructor;
   final PackagePurchase? packagePurchase;
 
   Booking({
@@ -82,7 +83,7 @@ class Booking {
     required this.createdAt,
     required this.updatedAt,
     required this.learner,
-    required this.instructor,
+    this.instructor,
     this.packagePurchase,
     this.review,
   });
@@ -117,12 +118,11 @@ class Booking {
       updatedAt: json['updatedAt'],
       learner: Learner.fromJson(json['learner']),
       instructor: Instructor.fromJson(json['instructor']),
-      packagePurchase: json['packagePurchase'] != null
-          ? PackagePurchase.fromJson(json['packagePurchase'])
-          : null,
-      review: json['review'] != null
-          ? Review.fromJson(json['review'])
-          : null,
+      packagePurchase:
+          json['packagePurchase'] != null
+              ? PackagePurchase.fromJson(json['packagePurchase'])
+              : null,
+      review: json['review'] != null ? Review.fromJson(json['review']) : null,
     );
   }
 }
@@ -192,6 +192,7 @@ class Learner {
     );
   }
 }
+
 class Preferences {
   final String? preferredTime;
   final String? transmissionType;
@@ -305,13 +306,14 @@ class UserModel {
     );
   }
 }
+
 class Instructor {
   final String id;
   final String userId;
   final String rsaLicenseNumber;
   final String licenseExpiryDate;
-  final String bio;
-  final int experience;
+  final String? bio;
+  final int? experience;
   final List<String> specializations;
   final VehicleDetails vehicleDetails;
   final double hourlyRate;
@@ -319,13 +321,13 @@ class Instructor {
   final String city;
   final String county;
   final String postcode;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final int radius;
   final String status;
   final String? agencyId;
   final bool isActive;
-  final double rating;
+  final double? rating;
   final int totalReviews;
   final bool documentsUploaded;
   final int defaultLessonDuration;
@@ -342,8 +344,8 @@ class Instructor {
     required this.userId,
     required this.rsaLicenseNumber,
     required this.licenseExpiryDate,
-    required this.bio,
-    required this.experience,
+    this.bio,
+    this.experience,
     required this.specializations,
     required this.vehicleDetails,
     required this.hourlyRate,
@@ -376,23 +378,24 @@ class Instructor {
       userId: json['userId'],
       rsaLicenseNumber: json['rsaLicenseNumber'],
       licenseExpiryDate: json['licenseExpiryDate'],
-      bio: json['bio'],
-      experience: json['experience'],
-      specializations:
-      List<String>.from(json['specializations'].map((e) => e.toString())),
+      bio: json['bio'] ?? "",
+      experience: json['experience'] ?? 0,
+      specializations: List<String>.from(
+        json['specializations'].map((e) => e.toString()),
+      ),
       vehicleDetails: VehicleDetails.fromJson(json['vehicleDetails']),
       hourlyRate: (json['hourlyRate'] as num).toDouble(),
       address: json['address'],
       city: json['city'],
       county: json['county'],
       postcode: json['postcode'],
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       radius: json['radius'],
       status: json['status'],
       agencyId: json['agencyId'],
       isActive: json['isActive'],
-      rating: (json['rating'] as num).toDouble(),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalReviews: json['totalReviews'],
       documentsUploaded: json['documentsUploaded'],
       defaultLessonDuration: json['defaultLessonDuration'],
@@ -406,6 +409,7 @@ class Instructor {
     );
   }
 }
+
 class VehicleDetails {
   final String make;
   final int year;
@@ -428,6 +432,7 @@ class VehicleDetails {
     );
   }
 }
+
 class PackagePurchase {
   final String id;
   final String learnerId;
@@ -480,6 +485,7 @@ class PackagePurchase {
     );
   }
 }
+
 class PackageModel {
   final String id;
   final String instructorId;

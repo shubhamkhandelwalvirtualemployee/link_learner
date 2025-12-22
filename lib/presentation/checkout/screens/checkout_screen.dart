@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/core/constants/route_names.dart';
-import 'package:link_learner/presentation/checkout/model/package_credit_list_response.dart';
 import 'package:link_learner/presentation/checkout/provider/checkout_provider.dart';
 import 'package:link_learner/presentation/instructor/model/instructor_detail_response.dart';
 import 'package:link_learner/presentation/instructor/model/weekly_available_model.dart';
@@ -32,7 +30,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final TextEditingController notesController = TextEditingController();
   bool useCredits = false;
   int selectedPackageIndex = 0;
-  int selectedCreditIndex = -1;  // -1 = not using credits
+  int selectedCreditIndex = -1; // -1 = not using credits
 
   @override
   void initState() {
@@ -43,7 +41,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
         selectedDate: widget.selectedDate,
         startTime: widget.selectedSlot.startTime,
       );
-      Provider.of<CheckoutProvider>(context, listen: false).getBookingCreditProvider(widget.instructor.id);
+      Provider.of<CheckoutProvider>(
+        context,
+        listen: false,
+      ).getBookingCreditProvider(widget.instructor.id);
     });
   }
 
@@ -63,7 +64,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             _buildInstructorCard(),
             const SizedBox(height: 16),
 
@@ -75,8 +75,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
               const Center(child: CircularProgressIndicator()),
 
             if (!provider.isLoading && provider.calculatePriceError != null)
-              Text(provider.calculatePriceError!,
-                  style: const TextStyle(color: Colors.red)),
+              Text(
+                provider.calculatePriceError!,
+                style: const TextStyle(color: Colors.red),
+              ),
 
             if (!provider.isLoading &&
                 provider.calculatePriceError == null &&
@@ -101,10 +103,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget _buildInstructorCard() {
     final i = widget.instructor;
     final String initials = [
-      if (i.user.firstName.isNotEmpty) i.user.firstName[0].toUpperCase() else "",
-      (i.user.lastName.isNotEmpty)
-          ? i.user.lastName[0].toUpperCase()
-          : "",
+      if (i.user.firstName.isNotEmpty)
+        i.user.firstName[0].toUpperCase()
+      else
+        "",
+      (i.user.lastName.isNotEmpty) ? i.user.lastName[0].toUpperCase() : "",
     ].join("");
     return Container(
       padding: const EdgeInsets.all(12),
@@ -135,14 +138,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("${i.user.firstName} ${i.user.lastName}",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text("Rating: ⭐ ${i.rating} (${i.totalReviews} reviews)"),
-              Text("€${i.hourlyRate}/hour",
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green)),
-            ]),
-          )
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${i.user.firstName} ${i.user.lastName}",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text("Rating: ⭐ ${i.rating} (${i.totalReviews} reviews)"),
+                Text(
+                  "€${i.hourlyRate}/hour",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -160,11 +177,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Booking Summary", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            "Booking Summary",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
 
           _row("Date", formattedDate),
-          _row("Time", "${widget.selectedSlot.startTime} - ${widget.selectedSlot.endTime}"),
+          _row(
+            "Time",
+            "${widget.selectedSlot.startTime} - ${widget.selectedSlot.endTime}",
+          ),
 
           const SizedBox(height: 12),
           const Text("Location", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -178,7 +201,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
 
           const SizedBox(height: 12),
-          const Text("Notes (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            "Notes (Optional)",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 6),
           TextField(
             controller: notesController,
@@ -202,24 +228,39 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: _box(),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text("Price Summary", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Price Summary",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
 
-        _row("Base Price", "€${data.basePrice.toStringAsFixed(2)}"),
-        _row("Peak Surcharge", "€${data.peakSurcharge.toStringAsFixed(2)}"),
-        _row("Weekend Surcharge", "€${data.weekendSurcharge.toStringAsFixed(2)}"),
-        _row("Demand Surcharge", "€${data.demandSurcharge.toStringAsFixed(2)}"),
+          _row("Base Price", "€${data.basePrice.toStringAsFixed(2)}"),
+          _row("Peak Surcharge", "€${data.peakSurcharge.toStringAsFixed(2)}"),
+          _row(
+            "Weekend Surcharge",
+            "€${data.weekendSurcharge.toStringAsFixed(2)}",
+          ),
+          _row(
+            "Demand Surcharge",
+            "€${data.demandSurcharge.toStringAsFixed(2)}",
+          ),
 
-        const Divider(),
-        _row("Final Price", "€${data.finalPrice.toStringAsFixed(2)}"),
+          const Divider(),
+          _row("Final Price", "€${data.finalPrice.toStringAsFixed(2)}"),
 
-        const SizedBox(height: 8),
-        const Text("Breakdown:", style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 6),
+          const SizedBox(height: 8),
+          const Text(
+            "Breakdown:",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 6),
 
-        ...data.breakdown.map((line) => Text("- $line")),
-      ]),
+          ...data.breakdown.map((line) => Text("- $line")),
+        ],
+      ),
     );
   }
 
@@ -246,8 +287,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
           const SizedBox(height: 6),
 
           // ---------------- AVAILABLE CREDITS ----------------
-          const Text("Available Credits",
-              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const Text(
+            "Available Credits",
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
           const SizedBox(height: 12),
 
           // ---------------- LIST OF CREDIT PACKAGES ----------------
@@ -272,23 +315,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected
-                          ? ColorConstants.primaryColor
-                          : Colors.red.shade200,
+                      color:
+                          isSelected
+                              ? ColorConstants.primaryColor
+                              : Colors.red.shade200,
                       width: isSelected ? 2 : 1,
                     ),
-                    color: isSelected
-                        ? ColorConstants.primaryColor.withOpacity(0.1)
-                        : Colors.red.shade50,
+                    color:
+                        isSelected
+                            ? ColorConstants.primaryColor.withOpacity(0.1)
+                            : Colors.red.shade50,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("${pkg.lessonsIncluded} Sessions",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: ColorConstants.textColor,
-                          )),
+                      Text(
+                        "${pkg.lessonsIncluded} Sessions",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: ColorConstants.textColor,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         "${pkg.lessonsRemaining} of ${pkg.lessonsIncluded} sessions remaining",
@@ -315,25 +362,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: !useCredits
-                      ? ColorConstants.primaryColor
-                      : Colors.red.shade200,
+                  color:
+                      !useCredits
+                          ? ColorConstants.primaryColor
+                          : Colors.red.shade200,
                   width: !useCredits ? 2 : 1,
                 ),
-                color: !useCredits
-                    ? ColorConstants.primaryColor.withOpacity(0.1)
-                    : Colors.red.shade50,
+                color:
+                    !useCredits
+                        ? ColorConstants.primaryColor.withOpacity(0.1)
+                        : Colors.red.shade50,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Pay for session",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: ColorConstants.textColor)),
+                  Text(
+                    "Pay for session",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: ColorConstants.textColor,
+                    ),
+                  ),
                   SizedBox(height: 4),
-                  Text("€${priceData?.finalPrice ?? 0} per session",
-                      style: const TextStyle(fontSize: 12)),
+                  Text(
+                    "€${priceData?.finalPrice ?? 0} per session",
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -342,8 +396,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
   }
-
-
 
   // -------------------------------------------------------------------
   // Confirm Button (Next Step)
@@ -367,8 +419,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
               );
               return;
             }
-            if(useCredits){
-              final provider = Provider.of<CheckoutProvider>(context, listen: false);
+            if (useCredits) {
+              final provider = Provider.of<CheckoutProvider>(
+                context,
+                listen: false,
+              );
               final credits = provider.packageCreditListResponse!.data.first;
               bool available = await provider.checkAvailability(
                 instructorId: widget.instructor.id,
@@ -376,21 +431,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 startTime: widget.selectedSlot.startTime,
               );
               if (!available) {
-                final msg = provider.availabilityResponse?.data.message ?? "Slot unavailable";
-                final conflicts = provider.availabilityResponse?.data.conflictingBookings ?? [];
+                final msg =
+                    provider.availabilityResponse?.data.message ??
+                    "Slot unavailable";
+                final conflicts =
+                    provider.availabilityResponse?.data.conflictingBookings ??
+                    [];
 
                 showDialog(
                   context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("Instructor Not Available"),
-                    content: Text("$msg\n\nConflicts: ${conflicts.join(", ")}"),
-                    actions: [
-                      TextButton(
-                        child: const Text("OK"),
-                        onPressed: () => Navigator.pop(context),
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text("Instructor Not Available"),
+                        content: Text(
+                          "$msg\n\nConflicts: ${conflicts.join(", ")}",
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
                 );
                 return;
               }
@@ -406,85 +468,113 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
               if (!bookingOK) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(provider.bookingError ?? "Booking Failed")),
+                  SnackBar(
+                    content: Text(provider.bookingError ?? "Booking Failed"),
+                  ),
                 );
                 return;
               }
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Booking Completed Successfully!")),
-              );
-              AppRoutes.push(context, RouteNames.paymentSuccessScreen);
-            }else{
-            final provider = Provider.of<CheckoutProvider>(context, listen: false);
-
-            // 1️⃣ Check Availability First
-            bool available = await provider.checkAvailability(
-              instructorId: widget.instructor.id,
-              selectedDate: widget.selectedDate,
-              startTime: widget.selectedSlot.startTime,
-            );
-
-            if (!available) {
-              final msg = provider.availabilityResponse?.data.message ?? "Slot unavailable";
-              final conflicts = provider.availabilityResponse?.data.conflictingBookings ?? [];
-
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text("Instructor Not Available"),
-                  content: Text("$msg\n\nConflicts: ${conflicts.join(", ")}"),
-                  actions: [
-                    TextButton(
-                      child: const Text("OK"),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
+                const SnackBar(
+                  content: Text("Booking Completed Successfully!"),
                 ),
               );
-              return;
-            }
-
-            // 2️⃣ Slot Available — Create Booking
-            bool bookingOK = await provider.createBooking(
-              instructorId: widget.instructor.id,
-              selectedDate: widget.selectedDate,
-              startTime: widget.selectedSlot.startTime,
-              location: locationController.text,
-              notes: notesController.text,
-            );
-
-            if (!bookingOK) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(provider.bookingError ?? "Booking Failed")),
+              AppRoutes.push(context, RouteNames.paymentSuccessScreen);
+            } else {
+              final provider = Provider.of<CheckoutProvider>(
+                context,
+                listen: false,
               );
-              return;
-            }
 
-            // 3️⃣ Create Payment Intent
-            bool intentOK = await provider.createPaymentIntent();
-            if (!intentOK) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(provider.paymentIntentError ?? "Failed to create payment intent")),
+              // 1️⃣ Check Availability First
+              bool available = await provider.checkAvailability(
+                instructorId: widget.instructor.id,
+                selectedDate: widget.selectedDate,
+                startTime: widget.selectedSlot.startTime,
               );
-              return;
-            }
 
-            // 4️⃣ Show Stripe Payment Sheet
-            bool paid = await provider.makePayment();
-            if (!paid) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(provider.stripePaymentError ?? "Payment Failed")),
+              if (!available) {
+                final msg =
+                    provider.availabilityResponse?.data.message ??
+                    "Slot unavailable";
+                final conflicts =
+                    provider.availabilityResponse?.data.conflictingBookings ??
+                    [];
+
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text("Instructor Not Available"),
+                        content: Text(
+                          "$msg\n\nConflicts: ${conflicts.join(", ")}",
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                );
+                return;
+              }
+
+              // 2️⃣ Slot Available — Create Booking
+              bool bookingOK = await provider.createBooking(
+                instructorId: widget.instructor.id,
+                selectedDate: widget.selectedDate,
+                startTime: widget.selectedSlot.startTime,
+                location: locationController.text,
+                notes: notesController.text,
               );
-              AppRoutes.push(context, RouteNames.paymentFailedScreen);
-              return;
-            }
 
-            // 5️⃣ Payment Success
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Payment Completed Successfully!")),
-            );
-            AppRoutes.push(context, RouteNames.paymentSuccessScreen);
-          }},
+              if (!bookingOK) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(provider.bookingError ?? "Booking Failed"),
+                  ),
+                );
+                return;
+              }
+
+              // 3️⃣ Create Payment Intent
+              bool intentOK = await provider.createPaymentIntent();
+              if (!intentOK) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      provider.paymentIntentError ??
+                          "Failed to create payment intent",
+                    ),
+                  ),
+                );
+                return;
+              }
+
+              // 4️⃣ Show Stripe Payment Sheet
+              bool paid = await provider.makePayment();
+              if (!paid) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      provider.stripePaymentError ?? "Payment Failed",
+                    ),
+                  ),
+                );
+                AppRoutes.push(context, RouteNames.paymentFailedScreen);
+                return;
+              }
+
+              // 5️⃣ Payment Success
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Payment Completed Successfully!"),
+                ),
+              );
+              AppRoutes.push(context, RouteNames.paymentSuccessScreen);
+            }
+          },
           title: "Confirm Booking",
           backgroundColor: ColorConstants.primaryColor,
         ),
@@ -496,7 +586,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
   BoxDecoration _box() => BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(16),
-    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))],
+    boxShadow: [
+      BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+    ],
   );
 
   Widget _row(String label, String value) {
@@ -505,8 +597,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );

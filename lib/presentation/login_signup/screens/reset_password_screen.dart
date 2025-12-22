@@ -17,7 +17,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<LoginSignupProvider>(
-        builder: (context, loginSignupProvider, child) {
+      builder: (context, loginSignupProvider, child) {
         return Scaffold(
           backgroundColor: ColorConstants.whiteColor,
           body: Column(
@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           },
                           icon: Icon(Icons.arrow_back),
                         ),
-                        SizedBox(width: 20,),
+                        SizedBox(width: 20),
                         Text(
                           "Reset Password",
                           style: TextStyle(
@@ -65,45 +65,47 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30,),
+                    SizedBox(height: 30),
                     _buildLabel("Your Email"),
-                    SizedBox(height: 10,),
+                    SizedBox(height: 10),
                     customTextField(
                       controller: loginSignupProvider.forgotEmailController,
                       validator:
-                          (value) =>
-                          loginSignupProvider.validateEmail(value),
+                          (value) => loginSignupProvider.validateEmail(value),
                     ),
-                    SizedBox(height: 40,),
+                    SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: loginSignupProvider.isLoading?const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                          ),
-                        ),
-                      ) :elevatedButton(
-                        onTap: () {
-                          loginSignupProvider.resetPassword(context);
-                        },
-                        title: "Send",
-                        backgroundColor: ColorConstants.primaryColor,
-                      ),
+                      child:
+                          loginSignupProvider.isLoading
+                              ? const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              : elevatedButton(
+                                onTap: () {
+                                  loginSignupProvider.resetPassword(context);
+                                },
+                                title: "Send",
+                                backgroundColor: ColorConstants.primaryColor,
+                              ),
                     ),
                   ],
                 ),
               ),
-
-
             ],
           ),
         );
-      }
+      },
     );
   }
 

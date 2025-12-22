@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // ✅ for date formatting
@@ -7,6 +8,7 @@ import 'package:link_learner/presentation/profile/model/get_user_profile_model.d
 import 'package:link_learner/presentation/profile/model/payment_history_response.dart';
 import 'package:link_learner/services/api_calling.dart';
 import 'package:link_learner/services/api_service.dart';
+
 import '../../../core/utils/pick_image.dart';
 
 class ProfileProvider extends ChangeNotifier {
@@ -18,36 +20,53 @@ class ProfileProvider extends ChangeNotifier {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
-  final TextEditingController _licenseNumberController = TextEditingController();
+  final TextEditingController _licenseNumberController =
+      TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _countyController = TextEditingController();
   final TextEditingController _postcodeController = TextEditingController();
-  final TextEditingController _emergencyContactController = TextEditingController();
+  final TextEditingController _emergencyContactController =
+      TextEditingController();
   final TextEditingController _goalsController = TextEditingController();
   final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _preferencesController = TextEditingController();
 
   // --- Getters ---
   TextEditingController get firstNameController => _firstNameController;
+
   TextEditingController get lastNameController => _lastNameController;
+
   TextEditingController get emailController => _emailController;
+
   TextEditingController get phoneController => _phoneController;
+
   TextEditingController get dateOfBirthController => _dateOfBirthController;
+
   TextEditingController get licenseNumberController => _licenseNumberController;
+
   TextEditingController get addressController => _addressController;
+
   TextEditingController get cityController => _cityController;
+
   TextEditingController get countyController => _countyController;
+
   TextEditingController get postcodeController => _postcodeController;
-  TextEditingController get emergencyContactController => _emergencyContactController;
+
+  TextEditingController get emergencyContactController =>
+      _emergencyContactController;
+
   TextEditingController get goalsController => _goalsController;
+
   TextEditingController get experienceController => _experienceController;
+
   TextEditingController get preferencesController => _preferencesController;
 
   String? _selectedTransmissionType = "Manual";
   String? _selectedPreferenceTime = "Evenings";
 
   String? get selectedTransmissionType => _selectedTransmissionType;
+
   String? get selectedPreferenceTime => _selectedPreferenceTime;
 
   void setTransmissionType(String value) {
@@ -62,8 +81,10 @@ class ProfileProvider extends ChangeNotifier {
 
   // --- Image handling ---
   File? _coverImage;
+
   File? get coverImage => _coverImage;
   String? _profileImageUrl;
+
   String? get profileImageUrl => _profileImageUrl;
 
   void setMobileNumber(String number) {
@@ -86,6 +107,7 @@ class ProfileProvider extends ChangeNotifier {
 
   // --- Loading state ---
   bool _isLoading = false;
+
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
@@ -95,15 +117,17 @@ class ProfileProvider extends ChangeNotifier {
 
   // --- Profile model ---
   ProfileResponse? _profileResponse;
+
   ProfileResponse? get profileResponse => _profileResponse;
 
-// ------- PAYMENT HISTORY -------
+  // ------- PAYMENT HISTORY -------
   PaymentHistoryResponse? _paymentHistory;
+
   PaymentHistoryResponse? get paymentHistory => _paymentHistory;
 
   bool _loadingPayments = false;
-  bool get loadingPayments => _loadingPayments;
 
+  bool get loadingPayments => _loadingPayments;
 
   // --- Fetch profile from API ---
   Future<void> getProfile() async {
@@ -121,13 +145,15 @@ class ProfileProvider extends ChangeNotifier {
       _lastNameController.text = user.lastName;
       _emailController.text = user.email;
       _phoneController.text = user.phone ?? '';
-      _profileImageUrl = user.avatar??"";
+      _profileImageUrl = user.avatar ?? "";
 
       // ✅ Format date for UI (dd-MMM-yyyy)
       if (learner?.dateOfBirth != null && learner!.dateOfBirth!.isNotEmpty) {
         try {
           final parsed = DateTime.parse(learner.dateOfBirth!);
-          _dateOfBirthController.text = DateFormat('dd-MMM-yyyy').format(parsed);
+          _dateOfBirthController.text = DateFormat(
+            'dd-MMM-yyyy',
+          ).format(parsed);
         } catch (_) {
           _dateOfBirthController.text = learner.dateOfBirth!;
         }
@@ -143,8 +169,10 @@ class ProfileProvider extends ChangeNotifier {
       _emergencyContactController.text = learner?.emergencyContact ?? '';
       _goalsController.text = learner?.goals ?? '';
       _experienceController.text = learner?.experience ?? '';
-      _selectedTransmissionType = learner?.preferences?.transmissionType ?? 'Manual';
-      _selectedPreferenceTime = learner?.preferences?.preferredTime ?? 'Evenings';
+      _selectedTransmissionType =
+          learner?.preferences?.transmissionType ?? 'Manual';
+      _selectedPreferenceTime =
+          learner?.preferences?.preferredTime ?? 'Evenings';
 
       notifyListeners();
     } catch (e) {
@@ -212,8 +240,12 @@ class ProfileProvider extends ChangeNotifier {
       String? formattedDob;
       if (_dateOfBirthController.text.isNotEmpty) {
         try {
-          final parsed = DateFormat('dd-MMM-yyyy').parse(_dateOfBirthController.text);
-          formattedDob = DateFormat('yyyy-MM-dd').format(parsed); // ✅ convert back for API
+          final parsed = DateFormat(
+            'dd-MMM-yyyy',
+          ).parse(_dateOfBirthController.text);
+          formattedDob = DateFormat(
+            'yyyy-MM-dd',
+          ).format(parsed); // ✅ convert back for API
         } catch (_) {
           formattedDob = _dateOfBirthController.text;
         }
@@ -236,15 +268,12 @@ class ProfileProvider extends ChangeNotifier {
         "preferences": {
           "transmissionType": _selectedTransmissionType,
           "preferredTime": _selectedPreferenceTime,
-        }
+        },
       });
 
       if (coverImage != null) {
         formData.files.add(
-          MapEntry(
-            "avatar",
-            await MultipartFile.fromFile(coverImage!.path),
-          ),
+          MapEntry("avatar", await MultipartFile.fromFile(coverImage!.path)),
         );
       }
 
@@ -259,7 +288,6 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
-
 
   Future<void> loadPaymentHistory() async {
     try {

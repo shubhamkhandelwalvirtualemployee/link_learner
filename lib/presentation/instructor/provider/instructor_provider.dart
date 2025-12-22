@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
@@ -41,8 +40,6 @@ class InstructorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   void clearSpecializations() {
     selectedSpecializations.clear();
     notifyListeners();
@@ -65,7 +62,7 @@ class InstructorProvider extends ChangeNotifier {
   DateTime? selectedDate;
   DateTime? weekStartDate;
 
-  Future<void> setSelectedDate(String instructorId,DateTime date) async {
+  Future<void> setSelectedDate(String instructorId, DateTime date) async {
     selectedDate = date;
     notifyListeners();
     print("date selected");
@@ -78,11 +75,11 @@ class InstructorProvider extends ChangeNotifier {
     selectedSlot = slot;
     notifyListeners();
   }
+
   void setWeekStartDate(DateTime date) {
     weekStartDate = date;
     notifyListeners();
   }
-
 
   String selectedCounty = "All Counties";
   String selectedRating = "Any Rating";
@@ -133,7 +130,6 @@ class InstructorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> getInstructorList({bool isRefresh = false}) async {
     if (isRefresh) {
       page = 1;
@@ -141,7 +137,7 @@ class InstructorProvider extends ChangeNotifier {
       instructorListResponse = null;
     }
 
-    if ((isPaginating && !isRefresh) || !hasMore) return;
+    if (isPaginating || !hasMore) return;
 
     if (page == 1) {
       isLoading = true;
@@ -149,7 +145,6 @@ class InstructorProvider extends ChangeNotifier {
       isPaginating = true;
     }
     notifyListeners();
-
     try {
       final res = await ApiCalling().getInstructorList(
         page: page,
@@ -162,13 +157,15 @@ class InstructorProvider extends ChangeNotifier {
         minRating: selectedRating,
       );
 
+      final newItems = res.data?.instructors ?? [];
+
       if (page == 1) {
         instructorListResponse = res;
       } else {
-        instructorListResponse!.data!.instructors!.addAll(res.data?.instructors ?? []);
+        instructorListResponse?.data?.instructors?.addAll(newItems);
       }
 
-      hasMore = (res.data?.instructors?.length ?? 0) == limit;
+      hasMore = newItems.isNotEmpty;
       if (hasMore) page++;
     } catch (e) {
       debugPrint("Pagination Error: $e");
@@ -179,9 +176,10 @@ class InstructorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> getAvailableSlotsProvider(
-      String instructorId, String date) async {
+    String instructorId,
+    String date,
+  ) async {
     isSlotsLoading = true;
     notifyListeners();
 
@@ -197,19 +195,14 @@ class InstructorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
   Future<void> getWeeklyAvailabilityProvider(String instructorId) async {
     isAvailabilityLoading = true;
     notifyListeners();
 
     try {
-      final res =
-      await ApiCalling().getWeeklyAvailability(instructorId);
+      final res = await ApiCalling().getWeeklyAvailability(instructorId);
 
-      weeklyAvailability = res;   // ✅ store data
-
+      weeklyAvailability = res; // ✅ store data
     } catch (e) {
       debugPrint("Error fetching weekly availability: $e");
     }
@@ -222,11 +215,9 @@ class InstructorProvider extends ChangeNotifier {
     isInstructorPackageLoading = true;
 
     try {
-      final res =
-      await ApiCalling().getInstructorPackage(instructorId);
+      final res = await ApiCalling().getInstructorPackage(instructorId);
 
-      instructorPackagesResponse = res;   // ✅ store data
-
+      instructorPackagesResponse = res; // ✅ store data
     } catch (e) {
       debugPrint("Error fetching weekly availability: $e");
     }
@@ -249,7 +240,10 @@ class InstructorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> createPaymentIntent(String instructorId, String packageId) async {
+  Future<bool> createPaymentIntent(
+    String instructorId,
+    String packageId,
+  ) async {
     try {
       isLoading = true;
       paymentIntentError = null;
@@ -257,14 +251,13 @@ class InstructorProvider extends ChangeNotifier {
 
       final response = await ApiCalling().createPaymentIntentForPackage(
         packageId: packageId!,
-        instructorId: instructorId
+        instructorId: instructorId,
       );
 
       clientSecret = response.data.clientSecret;
       paymentIntentId = response.data.paymentIntentId;
 
       return true;
-
     } catch (e) {
       paymentIntentError = "Payment Intent Error: $e";
       return false;
@@ -299,12 +292,9 @@ class InstructorProvider extends ChangeNotifier {
       await Stripe.instance.presentPaymentSheet();
 
       return true;
-
     } catch (e) {
       stripePaymentError = "Stripe Payment Failed: $e";
       return false;
     }
   }
-
-
 }

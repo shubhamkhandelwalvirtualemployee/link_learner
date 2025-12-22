@@ -13,9 +13,10 @@ class InstructorPackagesResponse {
     return InstructorPackagesResponse(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: (json['data'] as List<dynamic>?)
-          ?.map((item) => InstructorPackage.fromJson(item))
-          .toList() ??
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((item) => InstructorPackage.fromJson(item))
+              .toList() ??
           [],
     );
   }
@@ -67,8 +68,7 @@ class InstructorPackage {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       lessonCount: json['lessonCount'] ?? 0,
-      pricePerLesson:
-      (json['pricePerLesson'] as num?)?.toDouble() ?? 0.0,
+      pricePerLesson: (json['pricePerLesson'] as num?)?.toDouble() ?? 0.0,
       totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0,
       duration: json['duration'] ?? 0,
       validityDays: json['validityDays'] ?? 0,
@@ -76,7 +76,7 @@ class InstructorPackage {
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       discountPercentage:
-      (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
+          (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

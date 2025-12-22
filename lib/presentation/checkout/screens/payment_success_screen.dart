@@ -42,7 +42,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                           AppRoutes.pushAndRemoveUntil(
                             context,
                             RouteNames.bottomNavBarScreens,
-                                (Route<dynamic> route) => false,
+                            (Route<dynamic> route) => false,
                           );
                         },
                         title: "Book another Session",

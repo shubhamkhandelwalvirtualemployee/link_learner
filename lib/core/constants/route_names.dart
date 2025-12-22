@@ -17,10 +17,11 @@ class RouteNames {
   static const String instructorListScreen = "/InstructorListScreen";
   static const String instructorDetailsScreen = "/InstructorDetailsScreen";
   static const String bookLessonScreen = "/BookLessonScreen";
-  static const String bookInstructorPackageScreen = "/BookInstructorPackageScreen";
+  static const String bookInstructorPackageScreen =
+      "/BookInstructorPackageScreen";
   static const String checkoutPage = "/CheckoutPage";
   static const String paymentHistoryScreen = "/PaymentHistoryScreen";
-  static const String aboutAppScreen= "/AboutAppScreen";
-  static const String helpSupportScreen= "/HelpSupportScreen";
-  static const String feedbackScreen= "/FeedbackScreen";
+  static const String aboutAppScreen = "/AboutAppScreen";
+  static const String helpSupportScreen = "/HelpSupportScreen";
+  static const String feedbackScreen = "/FeedbackScreen";
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/app_images.dart';
-import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
-import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
+import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:link_learner/presentation/booking/screens/booking_screen.dart';
+import 'package:link_learner/presentation/bottom_nav_bar/provider/bottom_nav_bar_provider.dart';
+import 'package:link_learner/presentation/home/screen/home_screen.dart';
+import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
+import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
 import 'package:link_learner/widgets/asset_images.dart';
 import 'package:provider/provider.dart';
-import 'package:link_learner/core/constants/color_constants.dart';
-import 'package:link_learner/presentation/home/screen/home_screen.dart';
-import 'package:link_learner/presentation/profile/screens/profile_screen.dart';
 
 class BottomNavBarScreens extends StatelessWidget {
   const BottomNavBarScreens({super.key});
@@ -153,9 +153,10 @@ class BottomNavBarScreens extends StatelessWidget {
                         Icon(
                           Icons.search,
                           size: 28,
-                          color: provider.selectedIndex == 2
-                              ? ColorConstants.primaryColor
-                              : ColorConstants.disabledColor,
+                          color:
+                              provider.selectedIndex == 2
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
                         ),
                       ],
                     ),
@@ -179,14 +180,15 @@ class BottomNavBarScreens extends StatelessWidget {
                         Icon(
                           Icons.person,
                           size: 28,
-                          color: provider.selectedIndex == 3
-                              ? ColorConstants.primaryColor
-                              : ColorConstants.disabledColor,
+                          color:
+                              provider.selectedIndex == 3
+                                  ? ColorConstants.primaryColor
+                                  : ColorConstants.disabledColor,
                         ),
                       ],
                     ),
                     label: 'Account',
-                  )
+                  ),
                 ],
               ),
             ),

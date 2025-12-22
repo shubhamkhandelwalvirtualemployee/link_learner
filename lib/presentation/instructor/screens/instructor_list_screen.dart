@@ -34,11 +34,14 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
   void _paginationLogic() {
     final provider = context.read<InstructorProvider>();
 
-    if (_controller.position.pixels >=
-            _controller.position.maxScrollExtent - 200 &&
-        !provider.isPaginating &&
-        provider.hasMore) {
-      provider.getInstructorList(); // fetch next page
+    if (!_controller.hasClients) return;
+
+    final threshold = 150;
+    final maxScroll = _controller.position.maxScrollExtent;
+    final currentScroll = _controller.position.pixels;
+
+    if (maxScroll - currentScroll <= threshold) {
+      provider.getInstructorList();
     }
   }
 
@@ -202,7 +205,10 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
   /// ✅ Instructor Card UI (Dynamic from API)
   Widget _instructorCard(Instructor instructor) {
     final String initials = [
-      if (instructor.user.firstName.isNotEmpty) instructor.user.firstName[0].toUpperCase() else "",
+      if (instructor.user.firstName.isNotEmpty)
+        instructor.user.firstName[0].toUpperCase()
+      else
+        "",
       (instructor.user.lastName.isNotEmpty)
           ? instructor.user.lastName[0].toUpperCase()
           : "",
@@ -309,7 +315,9 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                instructor.rating.toStringAsFixed(1),
+                                instructor.rating != null
+                                    ? instructor.rating!.toStringAsFixed(1)
+                                    : "0.0",
                                 style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 12,
@@ -392,10 +400,11 @@ class _InstructorListScreenState extends State<InstructorListScreen> {
                         AppRoutes.push(
                           context,
                           RouteNames.bookInstructorPackageScreen,
-                          arguments: {'instructorId': instructor.id,
-                            'user':instructor.user,
-                            'ratings':instructor.rating,
-                            'hourlyRate':instructor.hourlyRate
+                          arguments: {
+                            'instructorId': instructor.id,
+                            'user': instructor.user,
+                            'ratings': instructor.rating,
+                            'hourlyRate': instructor.hourlyRate,
                           },
                         );
                       },

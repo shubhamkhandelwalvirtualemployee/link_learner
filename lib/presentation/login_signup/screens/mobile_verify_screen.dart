@@ -7,7 +7,6 @@ import 'package:link_learner/routes/app_routes.dart';
 import 'package:link_learner/widgets/asset_images.dart';
 import 'package:link_learner/widgets/common_elevated_button.dart';
 import 'package:link_learner/widgets/phone_number_field.dart';
-
 import 'package:provider/provider.dart';
 
 class MobileVerifyScreen extends StatelessWidget {

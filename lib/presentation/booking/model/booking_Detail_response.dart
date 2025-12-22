@@ -17,6 +17,7 @@ class BookingDetailResponse {
     );
   }
 }
+
 class BookingDetail {
   final String id;
   final String type;
@@ -77,14 +78,15 @@ class BookingDetail {
       updatedAt: json['updatedAt'],
       learner: Learner.fromJson(json['learner']),
       instructor: Instructor.fromJson(json['instructor']),
-      packagePurchase: json['packagePurchase'] != null
-          ? PackagePurchase.fromJson(json['packagePurchase'])
-          : null,
-      review:
-      json['review'] != null ? Review.fromJson(json['review']) : null,
+      packagePurchase:
+          json['packagePurchase'] != null
+              ? PackagePurchase.fromJson(json['packagePurchase'])
+              : null,
+      review: json['review'] != null ? Review.fromJson(json['review']) : null,
     );
   }
 }
+
 class Learner {
   final String id;
   final String city;
@@ -110,6 +112,7 @@ class Learner {
     );
   }
 }
+
 class Instructor {
   final String id;
   final double rating;
@@ -132,6 +135,7 @@ class Instructor {
     );
   }
 }
+
 class User {
   final String id;
   final String firstName;
@@ -160,6 +164,7 @@ class User {
     );
   }
 }
+
 class PackagePurchase {
   final String id;
   final int lessonsIncluded;
@@ -185,16 +190,13 @@ class PackagePurchase {
     );
   }
 }
+
 class Review {
   final String id;
   final double overallRating;
   final String? comment;
 
-  Review({
-    required this.id,
-    required this.overallRating,
-    this.comment,
-  });
+  Review({required this.id, required this.overallRating, this.comment});
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(

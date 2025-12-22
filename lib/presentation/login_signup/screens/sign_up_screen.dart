@@ -86,7 +86,8 @@ class SignUpScreen extends StatelessWidget {
                                       ? "Name is required"
                                       : null,
                         ),
-                        const SizedBox(height: 10), _buildLabel("Last Name"),
+                        const SizedBox(height: 10),
+                        _buildLabel("Last Name"),
                         customTextField(
                           controller:
                               loginSignupProvider.signUpLastNameController,
