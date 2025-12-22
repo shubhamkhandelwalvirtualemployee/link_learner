@@ -381,4 +381,15 @@ class ApiCalling {
       body,
     );
   }
+  Future<void> cancelBooking({
+    required String bookingId,
+    required Map<String, dynamic> body,
+  }) async {
+    await ApiService().put(
+      "/v1/bookings/$bookingId/cancel",
+      body,
+    );
+  }
+
+
 }

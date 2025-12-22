@@ -135,4 +135,33 @@ class BookingProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> cancelBooking({
+    required String bookingId,
+    required String reason,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final body = {
+        "reason": reason,
+      };
+
+      await ApiCalling().cancelBooking(
+        bookingId: bookingId,
+        body: body,
+      );
+
+      await fetchBookings(); // refresh list
+      return true;
+    } catch (e) {
+      debugPrint("❌ Cancel booking error: $e");
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
 }

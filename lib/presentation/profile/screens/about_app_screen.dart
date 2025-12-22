@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:link_learner/core/constants/color_constants.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AboutAppScreen extends StatefulWidget {
@@ -25,7 +26,12 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("About App")),
+      backgroundColor: ColorConstants.whiteColor,
+      appBar: AppBar(
+        title: const Text("About App",style: TextStyle(fontSize: 24,
+            fontWeight: FontWeight.w400),),
+        backgroundColor:ColorConstants.whiteColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

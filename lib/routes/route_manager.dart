@@ -8,7 +8,6 @@ import 'package:link_learner/presentation/checkout/screens/payment_success_scree
 import 'package:link_learner/presentation/bottom_nav_bar/screens/bottom_nav_bar_screens.dart';
 import 'package:link_learner/presentation/checkout/screens/checkout_screen.dart';
 import 'package:link_learner/presentation/instructor/model/intructor_list_model.dart';
-import 'package:link_learner/presentation/instructor/screens/book_lesson_screen.dart';
 import 'package:link_learner/presentation/instructor/screens/book_package_page.dart';
 import 'package:link_learner/presentation/instructor/screens/instructor_detail_screen.dart';
 import 'package:link_learner/presentation/instructor/screens/instructor_list_screen.dart';
@@ -57,7 +56,6 @@ class RouteManager {
       RouteNames.resetPasswordScreen: (context) => ResetPasswordScreen(),
       RouteNames.changePasswordScreen: (context) => ChangePasswordScreen(),
       RouteNames.instructorListScreen: (context) => InstructorListScreen(),
-      RouteNames.bookLessonScreen: (context) => BookLessonScreen(),
       RouteNames.aboutAppScreen: (context) => AboutAppScreen(),
       RouteNames.helpSupportScreen: (context) => HelpSupportScreen(),
       RouteNames.feedbackScreen: (context) => FeedbackScreen(),

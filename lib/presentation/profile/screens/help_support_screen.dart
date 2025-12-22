@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:link_learner/core/constants/color_constants.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -6,7 +7,12 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Help & Support")),
+      backgroundColor: ColorConstants.whiteColor,
+      appBar: AppBar(
+        title: const Text("Help & Support",style: TextStyle(fontSize: 24,
+            fontWeight: FontWeight.w400),),
+        backgroundColor:ColorConstants.whiteColor,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -25,10 +31,6 @@ class HelpSupportScreen extends StatelessWidget {
             description: "Email us at support@linklearner.com",
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text("Contact Support"),
-          )
         ],
       ),
     );

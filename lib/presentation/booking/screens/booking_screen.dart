@@ -6,6 +6,7 @@ import 'package:link_learner/presentation/booking/model/booking_list_response.da
 import 'package:link_learner/presentation/booking/provider/booking_provider.dart';
 import 'package:link_learner/presentation/booking/screens/review_screen.dart';
 import 'package:link_learner/routes/app_routes.dart';
+import 'package:link_learner/widgets/common_elevated_button.dart';
 import 'package:provider/provider.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -186,6 +187,8 @@ class _BookingScreenState extends State<BookingScreen> {
         statusText = Colors.black87;
     }
     final isCompleted = booking.status.toUpperCase() == "COMPLETED";
+    final isCancel = booking.status.toUpperCase() == "CONFIRMED";
+    final isPaid = booking.paymentStatus.toUpperCase() == "COMPLETED";
     final hasReview = booking.review != null && booking.review!.id.isNotEmpty;
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -326,31 +329,104 @@ class _BookingScreenState extends State<BookingScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              if (isCancel)
+                GestureDetector(
+                  onTap: () {
+                    _showCancelBookingDialog(context, booking.id);
+                  },
+                  child: _actionButton("Cancel"),
+                ),
+              if (!isPaid)
+                GestureDetector(
+                  onTap: () async {
+                    if (booking!.paymentStatus.toUpperCase() != "PENDING") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Payment is already ${booking.paymentStatus}",
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final provider = Provider.of<BookingProvider>(
+                      context,
+                      listen: false,
+                    );
+
+                    // 1️⃣ Create Payment Intent
+                    bool intentOK = await provider.createPaymentIntent(
+                      booking.id,
+                    );
+                    if (!intentOK) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            provider.paymentIntentError ??
+                                "Failed to create payment intent",
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                    bool paid = await provider.makePayment();
+                    if (!paid) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("Payment Failed")));
+                      return;
+                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Payment Completed Successfully!"),
+                      ),
+                    );
+                    provider.fetchBookings(
+                      status: filterApiValues[selectedIndex],
+                    );
+                  },
+                  child: _actionButton(
+                    "Make Payment €${booking.finalPrice}",
+                    color: ColorConstants.paymentColor,
+                  ),
+                ),
               if (isCompleted)
                 GestureDetector(
                   onTap: () async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ReviewScreen(
-                          instructorName: "${booking.instructor.user.firstName} ${booking.instructor.user.lastName}",
-                          bookingId:booking.id,
-                          lessonDate: booking.scheduledAt,
-                          review: booking.review, // 👈 YOUR Review MODEL
-                        ),
+                        builder:
+                            (_) => ReviewScreen(
+                              instructorName:
+                                  "${booking.instructor.user.firstName} ${booking.instructor.user.lastName}",
+                              bookingId: booking.id,
+                              lessonDate: booking.scheduledAt,
+                              review: booking.review, // 👈 YOUR Review MODEL
+                            ),
                       ),
                     );
                   },
-                  child: _actionButton(hasReview ? "View Review" : "Review"),
+                  child: _actionButton(
+                    hasReview ? "View Review" : "Review",
+                    color: ColorConstants.reviewColor,
+                  ),
                 ),
               SizedBox(width: 10),
-              GestureDetector(onTap: () async {
-                 AppRoutes.push(
-                  context,
-                  RouteNames.bookingDetailsScreen,
-                  arguments: booking.id,
-                );
-              }, child: _actionButton("View")),
+              GestureDetector(
+                onTap: () async {
+                  AppRoutes.push(
+                    context,
+                    RouteNames.bookingDetailsScreen,
+                    arguments: booking.id,
+                  );
+                },
+                child: _actionButton(
+                  "View",
+                  color: ColorConstants.greyViewColor.withOpacity(0.5),
+                ),
+              ),
             ],
           ),
         ],
@@ -358,84 +434,113 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  // ---------------- REUSABLE CHIP ----------------
-  Widget _chip(
-    Color bg,
-    Color textColor,
-    String label, {
-    bool isPayment = false,
-    Booking? booking,
-  }) {
-    return GestureDetector(
-      onTap: () async {
-        if (!isPayment) return; // Not a payment chip → Just display status
+  void _showCancelBookingDialog(BuildContext context, String bookingId) {
+    final TextEditingController reasonController = TextEditingController();
+    final provider = Provider.of<BookingProvider>(context, listen: false);
 
-        // ✔ Allow retry only if payment is pending
-        if (booking!.paymentStatus.toUpperCase() != "PENDING") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Payment is already ${booking.paymentStatus}"),
-            ),
-          );
-          return;
-        }
-
-        final provider = Provider.of<BookingProvider>(context, listen: false);
-
-        // 1️⃣ Create Payment Intent
-        bool intentOK = await provider.createPaymentIntent(booking.id);
-        if (!intentOK) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                provider.paymentIntentError ??
-                    "Failed to create payment intent",
-              ),
-            ),
-          );
-          return;
-        }
-
-        // 2️⃣ Show Stripe Payment Sheet
-        bool paid = await provider.makePayment();
-        if (!paid) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Payment Failed")));
-          return;
-        }
-
-        // 3️⃣ Success
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Payment Completed Successfully!")),
-        );
-
-        // Reload booking list
-        provider.fetchBookings(status: filterApiValues[selectedIndex]);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: textColor,
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text(
+            "Cancel Booking",
+            style: TextStyle(fontWeight: FontWeight.w700),
           ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Please tell us why you are cancelling this booking.",
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: "Enter cancellation reason",
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Back"),
+            ),
+            elevatedButton(
+              backgroundColor: ColorConstants.primaryColor,
+              onTap: () async {
+                final reason = reasonController.text.trim();
+
+                if (reason.length < 5) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Please enter at least 5 characters for the reason",
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                Navigator.pop(context);
+
+                final success = await provider.cancelBooking(
+                  bookingId: bookingId,
+                  reason: reason,
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? "Booking cancelled successfully"
+                          : "Failed to cancel booking",
+                    ),
+                  ),
+                );
+              },
+              title: "Confirm Cancel",
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ---------------- REUSABLE CHIP ----------------
+  Widget _chip(Color bg, Color textColor, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: textColor,
         ),
       ),
     );
   }
 
-  Widget _actionButton(String label) {
+  Widget _actionButton(String label, {Color? color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.red.shade700,
+        color: color ?? ColorConstants.primaryColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

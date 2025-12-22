@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:link_learner/core/constants/api_endpoint.dart';
 import 'package:link_learner/core/constants/api_urls.dart';
 import 'package:link_learner/core/constants/route_names.dart';
 import 'package:link_learner/core/constants/session_constants.dart';
 import 'package:link_learner/core/utils/session_manager.dart';
-import 'package:link_learner/main.dart';
 import 'package:link_learner/routes/app_routes.dart';
 
 class ApiService {
@@ -16,6 +16,7 @@ class ApiService {
   bool _isRefreshing = false;
   final List<Function()> _pendingRequests = [];
   bool _hasLoggedOut = false;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   ApiService() {
     String baseUrl = ApiUrls.baseUrl;
@@ -170,12 +171,27 @@ class ApiService {
   // GET
   Future<dynamic> get(String path, [Map<String, String>? headers]) async {
     try {
-      final response = await _dio.get(path, options: Options(headers: headers));
+      final response = await _dio.get(
+        path,
+        options: Options(
+          headers: headers,
+          validateStatus: (_) => true, // 🔥 THIS LINE IS REQUIRED
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+        );
+      }
+
       return response.data;
     } on DioException catch (e) {
-      throw Exception(e.error ?? e.message ?? "Unknown error");
+      throw Exception(e.message ?? "API error");
     }
   }
+
 
   // POST
   Future<dynamic> post(String path, dynamic data) async {

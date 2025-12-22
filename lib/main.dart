@@ -30,7 +30,6 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 String? fcmToken;
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,6 +71,7 @@ class _MyAppState extends State<MyApp> {
    late FirebaseMessaging _messaging;
   late final FlutterLocalNotificationsPlugin _localNotifications;
   final _appLinks = AppLinks();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {

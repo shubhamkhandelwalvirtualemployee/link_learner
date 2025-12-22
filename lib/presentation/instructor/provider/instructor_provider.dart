@@ -68,6 +68,7 @@ class InstructorProvider extends ChangeNotifier {
   Future<void> setSelectedDate(String instructorId,DateTime date) async {
     selectedDate = date;
     notifyListeners();
+    print("date selected");
 
     final dateStr = DateFormat("yyyy-MM-dd").format(date);
     await getAvailableSlotsProvider(instructorId, dateStr);
@@ -186,6 +187,7 @@ class InstructorProvider extends ChangeNotifier {
 
     try {
       final res = await ApiCalling().getAvailableSlot(instructorId, date);
+      print(res.data.availableSlots);
       availableSlotsResponse = res; // store data
     } catch (e) {
       debugPrint("Error fetching available slots: $e");

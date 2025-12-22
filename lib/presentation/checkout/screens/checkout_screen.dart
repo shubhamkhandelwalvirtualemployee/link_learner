@@ -354,6 +354,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
         height: 50,
         child: elevatedButton(
           onTap: () async {
+            final location = locationController.text.trim();
+
+            if (location.length < 5) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "Please add a correct location (at least 5 characters) to help the instructor prepare.",
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+              return;
+            }
             if(useCredits){
               final provider = Provider.of<CheckoutProvider>(context, listen: false);
               final credits = provider.packageCreditListResponse!.data.first;
