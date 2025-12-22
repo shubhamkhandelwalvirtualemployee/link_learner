@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "811207409636",
+    "project_id": "link-learner",
+    "storage_bucket": "link-learner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811207409636:android:4a62463a83c5f267f351f1",
+        "android_client_info": {
+          "package_name": "com.example.link_learner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAETCUkBnVoVh0bmAVuaTf4H8zlUbAMlqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
